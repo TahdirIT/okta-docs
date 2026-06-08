@@ -1,72 +1,91 @@
-# CLAUDE.md
+# CLAUDE.md — okta documentation hub
 
-هذا الملف يوجّه Claude Code (وأي مساعد ذكاء اصطناعي آخر مثل Cursor) عند العمل داخل هذا المشروع.
+`okta` is a single, integrated educational platform — not five separate products.
+A core platform (`okta-web`) owns the domain data and exposes services; a partner
+platform (`okta-partners`) is the mechanism through which applications are
+authored and **installed into** the core; a Flutter client (`okta-app`) shows each
+Tenant the applications it has installed; and this repository (`okta-docs`) is the
+documentation hub and standards source. Applications added to the product have a
+**dual surface** — the same installed application appears both inside `okta-web`
+and inside `okta-app` — and they progress through environments **dev → prod**
+(sandbox → production).
 
-## نظرة عامة
+This file is the **map**. Depth lives in [`claude/`](./claude/). Start here, then
+open the reference file the table points you to.
 
-**okta-tech-docs** هو المرجع الرسمي للتوثيق التقني والمعايير الهندسية لمنصة **أوكتا التعليمية**. المحتوى الأساسي مكتوب بالعربية ويصف:
+---
 
-- **الرؤية والخدمات الأساسية** للمنصة.
-- **الفئات المستهدفة** (المعلم الفردي، المدرسة، المجمع، الكلية، الجامعة، المعهد، الأكاديمية، الشركة التعليمية).
-- **منصة الشركاء** (Partner Platform) وآلية التكامل عبر APIs.
-- **المعايير التقنية** (Tech Standards) التي تلتزم بها المشاريع الأخرى: `okta-web` و `okta-partners`.
+## Repository map
 
-هذا repo للتوثيق فقط — **لا يحتوي كود تطبيقي**.
+| Repo | Responsibility (one sentence) | Deep reference |
+|---|---|---|
+| **okta-web** | The platform/core: owns domain data, exposes services, and hosts installed applications as code; runs in sandbox + production. | [`claude/web.md`](./claude/web.md) |
+| **okta-partners** | The installation/deployment mechanism: author, version, review, publish, and install applications through the bridge into `okta-web`. | [`claude/partners.md`](./claude/partners.md) |
+| **okta-app** | The client: a Flutter app that lists and launches, per Tenant + role, the applications a Tenant has installed. | [`claude/app.md`](./claude/app.md) |
+| **okta-docs** | This repo: documentation hub + engineering/design standards. | [`docs/`](./docs/README.md) · [`docs/tech-standards/`](./docs/tech-standards/README.md) |
 
-## بنية المجلدات
+> Applications that Tenants install are **not** listed as a repository: each lives
+> in its own partner repo (scaffolded by `okta-partners`) and is represented here
+> by the general **installed-application model** —
+> [`claude/installed-apps.md`](./claude/installed-apps.md).
 
-```
-docs/
-├── README.md                       # نظرة عامة على المنصة
-├── end-users.md                    # المستخدمون النهائيون
-├── packages.md                     # حزم/اشتراكات الخدمات
-├── partner-platform.md             # رؤية منصة الشركاء
-├── tenants.md                      # أنواع الكيانات التعليمية
-├── translations.md
-├── pages/                          # صفحات إضافية
-├── prompts/                        # prompts جاهزة لمساعدات الـ AI
-├── services/                       # توثيق الخدمات التفصيلي
-└── tech-standards/                 # المعايير الهندسية (المرجع لكل repos)
-    ├── README.md
-    ├── design-standards.md
-    ├── permissions-naming.md
-    └── laravel-feature-services-structure.md
-tmp/                                # ملفات مؤقتة (لا تُعتمد كمرجع)
-```
+---
 
-## المعايير الحالية المُعتمدة
+## How the pieces connect (compact)
 
-### `tech-standards/laravel-feature-services-structure.md`
-- `app/Services/<Feature>/<Resource>/<Function>.php`
-- كل Use-case كلاس واحدة مع `__invoke()`، بدون `XxxService.php` عامة.
+- **Source of truth**: `okta-web` owns all Tenant domain data and the scope
+  catalog. Everything orbits it.
+- **Runtime edges**: `okta-partners → okta-web` over an authenticated HTTP
+  **bridge** (publish/install/sync) + signed webhooks back; `okta-app → okta-web`
+  over the mobile API (`/api/mobile/*`). There is **no** `okta-app ↔ okta-partners`
+  link.
+- **Dual surface**: one install lights up both the **platform** surface
+  (`okta-web` web UI, from the manifest's `menu` block) and the **client** surface
+  (`okta-app` catalog, from the manifest's `mobile` block).
+- **dev → prod**: applications are tested in `okta-web` **sandbox**, then
+  **published to production** — selected from `okta-partners` via `BridgeSettings`.
+- **Isolation**: an installed application reaches Tenant data only through the
+  Partner API (in-process for embedded, scope-gated HTTP for external); direct
+  access to platform internals is blocked by a static policy scanner + runtime
+  guards.
 
-### `tech-standards/permissions-naming.md`
-- الصيغة: `<feature>.<resource>.<action>` — **lowercase** + **dot-separated** + **snake_case** داخل الجزء.
-- أفعال محددة (`view`, `create`, `update`, `delete`, `activate`)، لا wildcards.
+Diagrams, the workspace tree, and the dependency map:
+[`claude/architecture.md`](./claude/architecture.md).
 
-### `tech-standards/design-standards.md`
-- معايير الهوية البصرية والتصميم للمنصة.
+---
 
-## إرشادات التحرير (مهمة)
+## Read this when…
 
-- **اللغة**: المحتوى الأساسي **بالعربية**. حافظ على الأسلوب والمصطلحات المستخدمة حالياً (مثل: «الفئة المستهدفة»، «الصلاحيات»، «الكيانات التعليمية»). إن أُضيف محتوى إنجليزي، اجعله ترجمة موازية ومنسَّقة وليس بديلاً.
-- **RTL**: احرص على تنسيق Markdown يعمل مع العرض RTL (مسافات قبل الرموز، استخدام `-` للقوائم، عدم خلط اتجاهات داخل السطر دون فاصل).
-- **الروابط الداخلية**: استخدم مسارات نسبية (مثل `./permissions-naming.md`) وتحقق أنها تعمل.
-- **الـ Code blocks**: اكتب الأمثلة البرمجية بالإنجليزية كما هي معتادة (PHP/Laravel). لا تُعرِّب أسماء classes أو namespaces.
-- **الفهرس**: عند إضافة ملف جديد في `tech-standards/`، حدِّث `tech-standards/README.md`. عند إضافة ملف جديد في `docs/`، أضف إشارة إليه من `docs/README.md` عند الاقتضاء.
-- **الأمثلة الصحيحة/الخاطئة**: أضف أمثلة واضحة (✅/❌) عند توثيق معيار جديد — كما في `permissions-naming.md`.
-- **تحديث المعايير**: أي تغيير في معيار قائم **قد يكسر** `okta-web` و `okta-partners`. أشِر بوضوح إلى أن التغيير breaking ووضّح خطة الترحيل.
-- **مجلد `tmp/`**: مخصص لمسودات/ملفات مؤقتة — لا تعتمده مرجعاً، ولا تربط إليه من ملفات موثّقة.
-- **لا تُنشئ ملفات توثيق في جذر الـ repo** — ضعها داخل `docs/` أو مجلد فرعي مناسب.
+| Your question | Open |
+|---|---|
+| How does the whole product fit together? Workspace tree, dependency map, dual surface. | [`claude/architecture.md`](./claude/architecture.md) |
+| What is each repo responsible for, and where are the boundaries? | [`claude/repos.md`](./claude/repos.md) |
+| What services does the core expose? How do installs work? Environments? | [`claude/web.md`](./claude/web.md) |
+| How are applications authored/published/installed? The dev→prod (sandbox→prod) flow? | [`claude/partners.md`](./claude/partners.md) · [`claude/deployment.md`](./claude/deployment.md) |
+| How does the mobile/desktop client list and launch a Tenant's apps? | [`claude/app.md`](./claude/app.md) |
+| What contract must an application follow to be installable and dual-surfaced? | [`claude/installed-apps.md`](./claude/installed-apps.md) |
+| End-to-end: from publish to appearing in both `okta-web` and `okta-app`. | [`claude/deployment.md`](./claude/deployment.md) |
+| What does a term mean (Tenant, scope, installed app, environment, …)? | [`claude/glossary.md`](./claude/glossary.md) |
+| Product vision, Tenant types, end-users (Arabic). | [`docs/README.md`](./docs/README.md) · [`docs/tenants.md`](./docs/tenants.md) · [`docs/end-users.md`](./docs/end-users.md) |
+| Engineering/design standards both Laravel repos obey. | [`docs/tech-standards/README.md`](./docs/tech-standards/README.md) |
 
-## المشاريع المرتبطة (المستهلِكة لهذه المعايير)
+---
 
-- [`tahdirit/okta-web`](https://github.com/tahdirit/okta-web) — التطبيق الأساسي (Laravel 12 + Livewire 4 + nwidart/laravel-modules).
-- [`tahdirit/okta-partners`](https://github.com/tahdirit/okta-partners) — منصة الشركاء و الـ APIs (Laravel 13 + Livewire 4 + JWT).
+## About this repository (editing rules)
 
-عند تعديل معيار هنا، يجب التحقق من أن CLAUDE.md في هذه المشاريع لا يزال يتوافق مع التغيير.
+`okta-docs` holds documentation only — no application code. Two layers:
 
-## أدوات مفيدة
+- [`docs/`](./docs/README.md) — product docs + the **tech-standards** consumed by
+  `okta-web` and `okta-partners`. Primary language is **Arabic**; keep the
+  existing style and RTL-friendly Markdown. Changing a standard can **break** the
+  consumer repos — flag such changes as breaking and note a migration path.
+- [`claude/`](./claude/) — this English reference layer describing the integrated
+  product. Use **relative links**; verify each one resolves.
 
-- Markdown preview في المحرر للتحقق من الهيئة قبل commit.
-- فحص الروابط الميتة: `markdown-link-check docs/**/*.md` (اختياري).
+Conventions: don't create doc files at the repo root (put them under `docs/` or
+`claude/`); treat `tmp/` as scratch (never a reference); when adding a
+tech-standard, update [`docs/tech-standards/README.md`](./docs/tech-standards/README.md).
+
+Each code repo also ships its own `CLAUDE.md` (`okta-web/CLAUDE.md`,
+`okta-partners/CLAUDE.md`) with repo-local detail — consult those for in-repo
+specifics; use *this* hub for the cross-repo, whole-product picture.
