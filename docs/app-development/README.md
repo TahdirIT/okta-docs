@@ -85,6 +85,12 @@ example-app/
 | Understand auth/identity across the surfaces and the install lifecycle | [`./auth-and-lifecycle.md`](./auth-and-lifecycle.md) |
 | See the whole product picture / publish flow | [`../../claude/`](../../claude/) |
 
+### Proposals / design specs (not yet implemented)
+
+| Spec | Status |
+|---|---|
+| [`proposals/dependent-accounts.md`](./proposals/dependent-accounts.md) — primary + dependent accounts, per-audience entries, and surfacing dependent apps to guardians/students in the **general (cross-tenant) scope**. | **Proposed** — design under review |
+
 ---
 
 ## Hard rules (don't skip)
