@@ -12,8 +12,12 @@
 بعض العلاقات **نموذج عمل** فقط، وبعض الأدوار **غير مزروعة** أو **مخطّطة ولم تُنفَّذ
 بعد**.
 
-> دليل الحالة: ✅ مُنفَّذ ومطابق · 🟡 مُنفَّذ بفرقٍ في التسمية/الشكل · 🔴 مفاهيمي
-> غير مُنفَّذ في الكود اليوم.
+> **هذا الملف يَسرد الفروق فقط.** البنود المطابقة تمامًا بين الطبقتين لا تُذكَر هنا
+> (مثل: «الجهة تدير مستخدميها»، ومتابعة «ولي أمر ← طالب»، ونطاقات الأدوار الثلاثة) —
+> راجِع تفاصيلها في [`tech/`](tech/README.md).
+
+> دليل الحالة: 🟡 مُنفَّذ بفرقٍ في التسمية/الشكل · 🔴 مفاهيمي غير مُنفَّذ في الكود
+> اليوم.
 
 ---
 
@@ -24,13 +28,10 @@
 | أنواع الكيانات الثمانية (معلم فردي، مدرسة، مجمع، كلية، جامعة، معهد، أكاديمية، شركة تعليمية) | [`tenants.md`](tenants.md) | الأنواع الثمانية **موجودة كمفاتيح كنسيّة** في `GetSettings::ENTITY_TYPES`؛ لكن `tenants.type` نصّ حرّ (لا enum DB)، والتحقّق app-layer فقط، مع قوائم مكرّرة بعضها قديم | [`tech/entities-tenancy.md`](tech/entities-tenancy.md) | 🟡 |
 | روضة (kindergarten) كنوع كيان | [`tenants.md`](tenants.md) · [`role-hierarchy.md`](role-hierarchy.md) | **ليست نوع كيان كنسيًّا**؛ غير موجودة في `GetSettings::ENTITY_TYPES`. `kindergarten` تظهر فقط كـ**مرحلة تعليمية** (`global_education_levels`) وفي قوائم قديمة مكرّرة | [`tech/entities-tenancy.md`](tech/entities-tenancy.md) | 🔴 |
 | احتواء الكيانات (شركة→مجمع→مدرسة/روضة، جامعة→كلية) | [`role-hierarchy.md`](role-hierarchy.md) | **لا يوجد** `parent_id` ولا شجرة؛ `tenants` جدول مسطّح | [`tech/entities-tenancy.md`](tech/entities-tenancy.md#الاحتواء) | 🔴 |
-| الجهة التشغيلية «تدير» مستخدميها | [`role-hierarchy.md`](role-hierarchy.md) | pivot `tenant_user` + أدوار team-scoped + نماذج العضوية | [`tech/roles-rbac.md`](tech/roles-rbac.md) | ✅ |
 | مسؤول الحساب (المالك المباشر) | [`end-users.md`](end-users.md) | دور `tenant-admin` (scope=`tenant`) | [`tech/roles-rbac.md`](tech/roles-rbac.md) | 🟡 |
 | إداري = اشتقاق من مسؤول الحساب بتفويض جزء من الصلاحيات | [`role-hierarchy.md`](role-hierarchy.md#اشتقاق-الأدوار-بالصلاحيات) | لا بنية «تفويض» خاصة؛ مجرّد إسناد دور/صلاحيات spatie أقل على مستوى الجهة. لا دور `admin` مزروع كنسيًّا | [`tech/roles-rbac.md`](tech/roles-rbac.md#6-الاشتقاق-بالتفويض-role-derivation) | 🟡 |
 | معلم (دور مستخدم نهائي بخدمات) | [`end-users.md`](end-users.md) | **ليس** دور spatie مزروعًا؛ يُمثَّل بـ `TenantEmployee.type='teacher'` | [`tech/roles-rbac.md`](tech/roles-rbac.md#5-نماذج-العضوية-وعلاقاتها) | 🟡 |
 | طالب / ولي أمر «تديرهما الجهة» | [`end-users.md`](end-users.md) · [`role-hierarchy.md`](role-hierarchy.md) | دورا `scope='general'` **شخصيان يتبعان المستخدم عبر جهاته**، يُزرعان لكل جهة ويُسنَدان آليًّا عبر backfill | [`tech/roles-rbac.md`](tech/roles-rbac.md) | 🟡 |
-| متابعة ولي أمر ← طالب | [`role-hierarchy.md`](role-hierarchy.md) | pivot `tenant_guardian_student` (`linked_at`/`unlinked_at`) | [`tech/roles-rbac.md`](tech/roles-rbac.md#5-نماذج-العضوية-وعلاقاتها) | ✅ |
-| نطاقات الأدوار الثلاثة (`system` / `tenant` / `general`) | [`role-scopes.md`](role-scopes.md) | عمود `roles.scope` بقيمه الثلاث، مزروعة ومستخدمة في بناء السياق (`ContextBuilder`) وربط `team_id` | [`tech/roles-rbac.md`](tech/roles-rbac.md) · [`tech/context-and-switching.md`](tech/context-and-switching.md) | ✅ |
 | مفوّض ولي أمر = اشتقاق بالتفويض | [`end-users.md`](end-users.md) · [`role-hierarchy.md`](role-hierarchy.md#اشتقاق-الأدوار-بالصلاحيات) | **غير مُنفَّذ**؛ الـ seeder ينشئ `guardian` فقط | [`tech/roles-rbac.md`](tech/roles-rbac.md#6-الاشتقاق-بالتفويض-role-derivation) | 🔴 |
 
 ---
@@ -63,7 +64,7 @@
   > بعد مواءمة التسمية، صار المفتاح `school` يقابل «مدرسة» في الطبقتين (كان المفهوم
   > سابقًا «مدرسة إدارية»).
 
-- **لماذا 🟡 وليست ✅** — الفروق الباقية:
+- **لماذا 🟡 (غير مطابقة تمامًا)** — الفروق الباقية:
   1. عمود `tenants.type` **نصّ حرّ (`string`) بلا قيد enum/check في القاعدة**؛
      الضمان app-layer فقط (راجع migration `2026_02_08_110911`).
   2. المفهوم يسمّي بالعربية، والكود يخزّن **مفاتيح snake_case** (`education_company`,
@@ -136,25 +137,15 @@
   التنفيذ سيتبع النمط نفسه (دور `guardian-delegate` بـ scope `general` + جدول ربط
   للتفويض على طالب محدّد).
 
-### 8) نطاقات الأدوار الثلاثة — ✅ مُنفَّذة ومطابقة
-
-- **المفهوم**: ثلاثة نطاقات للدور (`system` / `tenant` / `general`) — راجع
-  [`role-scopes.md`](role-scopes.md).
-- **التقني**: عمود `roles.scope` يحمل القيم الثلاث نفسها، ويُستخدَم في:
-  `ContextBuilder` لبناء السياق (system/tenant/general)، وربط `team_id = tenant_id`
-  لأدوار `tenant`، والزرع التلقائي لأدوار `general` (`guardian`/`student`). انظر
-  [`tech/roles-rbac.md`](tech/roles-rbac.md) و
-  [`tech/context-and-switching.md`](tech/context-and-switching.md).
-- **الأثر**: مطابقة تامّة بين المفهوم والتنفيذ على مستوى النطاقات الثلاثة.
-
 ---
 
 ## إرشاد للمحرّرين
 
 - عند **تنفيذ** بندٍ مُعلَّم 🔴 (كالاحتواء أو المفوَّض)، حدِّث **كلتا** الطبقتين:
-  الوصف المفاهيمي + ملف `tech/` المقابل، وانقل الحالة إلى ✅/🟡 هنا.
+  الوصف المفاهيمي + ملف `tech/` المقابل. وإن صار البند **مطابقًا تمامًا**، **احذفه
+  من هذا الملف** (فهو لا يسرد إلا الفروق).
 - عند تغيير بندٍ مُعلَّم 🟡 ليطابق المفهوم تمامًا (مثل زرع دور `teacher` كنسيًّا)،
   راجِع المستهلكين عبر المستودعات — أسماء الأدوار وقيم `type` جزءٌ من عقدٍ مشترك
-  (راجع تحذير breaking في [`tech/README.md`](tech/README.md)).
+  (راجع تحذير breaking في [`tech/README.md`](tech/README.md))، ثم احذف البند من هنا.
 - لا تترك هذا الملف يتعفّن: هو **عقد الصدق** بين ما نَعِد به مفاهيميًّا وما نسلّمه
   تقنيًّا.
