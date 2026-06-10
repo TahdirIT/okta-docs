@@ -66,7 +66,7 @@ Diagrams, the workspace tree, and the dependency map:
 | What contract must an application follow to be installable and dual-surfaced? | [`claude/installed-apps.md`](./claude/installed-apps.md) |
 | End-to-end: from publish to appearing in both `okta-web` and `okta-app`. | [`claude/deployment.md`](./claude/deployment.md) |
 | What does a term mean (Tenant, scope, installed app, environment, …)? | [`claude/glossary.md`](./claude/glossary.md) |
-| Product vision, Tenant types, end-users (Arabic). | [`docs/README.md`](./docs/README.md) · [`docs/tenants.md`](./docs/tenants.md) · [`docs/end-users.md`](./docs/end-users.md) |
+| Product vision, Tenant types, end-users (Arabic). | [`docs/README.md`](./docs/README.md) · [`docs/groups/tenants.md`](./docs/groups/tenants.md) · [`docs/groups/end-users.md`](./docs/groups/end-users.md) |
 | Engineering/design standards both Laravel repos obey. | [`docs/tech-standards/README.md`](./docs/tech-standards/README.md) |
 
 ---

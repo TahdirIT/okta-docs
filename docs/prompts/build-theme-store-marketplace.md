@@ -515,7 +515,7 @@ Schema::create('theme_purchases', function (Blueprint $t) {
   - `routes/landing.php`
 - وثيقة الشركاء: `docs/partner-platform.md`
 - معايير: `docs/tech-standards/permissions-naming.md`، `docs/tech-standards/design-standards.md`
-- تعددية: `docs/tenants.md`
+- تعددية: `docs/groups/tenants.md`
 
 > **تذكير أخير:** هذا الملف هو "عقد" لجلسة جديدة. أي انحراف عنه — خصوصاً إدخال تقنيات خارج Laravel+Livewire، أو استخدام Flux، أو استخدام `max-w-*` — مرفوض.
 

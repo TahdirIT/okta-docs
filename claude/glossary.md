@@ -36,12 +36,12 @@ inferred rather than explicit in code, it is marked `> TODO: confirm`.
 - **Tenant** — An educational entity that subscribes to the platform: individual
   teacher, school, complex, college, university, institute, academy, or
   educational company. The unit of data isolation
-  (`spatie/laravel-multitenancy`). Full list: [`../docs/tenants.md`](../docs/tenants.md).
+  (`spatie/laravel-multitenancy`). Full list: [`../docs/groups/tenants.md`](../docs/groups/tenants.md).
 - **Landlord** — The shared/central database and tables that are not
   tenant-scoped (e.g. `module_statuses`, the partner scope catalog, finance).
 - **End-user / role** — A person acting inside a Tenant with a role
   (account admin, administrative staff, teacher, student, guardian, guardian
-  delegate). See [`../docs/end-users.md`](../docs/end-users.md). The mobile
+  delegate). See [`../docs/groups/end-users.md`](../docs/groups/end-users.md). The mobile
   client resolves an **active role** per session.
 - **Active context** — The `(scope, tenant_id, active_role_id)` selection a user
   makes after login in `okta-app` (`scope` = `tenant` or `system`). Drives which
