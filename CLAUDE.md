@@ -67,6 +67,7 @@ Diagrams, the workspace tree, and the dependency map:
 | End-to-end: from publish to appearing in both `okta-web` and `okta-app`. | [`claude/deployment.md`](./claude/deployment.md) |
 | What does a term mean (Tenant, scope, installed app, environment, …)? | [`claude/glossary.md`](./claude/glossary.md) |
 | Product vision, Tenant types, end-users (Arabic). | [`docs/README.md`](./docs/README.md) · [`docs/groups/tenants.md`](./docs/groups/tenants.md) · [`docs/groups/end-users.md`](./docs/groups/end-users.md) |
+| Roles ↔ account-type map (followed → follower) as a graph. | [`docs/groups/role-hierarchy.md`](./docs/groups/role-hierarchy.md) |
 | Engineering/design standards both Laravel repos obey. | [`docs/tech-standards/README.md`](./docs/tech-standards/README.md) |
 
 ---
