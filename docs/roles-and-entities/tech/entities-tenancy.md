@@ -38,27 +38,30 @@
 نوع الحساب يُخزَّن كـ **string مسطّح** في `tenants.type`. القيم التي يصفها
 [`tenants.md`](../tenants.md) تُمثَّل جميعها كقيم لهذا العمود الواحد.
 
-**المصدر الكنسي للأنواع** هو ثابت
-`App\Services\CountriesManagement\EntityRegistrationCustomizations\GetSettings::ENTITY_TYPES`
-(مفاتيح `snake_case` ↔ تسميات عربية):
+**المصدر الكنسي للأنواع** هو enum `App\Enums\EntityType` (مفاتيح `snake_case` ↔
+تسميات عربية)، ويُطابِقه `GetSettings::ENTITY_TYPES` (اختبار وحدة يحرس التطابق):
 
 ```php
 'individual_teacher' => 'معلم فردي',   'school'           => 'مدرسة',
-'complex'            => 'مجمع',         'college'          => 'كلية',
-'university'         => 'جامعة',        'institute'        => 'معهد',
-'academy'            => 'أكاديمية',     'education_company' => 'شركة تعليمية',
+'kindergarten'       => 'روضة',        'complex'          => 'مجمع',
+'college'            => 'كلية',         'university'       => 'جامعة',
+'institute'          => 'معهد',         'academy'          => 'أكاديمية',
+'education_company'  => 'شركة تعليمية',
 ```
 
-- **لا قيد enum/check على مستوى القاعدة**؛ التحقّق يتم في طبقة التطبيق:
-  `RegisterTenant::validateTenantData()` يرفض أي نوع ليس مفتاحًا في
-  `GetSettings::ENTITY_TYPES`. لكل دولة يمكن **تمكين/تعطيل** مجموعة فرعية عبر
-  `GetEntityRegistrationCustomization`.
+- **حاجز على مستوى القاعدة**: قيد `CHECK (type IN (...))` على `tenants.type`
+  (Postgres؛ مُضاف `NOT VALID` فيفرض على كل INSERT/UPDATE جديد، وعلى الإنتاج
+  يُشدَّد على الصفوف القائمة بـ `VALIDATE CONSTRAINT` بعد التدقيق). الاختبارات على
+  sqlite تتخطّى القيد (محروس بالـ driver).
+- **طبقة التطبيق** أيضًا: `RegisterTenant::validateTenantData()` و`TenantEditorModal`
+  يرفضان أي نوع ليس مفتاحًا كنسيًّا. لكل دولة يمكن **تمكين/تعطيل** مجموعة فرعية عبر
+  `GetEntityRegistrationCustomization`. ووصول مُنمَّط آمن عبر `Tenant::entityType()`.
 - بعض الأنواع تتطلّب اختيار مرحلة تعليمية عند التسجيل — يحدّدها
-  `EntityTypesRequiringEducationLevel::KEYS = ['school', 'individual_teacher']`.
-- **حذار من القوائم القديمة المكرّرة**: تعليق الـ migration و`SubjectModal`
-  وبعض الـ presenters/blade تحمل قائمة قديمة فيها `kindergarten` (وهي **مرحلة
-  تعليمية** لا نوع كيان) وتُسقِط `complex`/`education_company`/`individual_teacher`.
-  اعتمد دائمًا `GetSettings::ENTITY_TYPES`.
+  `EntityTypesRequiringEducationLevel::KEYS = ['school', 'individual_teacher']`
+  (روضة غير مُلزَمة بمرحلة حاليًا).
+- **متابعة تنظيف مُعلَّقة**: لا تزال قوائم يدوية مكرّرة (`SubjectModal`،
+  بعض الـ presenters/blade، وتعليق الـ migration الأقدم) غير مشتقّة من الـ enum
+  وتُسقِط بعض المفاتيح — اعتمد دائمًا `App\Enums\EntityType` / `GetSettings::ENTITY_TYPES`.
 - التمييز بين «جهة تشغيلية» و«حاوية» (انظر [`role-hierarchy.md`](../role-hierarchy.md))
   هو تمييز **مفاهيمي/منطقي**، لا ينعكس على بنية الجدول.
 
