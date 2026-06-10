@@ -3,8 +3,8 @@
 هذا الملف يوضّح **الفرق التنفيذي** بين الطبقتين:
 
 - **الطبقة المفاهيمية** — [`tenants.md`](tenants.md)، [`end-users.md`](end-users.md)،
-  [`role-hierarchy.md`](role-hierarchy.md): تصف الأنواع والأدوار والعلاقات كما هي
-  في **نموذج العمل**.
+  [`role-hierarchy.md`](role-hierarchy.md)، [`role-scopes.md`](role-scopes.md): تصف
+  الأنواع والأدوار والنطاقات والعلاقات كما هي في **نموذج العمل**.
 - **الطبقة التقنية** — [`tech/`](tech/README.md): تصف ما هو **مُنفَّذ فعليًّا** في
   الكود (جداول، أعمدة، نماذج، middleware).
 
@@ -22,13 +22,15 @@
 | البند المفاهيمي | أين يُذكر | المقابل التقني الفعلي | أين | الحالة |
 |---|---|---|---|---|
 | أنواع الكيانات الثمانية (معلم فردي، مدرسة، مجمع، كلية، جامعة، معهد، أكاديمية، شركة تعليمية) | [`tenants.md`](tenants.md) | الأنواع الثمانية **موجودة كمفاتيح كنسيّة** في `GetSettings::ENTITY_TYPES`؛ لكن `tenants.type` نصّ حرّ (لا enum DB)، والتحقّق app-layer فقط، مع قوائم مكرّرة بعضها قديم | [`tech/entities-tenancy.md`](tech/entities-tenancy.md) | 🟡 |
-| احتواء الكيانات (شركة→مجمع→مدرسة، جامعة→كلية) | [`role-hierarchy.md`](role-hierarchy.md) | **لا يوجد** `parent_id` ولا شجرة؛ `tenants` جدول مسطّح | [`tech/entities-tenancy.md`](tech/entities-tenancy.md#الاحتواء) | 🔴 |
+| روضة (kindergarten) كنوع كيان | [`tenants.md`](tenants.md) · [`role-hierarchy.md`](role-hierarchy.md) | **ليست نوع كيان كنسيًّا**؛ غير موجودة في `GetSettings::ENTITY_TYPES`. `kindergarten` تظهر فقط كـ**مرحلة تعليمية** (`global_education_levels`) وفي قوائم قديمة مكرّرة | [`tech/entities-tenancy.md`](tech/entities-tenancy.md) | 🔴 |
+| احتواء الكيانات (شركة→مجمع→مدرسة/روضة، جامعة→كلية) | [`role-hierarchy.md`](role-hierarchy.md) | **لا يوجد** `parent_id` ولا شجرة؛ `tenants` جدول مسطّح | [`tech/entities-tenancy.md`](tech/entities-tenancy.md#الاحتواء) | 🔴 |
 | الجهة التشغيلية «تدير» مستخدميها | [`role-hierarchy.md`](role-hierarchy.md) | pivot `tenant_user` + أدوار team-scoped + نماذج العضوية | [`tech/roles-rbac.md`](tech/roles-rbac.md) | ✅ |
 | مسؤول الحساب (المالك المباشر) | [`end-users.md`](end-users.md) | دور `tenant-admin` (scope=`tenant`) | [`tech/roles-rbac.md`](tech/roles-rbac.md) | 🟡 |
 | إداري = اشتقاق من مسؤول الحساب بتفويض جزء من الصلاحيات | [`role-hierarchy.md`](role-hierarchy.md#اشتقاق-الأدوار-بالصلاحيات) | لا بنية «تفويض» خاصة؛ مجرّد إسناد دور/صلاحيات spatie أقل على مستوى الجهة. لا دور `admin` مزروع كنسيًّا | [`tech/roles-rbac.md`](tech/roles-rbac.md#6-الاشتقاق-بالتفويض-role-derivation) | 🟡 |
 | معلم (دور مستخدم نهائي بخدمات) | [`end-users.md`](end-users.md) | **ليس** دور spatie مزروعًا؛ يُمثَّل بـ `TenantEmployee.type='teacher'` | [`tech/roles-rbac.md`](tech/roles-rbac.md#5-نماذج-العضوية-وعلاقاتها) | 🟡 |
 | طالب / ولي أمر «تديرهما الجهة» | [`end-users.md`](end-users.md) · [`role-hierarchy.md`](role-hierarchy.md) | دورا `scope='general'` **شخصيان يتبعان المستخدم عبر جهاته**، يُزرعان لكل جهة ويُسنَدان آليًّا عبر backfill | [`tech/roles-rbac.md`](tech/roles-rbac.md) | 🟡 |
 | متابعة ولي أمر ← طالب | [`role-hierarchy.md`](role-hierarchy.md) | pivot `tenant_guardian_student` (`linked_at`/`unlinked_at`) | [`tech/roles-rbac.md`](tech/roles-rbac.md#5-نماذج-العضوية-وعلاقاتها) | ✅ |
+| نطاقات الأدوار الثلاثة (`system` / `tenant` / `general`) | [`role-scopes.md`](role-scopes.md) | عمود `roles.scope` بقيمه الثلاث، مزروعة ومستخدمة في بناء السياق (`ContextBuilder`) وربط `team_id` | [`tech/roles-rbac.md`](tech/roles-rbac.md) · [`tech/context-and-switching.md`](tech/context-and-switching.md) | ✅ |
 | مفوّض ولي أمر = اشتقاق بالتفويض | [`end-users.md`](end-users.md) · [`role-hierarchy.md`](role-hierarchy.md#اشتقاق-الأدوار-بالصلاحيات) | **غير مُنفَّذ**؛ الـ seeder ينشئ `guardian` فقط | [`tech/roles-rbac.md`](tech/roles-rbac.md#6-الاشتقاق-بالتفويض-role-derivation) | 🔴 |
 
 ---
@@ -45,7 +47,7 @@
   | المفتاح التقني | التسمية الكنسيّة | المفهوم في `tenants.md` |
   |---|---|---|
   | `individual_teacher` | معلم فردي | معلم فردي |
-  | `school` | مدرسة | مدرسة إدارية |
+  | `school` | مدرسة | مدرسة |
   | `complex` | مجمع | مجمع |
   | `college` | كلية | كلية |
   | `university` | جامعة | جامعة |
@@ -58,15 +60,16 @@
   `array_key_exists($type, GetSettings::ENTITY_TYPES)`، مع إمكانية **تمكين/تعطيل لكل
   دولة** عبر `GetEntityRegistrationCustomization`.
 
+  > بعد مواءمة التسمية، صار المفتاح `school` يقابل «مدرسة» في الطبقتين (كان المفهوم
+  > سابقًا «مدرسة إدارية»).
+
 - **لماذا 🟡 وليست ✅** — الفروق الباقية:
   1. عمود `tenants.type` **نصّ حرّ (`string`) بلا قيد enum/check في القاعدة**؛
      الضمان app-layer فقط (راجع migration `2026_02_08_110911`).
   2. المفهوم يسمّي بالعربية، والكود يخزّن **مفاتيح snake_case** (`education_company`,
      `individual_teacher`).
-  3. فرق تسمية طفيف: `tenants.md` يقول «مدرسة **إدارية**» مقابل التسمية الكنسيّة
-     «مدرسة» (المفتاح `school`).
-  4. المجموعة الفعّالة **قابلة للضبط لكل دولة**، لا قائمة ثابتة عالميًّا.
-  5. **قوائم مكرّرة وبعضها قديم**: تعليق الـ migration و`SubjectModal.php`
+  3. المجموعة الفعّالة **قابلة للضبط لكل دولة**، لا قائمة ثابتة عالميًّا.
+  4. **قوائم مكرّرة وبعضها قديم**: تعليق الـ migration و`SubjectModal.php`
      (`in:school,kindergarten,institute,academy,college,university`) و
      `TenantRegistrationDetailsPresenter.php` و`tenant-context-card.blade.php` تحمل
      قائمة قديمة تضمّ `kindergarten` (وهي **مرحلة تعليمية** في
@@ -74,11 +77,24 @@
      `education_company` / `individual_teacher`. **المصدر الكنسي الوحيد هو
      `GetSettings::ENTITY_TYPES`.**
 
-- **الأثر**: الأنواع متطابقة مفاهيميًّا↔تقنيًّا، لكن (أ) لا تعتمد على قيد DB لحصرها،
-  (ب) استعمل المفاتيح `snake_case` لا التسميات، (ج) لا تَستقِ قائمة الأنواع من القوائم
-  القديمة المكرّرة — استقِها من `GetSettings::ENTITY_TYPES`.
+- **الأثر**: الأنواع الثمانية متطابقة مفاهيميًّا↔تقنيًّا، لكن (أ) لا تعتمد على قيد DB
+  لحصرها، (ب) استعمل المفاتيح `snake_case` لا التسميات، (ج) لا تَستقِ قائمة الأنواع من
+  القوائم القديمة المكرّرة — استقِها من `GetSettings::ENTITY_TYPES`.
 
-### 2) الاحتواء — 🔴 مفاهيمي غير مُنفَّذ
+### 2) روضة (kindergarten) كنوع كيان — 🔴 مفاهيمي غير مُنفَّذ
+
+- **المفهوم**: أُضيفت **روضة** كنوع كيان تشغيلي (تابع لشركة تعليمية/مجمع، يدير ولي
+  أمر + طالب) — راجع [`tenants.md`](tenants.md) و[`role-hierarchy.md`](role-hierarchy.md).
+- **التقني**: **ليست نوع كيان كنسيًّا** — لا مفتاح `kindergarten` في
+  `GetSettings::ENTITY_TYPES`، فيرفضها `RegisterTenant::validateTenantData()`. القيمة
+  `kindergarten` موجودة في الكود **كمرحلة تعليمية** (enum في `global_education_levels`:
+  `kindergarten|elementary|middle|high`) وفي **قوائم أنواع قديمة مكرّرة** فقط، لا كنوع
+  جهة فعلي.
+- **الأثر**: لتفعيلها كنوع كيان حقيقي يلزم إضافة `'kindergarten' => 'روضة'` إلى
+  `GetSettings::ENTITY_TYPES` (وتنظيف القوائم القديمة لتفادي الالتباس مع المرحلة
+  التعليمية). إلى أن يحدث ذلك، احتواؤها يبقى 🔴 شأن باقي الاحتواء.
+
+### 3) الاحتواء — 🔴 مفاهيمي غير مُنفَّذ
 
 - **المفهوم**: شجرة «متبوع → تابع» (شركة تعليمية تحتوي مجمعًا/جامعة…، المجمع يحتوي
   مدرسة، الجامعة تحتوي كلية).
@@ -88,7 +104,7 @@
 - **الأثر**: أي استعلام «أعطني كل مدارس هذا المجمع» **لا** يمكن تنفيذه اليوم عبر
   علاقة في القاعدة؛ تمثيل الاحتواء التعليمي يتطلّب جدول/عمودًا جديدًا مستقبلًا.
 
-### 3) مسؤول الحساب وإداري — 🟡
+### 4) مسؤول الحساب وإداري — 🟡
 
 - **المفهوم**: مسؤول الحساب يملك الجهة، ويشتقّ «إداري» بمنحه **بعض** صلاحياته.
 - **التقني**: مسؤول الحساب = دور `tenant-admin`. أما «إداري» فلا يوجد له دور مزروع
@@ -96,14 +112,14 @@
   على مستوى الجهة (`team_id = tenant_id`). الاشتقاق هنا = «دور بصلاحيات أقل»، لا بنية
   برمجية مخصّصة.
 
-### 4) معلم — 🟡
+### 5) معلم — 🟡
 
 - **المفهوم**: دور مستقل ضمن أدوار المستخدم النهائي.
 - **التقني**: لا دور `teacher` مزروع في الـ seeder الظاهر؛ التمييز عبر
   `TenantEmployee.type='teacher'`، والصلاحيات الدقيقة تُمنح بإسناد دور/صلاحيات حسب
   النشر.
 
-### 5) طالب وولي أمر — 🟡 (فرق في «من يملك الدور»)
+### 6) طالب وولي أمر — 🟡 (فرق في «من يملك الدور»)
 
 - **المفهوم**: أدوار «تديرها الجهة» ضمن تسلسلها.
 - **التقني**: دورا `guardian` و`student` بـ `scope='general'` — **يتبعان المستخدم
@@ -113,12 +129,23 @@
 - **الأثر**: الفهم «الجهة تملك الدور» صحيح للزرع (دور لكل جهة)، لكن **تجربة المستخدم**
   للطالب/الولي عابرة للجهات لا محصورة في واحدة كما قد يوحي التسلسل.
 
-### 6) مفوّض ولي أمر — 🔴 مخطّط لم يُنفَّذ
+### 7) مفوّض ولي أمر — 🔴 مخطّط لم يُنفَّذ
 
 - **المفهوم**: دور مشتقّ بمنح وليّ الأمر جزءًا من صلاحياته على الطالب.
 - **التقني**: **غير موجود في الكود**. الـ seeder الحالي ينشئ دور `guardian` فقط. عند
   التنفيذ سيتبع النمط نفسه (دور `guardian-delegate` بـ scope `general` + جدول ربط
   للتفويض على طالب محدّد).
+
+### 8) نطاقات الأدوار الثلاثة — ✅ مُنفَّذة ومطابقة
+
+- **المفهوم**: ثلاثة نطاقات للدور (`system` / `tenant` / `general`) — راجع
+  [`role-scopes.md`](role-scopes.md).
+- **التقني**: عمود `roles.scope` يحمل القيم الثلاث نفسها، ويُستخدَم في:
+  `ContextBuilder` لبناء السياق (system/tenant/general)، وربط `team_id = tenant_id`
+  لأدوار `tenant`، والزرع التلقائي لأدوار `general` (`guardian`/`student`). انظر
+  [`tech/roles-rbac.md`](tech/roles-rbac.md) و
+  [`tech/context-and-switching.md`](tech/context-and-switching.md).
+- **الأثر**: مطابقة تامّة بين المفهوم والتنفيذ على مستوى النطاقات الثلاثة.
 
 ---
 
