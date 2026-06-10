@@ -66,8 +66,9 @@ Diagrams, the workspace tree, and the dependency map:
 | What contract must an application follow to be installable and dual-surfaced? | [`claude/installed-apps.md`](./claude/installed-apps.md) |
 | End-to-end: from publish to appearing in both `okta-web` and `okta-app`. | [`claude/deployment.md`](./claude/deployment.md) |
 | What does a term mean (Tenant, scope, installed app, environment, …)? | [`claude/glossary.md`](./claude/glossary.md) |
-| Product vision, Tenant types, end-users (Arabic). | [`docs/README.md`](./docs/README.md) · [`docs/groups/tenants.md`](./docs/groups/tenants.md) · [`docs/groups/end-users.md`](./docs/groups/end-users.md) |
-| Roles ↔ account-type map (followed → follower) as a graph. | [`docs/groups/role-hierarchy.md`](./docs/groups/role-hierarchy.md) |
+| Product vision (Arabic). | [`docs/README.md`](./docs/README.md) |
+| Entity types (Tenants), end-user roles, and the relationships between them. | [`docs/roles-and-entities/README.md`](./docs/roles-and-entities/README.md) |
+| Roles ↔ account-type map (followed → follower, containment, derivation) as a graph. | [`docs/roles-and-entities/role-hierarchy.md`](./docs/roles-and-entities/role-hierarchy.md) |
 | Engineering/design standards both Laravel repos obey. | [`docs/tech-standards/README.md`](./docs/tech-standards/README.md) |
 
 ---

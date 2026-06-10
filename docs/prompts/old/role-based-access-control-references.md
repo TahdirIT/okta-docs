@@ -73,8 +73,8 @@
 **المجلد:** `docs/`
 
 - `README.md` - نظرة عامة على المشروع
-- `groups/tenants.md` - معلومات عن المستأجرين (Tenants) وطريقة عمل تعدد المستأجرين
-- `groups/end-users.md` - معلومات عن المستخدمين النهائيين
+- `roles-and-entities/tenants.md` - معلومات عن المستأجرين (Tenants) وطريقة عمل تعدد المستأجرين
+- `roles-and-entities/end-users.md` - معلومات عن المستخدمين النهائيين
 - `packages.md` - معلومات عن الحزم (خاصة `spatie/laravel-permission` و/أو `spatie/laravel-multitenancy` إن وُجدت)
 - `partner-platform.md` - معلومات عن منصة الشركاء
 - `services/core-services.md` - الخدمات الأساسية

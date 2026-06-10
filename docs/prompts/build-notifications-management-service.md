@@ -27,7 +27,7 @@
   - `docs/packages.md`
 
 - المستويات المؤسسية (Tenants):
-  - `docs/groups/tenants.md`
+  - `docs/roles-and-entities/tenants.md`
 
 ## ربط بما هو موجود حالياً في okta-web (نقطة انطلاق)
 - إشارات لغوية وواجهات:

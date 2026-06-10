@@ -115,8 +115,8 @@
 **المجلد:** `docs/`
 
 - `README.md` - نظرة عامة على المشروع
-- `groups/tenants.md` - معلومات عن المستأجرين (Tenants)
-- `groups/end-users.md` - معلومات عن المستخدمين النهائيين
+- `roles-and-entities/tenants.md` - معلومات عن المستأجرين (Tenants)
+- `roles-and-entities/end-users.md` - معلومات عن المستخدمين النهائيين
 - `packages.md` - معلومات عن الحزم
 - `partner-platform.md` - معلومات عن منصة الشركاء
 - `services/core-services.md` - الخدمات الأساسية
