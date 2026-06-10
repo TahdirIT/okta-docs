@@ -36,11 +36,29 @@
 ## 2) نوع الكيان (`type`) — قائمة مسطّحة، لا شجرة
 
 نوع الحساب يُخزَّن كـ **string مسطّح** في `tenants.type`. القيم التي يصفها
-[`tenants.md`](../tenants.md) (معلم فردي، مدرسة إدارية، مجمع، كلية، جامعة، معهد،
-أكاديمية، شركة تعليمية) تُمثَّل جميعها كقيم لهذا العمود الواحد.
+[`tenants.md`](../tenants.md) تُمثَّل جميعها كقيم لهذا العمود الواحد.
 
-- لا يوجد عمود enum صارم على مستوى القاعدة لهذه القيم؛ التحقّق من القيمة يتم في
-  طبقة التسجيل/الخدمة لا عبر قيد قاعدة بيانات.
+**المصدر الكنسي للأنواع** هو ثابت
+`App\Services\CountriesManagement\EntityRegistrationCustomizations\GetSettings::ENTITY_TYPES`
+(مفاتيح `snake_case` ↔ تسميات عربية):
+
+```php
+'individual_teacher' => 'معلم فردي',   'school'           => 'مدرسة',
+'complex'            => 'مجمع',         'college'          => 'كلية',
+'university'         => 'جامعة',        'institute'        => 'معهد',
+'academy'            => 'أكاديمية',     'education_company' => 'شركة تعليمية',
+```
+
+- **لا قيد enum/check على مستوى القاعدة**؛ التحقّق يتم في طبقة التطبيق:
+  `RegisterTenant::validateTenantData()` يرفض أي نوع ليس مفتاحًا في
+  `GetSettings::ENTITY_TYPES`. لكل دولة يمكن **تمكين/تعطيل** مجموعة فرعية عبر
+  `GetEntityRegistrationCustomization`.
+- بعض الأنواع تتطلّب اختيار مرحلة تعليمية عند التسجيل — يحدّدها
+  `EntityTypesRequiringEducationLevel::KEYS = ['school', 'individual_teacher']`.
+- **حذار من القوائم القديمة المكرّرة**: تعليق الـ migration و`SubjectModal`
+  وبعض الـ presenters/blade تحمل قائمة قديمة فيها `kindergarten` (وهي **مرحلة
+  تعليمية** لا نوع كيان) وتُسقِط `complex`/`education_company`/`individual_teacher`.
+  اعتمد دائمًا `GetSettings::ENTITY_TYPES`.
 - التمييز بين «جهة تشغيلية» و«حاوية» (انظر [`role-hierarchy.md`](../role-hierarchy.md))
   هو تمييز **مفاهيمي/منطقي**، لا ينعكس على بنية الجدول.
 

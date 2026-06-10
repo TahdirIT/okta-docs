@@ -21,7 +21,7 @@
 
 | البند المفاهيمي | أين يُذكر | المقابل التقني الفعلي | أين | الحالة |
 |---|---|---|---|---|
-| أنواع الكيانات الثمانية (معلم فردي، مدرسة، مجمع، كلية، جامعة، معهد، أكاديمية، شركة تعليمية) | [`tenants.md`](tenants.md) | عمود `tenants.type` **string مسطّح**، بلا enum مفروض؛ قيم الـ migration الفعلية لا تطابق المسميات حرفيًّا | [`tech/entities-tenancy.md`](tech/entities-tenancy.md) | 🟡 |
+| أنواع الكيانات الثمانية (معلم فردي، مدرسة، مجمع، كلية، جامعة، معهد، أكاديمية، شركة تعليمية) | [`tenants.md`](tenants.md) | الأنواع الثمانية **موجودة كمفاتيح كنسيّة** في `GetSettings::ENTITY_TYPES`؛ لكن `tenants.type` نصّ حرّ (لا enum DB)، والتحقّق app-layer فقط، مع قوائم مكرّرة بعضها قديم | [`tech/entities-tenancy.md`](tech/entities-tenancy.md) | 🟡 |
 | احتواء الكيانات (شركة→مجمع→مدرسة، جامعة→كلية) | [`role-hierarchy.md`](role-hierarchy.md) | **لا يوجد** `parent_id` ولا شجرة؛ `tenants` جدول مسطّح | [`tech/entities-tenancy.md`](tech/entities-tenancy.md#الاحتواء) | 🔴 |
 | الجهة التشغيلية «تدير» مستخدميها | [`role-hierarchy.md`](role-hierarchy.md) | pivot `tenant_user` + أدوار team-scoped + نماذج العضوية | [`tech/roles-rbac.md`](tech/roles-rbac.md) | ✅ |
 | مسؤول الحساب (المالك المباشر) | [`end-users.md`](end-users.md) | دور `tenant-admin` (scope=`tenant`) | [`tech/roles-rbac.md`](tech/roles-rbac.md) | 🟡 |
@@ -38,14 +38,45 @@
 ### 1) أنواع الكيانات — 🟡 مُنفَّذ بفرق
 
 - **المفهوم**: ثمانية أنواع مسمّاة بالعربية مع وصف لكلٍّ.
-- **التقني**: قيمة نصّية واحدة في `tenants.type`. لا قيد قاعدة بيانات يحصر القيم،
-  والتحقّق يتم في طبقة التسجيل/الخدمة. قيم الكود في تعليق الـ migration
-  (`school | kindergarten | institute | academy | college | university`) **لا
-  تطابق** قائمة المسمّيات المفاهيمية حرفًا بحرف — مثلًا «kindergarten» موجودة تقنيًّا
-  وغير مذكورة مفاهيميًّا، بينما «مجمع/شركة تعليمية/معلم فردي» مفاهيمية بلا تمثيل
-  enum مفروض.
-- **الأثر**: لا تعتمد على `type` كقيمة من قائمة مغلقة مضمونة؛ تحقّق من القيم الفعلية
-  المستخدمة قبل بناء منطق يعتمد عليها.
+- **التقني**: الأنواع الثمانية **موجودة فعلًا** كقائمة كنسيّة في
+  `App\Services\CountriesManagement\EntityRegistrationCustomizations\GetSettings::ENTITY_TYPES`،
+  بمفاتيح `snake_case` ↔ تسميات عربية مطابقة للمفهوم:
+
+  | المفتاح التقني | التسمية الكنسيّة | المفهوم في `tenants.md` |
+  |---|---|---|
+  | `individual_teacher` | معلم فردي | معلم فردي |
+  | `school` | مدرسة | مدرسة إدارية |
+  | `complex` | مجمع | مجمع |
+  | `college` | كلية | كلية |
+  | `university` | جامعة | جامعة |
+  | `institute` | معهد | معهد |
+  | `academy` | أكاديمية | أكاديمية |
+  | `education_company` | شركة تعليمية | شركة تعليمية |
+
+  والتحقّق منها قائم على مستوى التطبيق في
+  `RegisterTenant::validateTenantData()`:
+  `array_key_exists($type, GetSettings::ENTITY_TYPES)`، مع إمكانية **تمكين/تعطيل لكل
+  دولة** عبر `GetEntityRegistrationCustomization`.
+
+- **لماذا 🟡 وليست ✅** — الفروق الباقية:
+  1. عمود `tenants.type` **نصّ حرّ (`string`) بلا قيد enum/check في القاعدة**؛
+     الضمان app-layer فقط (راجع migration `2026_02_08_110911`).
+  2. المفهوم يسمّي بالعربية، والكود يخزّن **مفاتيح snake_case** (`education_company`,
+     `individual_teacher`).
+  3. فرق تسمية طفيف: `tenants.md` يقول «مدرسة **إدارية**» مقابل التسمية الكنسيّة
+     «مدرسة» (المفتاح `school`).
+  4. المجموعة الفعّالة **قابلة للضبط لكل دولة**، لا قائمة ثابتة عالميًّا.
+  5. **قوائم مكرّرة وبعضها قديم**: تعليق الـ migration و`SubjectModal.php`
+     (`in:school,kindergarten,institute,academy,college,university`) و
+     `TenantRegistrationDetailsPresenter.php` و`tenant-context-card.blade.php` تحمل
+     قائمة قديمة تضمّ `kindergarten` (وهي **مرحلة تعليمية** في
+     `global_education_levels`، **ليست** نوع كيان) وتُسقِط `complex` /
+     `education_company` / `individual_teacher`. **المصدر الكنسي الوحيد هو
+     `GetSettings::ENTITY_TYPES`.**
+
+- **الأثر**: الأنواع متطابقة مفاهيميًّا↔تقنيًّا، لكن (أ) لا تعتمد على قيد DB لحصرها،
+  (ب) استعمل المفاتيح `snake_case` لا التسميات، (ج) لا تَستقِ قائمة الأنواع من القوائم
+  القديمة المكرّرة — استقِها من `GetSettings::ENTITY_TYPES`.
 
 ### 2) الاحتواء — 🔴 مفاهيمي غير مُنفَّذ
 
