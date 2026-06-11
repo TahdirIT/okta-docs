@@ -94,6 +94,15 @@ $user->isSuperAdmin();                        // دور system
 - pivot **`tenant_user`** (`app/Models/TenantUser.php`) — فريد `(tenant_id, user_id)`
   مع حذف ناعم. `TenantUser::roles()` يقرأ `model_has_roles` مُقيَّدًا بـ
   `tenant_id` ونوع `User` فقط.
+- **الربط الإداري (مسؤول منصّة)** من `settings/users/{hashid}/edit`
+  (`UserEditorPage`): بطاقة «وصول الجهات» تعرض جهات المستخدم وأدواره في كلٍّ،
+  وزرّ **«إضافة جهة»** يفتح modal بحث (`UserTenantPickerModal`) لاختيار **جهة
+  واحدة + أدوارها**. الكتابة الفعلية في خدمة
+  `App\Services\Tenants\Members\AttachUserToTenant`: `TenantUser::firstOrCreate`
+  ثم `syncRoles` ضمن سياق فريق الجهة (`setPermissionsTeamId($tenantId)`)، مع
+  إسقاط أي دور ليس `scope='tenant'`. أمّا حفظ أدوار الجهات القائمة (المربّعات) +
+  أدوار النظام فيمرّ عبر `App\Services\UserManagement\Roles\AssignUserRoles` عند
+  حفظ الصفحة. محميّ بصلاحية `rbac.users.update`.
 
 ---
 
