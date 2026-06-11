@@ -25,7 +25,7 @@
 
 | البند المفاهيمي | أين يُذكر | المقابل التقني الفعلي | أين | الحالة |
 |---|---|---|---|---|
-| احتواء الكيانات (شركة→مجمع→مدرسة/روضة، جامعة→كلية) | [`role-hierarchy.md`](role-hierarchy.md) | **منفَّذ** كـ `tenants.parent_tenant_id` + قواعد `EntityType` + خدمة `SetTenantParent` + ربط إداري؛ **باقٍ**: لا تجميع عابر للعزل ولا تنقّل سياق لمدير الأب | [`tech/entities-tenancy.md`](tech/entities-tenancy.md#الاحتواء) | 🟡 |
+| احتواء الكيانات (شركة→مجمع→مدرسة/روضة، جامعة→كلية) | [`role-hierarchy.md`](role-hierarchy.md) | **منفَّذ**: `tenants.parent_tenant_id` + قواعد `EntityType` + `SetTenantParent` + ربط إداري + **لوحات تجميعية** للمجمع/الشركة (قراءة عبر التابعين)؛ **الباقي الوحيد**: تنقّل السياق لمدير الأب | [`tech/entities-tenancy.md`](tech/entities-tenancy.md#الاحتواء) | 🟡 |
 | مسؤول الحساب (المالك المباشر) | [`end-users.md`](end-users.md) | دور `tenant-admin` (scope=`tenant`) | [`tech/roles-rbac.md`](tech/roles-rbac.md) | 🟡 |
 | إداري = اشتقاق من مسؤول الحساب بتفويض جزء من الصلاحيات | [`role-hierarchy.md`](role-hierarchy.md#اشتقاق-الأدوار-بالصلاحيات) | لا بنية «تفويض» خاصة؛ مجرّد إسناد دور/صلاحيات spatie أقل على مستوى الجهة. لا دور `admin` مزروع كنسيًّا | [`tech/roles-rbac.md`](tech/roles-rbac.md#6-الاشتقاق-بالتفويض-role-derivation) | 🟡 |
 | معلم (دور مستخدم نهائي بخدمات) | [`end-users.md`](end-users.md) | **ليس** دور spatie مزروعًا؛ يُمثَّل بـ `TenantEmployee.type='teacher'` | [`tech/roles-rbac.md`](tech/roles-rbac.md#5-نماذج-العضوية-وعلاقاتها) | 🟡 |
@@ -47,12 +47,17 @@
     `canContain`/`containerTypes`).
   - خدمة `App\Services\Tenants\Containment\SetTenantParent` (تطابق الأنواع + منع
     self-parent + منع الدورات)، تُستدعى من `TenantEditorModal` (**ربط إداري**:
-    مسؤول المنصّة ينشئ مجمعًا/شركة ويربط التابعين). عرض الأب/التابعين في
-    `tenant-show`.
+    مسؤول المنصّة ينشئ مجمعًا/شركة ويربط التابعين) + ربط سريع من قائمة الجهات
+    (`TenantParentModal` عبر `EligibleTenantParents`). عرض الأب/التابعين في
+    `tenant-show` وفي قائمة الجهات (رابط قابل للضغط).
+  - **تجميع للقراءة عبر التابعين** في لوحة التحكم (`pages/dashboard`): لوحة
+    **المجمع** تعدّ المدارس/الروضات + إجمالي طلاب/موظفي أبنائها؛ لوحة **الشركة
+    التعليمية** تجمّع الشجرة كاملة (`descendantIds` + `withoutTenantScope`)
+    وتعرض الأبناء مجمّعين حسب النوع. (التجميع يتجاوز عزل `BelongsToTenant` بأمان
+    عبر `withoutTenantScope` مقيَّدًا بمعرّفات التابعين.)
 - **التقني (باقٍ — لماذا 🟡 وليست ✅)**:
-  - **لا تجميع عابر للعزل**: «كل طلاب الشركة عبر مدارسها» يتطلّب المرور على كل ابن
-    بـ `makeCurrent()` (نماذج الطلاب مقيّدة بـ `BelongsToTenant`) — غير مُنفَّذ.
-  - **لا تنقّل سياق** لمدير الجهة الأم إلى التابعين (الأدوار معزولة بـ `team_id`).
+  - **لا تنقّل سياق** لمدير الجهة الأم **للكتابة** داخل جهة تابعة (الأدوار معزولة
+    بـ `team_id` لكل جهة؛ التجميع الحالي للقراءة فقط).
   - الربط **إداري فقط**؛ لا تسجيل ذاتي يدّعي أبًا.
 - **تمييز**: `owner_partner_tenant_id` ملكية **شريك** (okta-partners)، لا احتواء
   تعليمي.
