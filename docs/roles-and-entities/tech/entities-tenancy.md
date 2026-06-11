@@ -62,21 +62,39 @@
 - **متابعة تنظيف مُعلَّقة**: لا تزال قوائم يدوية مكرّرة (`SubjectModal`،
   بعض الـ presenters/blade، وتعليق الـ migration الأقدم) غير مشتقّة من الـ enum
   وتُسقِط بعض المفاتيح — اعتمد دائمًا `App\Enums\EntityType` / `GetSettings::ENTITY_TYPES`.
-- التمييز بين «جهة تشغيلية» و«حاوية» (انظر [`role-hierarchy.md`](../role-hierarchy.md))
-  هو تمييز **مفاهيمي/منطقي**، لا ينعكس على بنية الجدول.
+- التمييز بين «جهة تشغيلية» و«حاوية» مُرمَّز في `EntityType::isContainer()`،
+  والاحتواء الفعلي يُمثَّل بعمود `parent_tenant_id` (انظر [الاحتواء](#الاحتواء)).
 
 ### الاحتواء
 
-العلاقة «شركة تعليمية → مجمع → مدرسة» و«جامعة → كلية» الموصوفة في
-[`role-hierarchy.md`](../role-hierarchy.md) هي **نموذج عمل (business model)**؛
-وهي **غير مفروضة كـ `parent_id`/شجرة في `tenants`**. تقنيًا:
+العلاقة «شركة تعليمية → مجمع → مدرسة/روضة» و«جامعة → كلية» الموصوفة في
+[`role-hierarchy.md`](../role-hierarchy.md) **منفَّذة** كقائمة جوار
+(adjacency list):
 
-- جدول `tenants` **مسطّح** — لا عمود `parent_tenant_id` ولا nested-set.
-- العمود الوحيد ذو دلالة «ملكية» هو `owner_partner_tenant_id`، وهو يربط الجهة
-  بـ **حساب شريك** في سياق منصّة الشركاء، لا بجهةٍ تعليميةٍ أكبر.
+- **العمود**: `tenants.parent_tenant_id` (self-FK، nullable، `nullOnDelete`).
+  `null` = جهة عليا/مستقلّة. (migration `2026_06_10_000003_add_parent_tenant_id_to_tenants`.)
+- **العلاقات** على `Tenant`: `parent()` / `children()` / `scopeTopLevel()` +
+  `descendantIds()` (تُستخدم لمنع الدورات).
+- **قواعد النوع** في `App\Enums\EntityType`: `allowedChildTypes()` /
+  `isContainer()` / `canContain()` / `containerTypes()` — مثلًا
+  `EducationCompany` يحتوي {Complex, University, College, Institute, Academy,
+  Kindergarten, School}، و`Complex` يحتوي {School, Kindergarten}، و`University`
+  يحتوي {College}؛ والبقية أوراق (لا تحتوي).
+- **الربط**: خدمة `App\Services\Tenants\Containment\SetTenantParent` تفرض تطابق
+  الأنواع وتمنع self-parent والدورات (الأب ليس من نسل الابن). تُستدعى من
+  `TenantEditorModal` — **عملية مسؤول منصّة** (نطاق system).
 
-> خلاصة للمحرّر: عند الحاجة لتمثيل الاحتواء التعليمي مستقبلًا، سيتطلب ذلك جدول/عمود
-> جديدًا؛ لا تفترض وجوده اليوم في الكود.
+> ميِّز عن `owner_partner_tenant_id` (ملكية **شريك**، سياق okta-partners) — لا
+> علاقة له بالاحتواء التعليمي.
+
+**حدود التنفيذ الحالي (مؤجَّل):**
+
+- **لا تجميع عابر للعزل** بعد: «إجمالي طلاب الشركة عبر كل مدارسها» يتطلّب المرور
+  على كل ابن بـ `makeCurrent()` (لأنّ نماذج الطلاب مقيّدة بـ `BelongsToTenant`) —
+  غير مُنفَّذ.
+- **لا تنقّل سياق** لمدير الجهة الأم إلى الجهات التابعة بعد (الأدوار تبقى معزولة
+  بـ `team_id` لكل جهة).
+- الربط **إداري فقط**؛ لا تسجيل ذاتي يدّعي أبًا.
 
 ---
 

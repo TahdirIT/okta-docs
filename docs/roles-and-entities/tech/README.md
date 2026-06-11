@@ -65,7 +65,7 @@ flowchart TD
 | المفهوم (في `roles-and-entities/`) | أين يعيش تقنيًا |
 |---|---|
 | نوع الكيان (شركة/مجمع/جامعة/كلية/مدرسة/معهد/أكاديمية/معلم فردي) | عمود `tenants.type` (string مسطّح) — [`entities-tenancy.md`](entities-tenancy.md) |
-| الاحتواء (شركة → مجمع → مدرسة …) | **نموذج عمل مفاهيمي**، غير مفروض كـ FK في القاعدة — [`entities-tenancy.md`](entities-tenancy.md#الاحتواء) |
+| الاحتواء (شركة → مجمع → مدرسة …) | منفَّذ كـ `tenants.parent_tenant_id` (adjacency list) + قواعد `EntityType` + خدمة `SetTenantParent` (ربط إداري) — [`entities-tenancy.md`](entities-tenancy.md#الاحتواء) |
 | مسؤول الحساب | دور `tenant-admin` (scope=`tenant`) — [`roles-rbac.md`](roles-rbac.md) |
 | إداري / معلم / طالب / ولي أمر | أدوار + نماذج عضوية (`TenantEmployee.type`, `TenantStudent`, `TenantGuardian`) — [`roles-rbac.md`](roles-rbac.md) |
 | مفوّض ولي أمر | اشتقاق بالتفويض (مفاهيمي؛ حالة التحقيق موضّحة) — [`roles-rbac.md`](roles-rbac.md#الاشتقاق) |
