@@ -6,7 +6,9 @@
 
 > بنودٌ نُفِّذت (فأُزيلت من هنا): أنواع الكيانات؛ الاحتواء (مجمع/شركة + ربط
 > إداري + لوحات تجميعية)؛ مسؤول الحساب (`tenant-admin`)؛ «معلم»
-> (`TenantEmployee.type`)؛ طالب/ولي أمر (نطاق `general`)؛ ربط المستخدم بالجهة.
+> (`TenantEmployee.type`)؛ طالب/ولي أمر (نطاق `general`)؛ ربط المستخدم بالجهة؛
+> **إداري = مجموعات `administrator` مؤلَّفة بالتفويض** (`roles.create/update/delete`
+> بنطاق `tenant` + دور `kind=administrator_group` + حارس منع التصعيد).
 > راجِع [`tech/roles-rbac.md`](tech/roles-rbac.md) و
 > [`tech/entities-tenancy.md`](tech/entities-tenancy.md).
 
@@ -18,27 +20,13 @@
 
 | البند المفاهيمي | أين يُذكر | الوضع التقني | أين | الحالة |
 |---|---|---|---|---|
-| إداري = دور جهة مؤلَّف بالتفويض | [`role-scopes.md`](role-scopes.md#أدوار-النطاق) · [`role-hierarchy.md`](role-hierarchy.md#اشتقاق-الأدوار-بالصلاحيات) | **الإسناد فقط مُنفَّذ**؛ لا إنشاء دور `administrator` ولا تأليف صلاحياته على مستوى الجهة | [`tech/roles-rbac.md`](tech/roles-rbac.md#6-الاشتقاق-بالتفويض-role-derivation) | 🔴 |
 | مفوّض ولي أمر = اشتقاق بالتفويض | [`role-scopes.md`](role-scopes.md#مفوض-ولي-أمر) · [`role-hierarchy.md`](role-hierarchy.md#اشتقاق-الأدوار-بالصلاحيات) | **غير مُنفَّذ**؛ الـ seeder ينشئ `guardian` فقط | [`tech/roles-rbac.md`](tech/roles-rbac.md#6-الاشتقاق-بالتفويض-role-derivation) | 🔴 |
 
 ---
 
 ## التفاصيل
 
-### 1) إداري — 🔴 الإسناد فقط، لا تأليف
-
-- **المفهوم**: دور جهة (`administrator`) يُنشئه مسؤول الحساب ويمنحه حزمة صلاحيات
-  منتقاة (مفوَّض بحسب ما يُعطى إليه).
-- **التقني**: **مُنفَّذ جزئيًّا**. المتاح هو **إسناد** أدوار جهة *قائمة* لمستخدم داخل
-  الجهة (`TenantMemberRoleModal`, `AttachUserToTenant`, `AssignUserRoles` عبر
-  `syncRoles` ضمن سياق الفريق؛ صلاحيات `roles.assign` / `tenants.members.assign-roles`
-  بنطاق `tenant`). أمّا **إنشاء** دور `administrator` و**تأليف صلاحياته** على مستوى
-  الجهة فـ**غير موجود**: لا دور `administrator` مزروع، ولا خدمة/واجهة تُنشئ دور
-  `scope='tenant'`، و`rbac.roles.create` بنطاق `system` فقط (لا يملكها مسؤول الجهة).
-  للتنفيذ يلزم: صلاحية `roles.create` بنطاق `tenant` + خدمة إنشاء دور جهة + واجهة
-  تأليف صلاحيات + حارس يمنع تجاوز صلاحيات مسؤول الحساب نفسه.
-
-### 2) مفوّض ولي أمر — 🔴 مخطّط لم يُنفَّذ
+### 1) مفوّض ولي أمر — 🔴 مخطّط لم يُنفَّذ
 
 - **المفهوم**: دور مشتقّ بمنح وليّ الأمر جزءًا من صلاحياته على الطالب.
 - **التقني**: **غير موجود في الكود**. الـ seeder الحالي ينشئ دور `guardian` فقط. عند

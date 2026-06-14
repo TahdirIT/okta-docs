@@ -33,8 +33,10 @@ spatie تدعم «Teams» لتقييد الأدوار ضمن نطاق. في أو
 و`2026_03_16_000001_add_team_id_to_permission_pivot_tables.php`):
 
 **`roles`** — إضافات: `tenant_id` (FK nullable)، `scope`
-(`system`\|`tenant`\|`general`)، `title_ar`/`title_en`، `deleted_at`.
-قيد فريد: `(tenant_id, name, guard_name)`.
+(`system`\|`tenant`\|`general`)، `kind` (مُميِّز الأدوار المؤلَّفة في الجهة، مثل
+`administrator_group`؛ الأدوار الكنسية `NULL`)، `title_ar`/`title_en` (اسم معروض)،
+`deleted_at`. قيد فريد: `(tenant_id, name, guard_name)`. (`kind` + `title_*` من
+migration `add_kind_and_titles_to_roles_table`.)
 
 **`permissions`** — إضافات: `scope`، `tenant_id`، `title_ar`/`title_en`،
 `deleted_at`.
@@ -132,9 +134,16 @@ $user->isSuperAdmin();                        // دور system
 [`role-hierarchy.md`](../role-hierarchy.md#اشتقاق-الأدوار-بالصلاحيات) هما **اشتقاق
 بمنح جزء من الصلاحيات**، لا إنشاء نوع مستقل:
 
-- **مسؤول الحساب → إداري**: عمليًّا يُنشئ `tenant-admin` دورًا/إسنادًا للموظف بجزء من
-  صلاحياته (إدارة العمليات اليومية) دون منح ملكية الحساب. التحقيق العام يتم عبر
-  جداول spatie (`roles`/`model_has_roles` على مستوى الجهة) لا عبر جدول خاص.
+- **مسؤول الحساب → إداري**: **مُنفَّذ** عبر **مجموعات `administrator`**. يؤلّف
+  `tenant-admin` مجموعةً = دور `scope='tenant'` بـ `kind='administrator_group'`
+  واسم تقني `administrator.<slug>` يحمل حزمة صلاحيات منتقاة. الخدمات:
+  `App\Services\TenantRoles\AdministratorGroups\{Create,Update,Delete}AdministratorGroup`
+  (trait `GuardsGrantablePermissions`). الصلاحيات: `roles.{view,create,update,delete}`
+  بنطاق `tenant` (يملكها `tenant-admin`). **حارس منع التصعيد**: لا يمنح الدور إلا
+  صلاحيات (أ) `scope='tenant'` و(ب) يملكها المؤلِّف فعلًا في الجهة
+  (`getPermissionsInTenant`)، وإلا `PermissionEscalationException`. الواجهة:
+  `settings/tenant/administrator-groups`. كل ذلك عبر جداول spatie القائمة (إسناد +
+  فحوص `can` تعمل بلا منطق إضافي).
 - **ولي أمر → مفوّض ولي أمر**: **مفاهيمي اليوم** — الـ seeder الحالي يُنشئ دور
   `guardian` فقط. عند تنفيذ المفوَّض سيتبع النمط نفسه: دور `guardian-delegate`
   (scope `general`) + جدول ربط للتفويض على طالب محدّد. اعتبره **غير مُنفَّذ بعد** في
