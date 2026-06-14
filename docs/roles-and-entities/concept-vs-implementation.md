@@ -18,7 +18,7 @@
 
 | البند المفاهيمي | أين يُذكر | الوضع التقني | أين | الحالة |
 |---|---|---|---|---|
-| مفوّض ولي أمر = اشتقاق بالتفويض | [`end-users.md`](end-users.md) · [`role-hierarchy.md`](role-hierarchy.md#اشتقاق-الأدوار-بالصلاحيات) | **غير مُنفَّذ**؛ الـ seeder ينشئ `guardian` فقط | [`tech/roles-rbac.md`](tech/roles-rbac.md#6-الاشتقاق-بالتفويض-role-derivation) | 🔴 |
+| مفوّض ولي أمر = اشتقاق بالتفويض | [`role-scopes.md`](role-scopes.md#مفوض-ولي-أمر) · [`role-hierarchy.md`](role-hierarchy.md#اشتقاق-الأدوار-بالصلاحيات) | **غير مُنفَّذ**؛ الـ seeder ينشئ `guardian` فقط | [`tech/roles-rbac.md`](tech/roles-rbac.md#6-الاشتقاق-بالتفويض-role-derivation) | 🔴 |
 
 ---
 

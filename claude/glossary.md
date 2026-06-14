@@ -41,7 +41,7 @@ inferred rather than explicit in code, it is marked `> TODO: confirm`.
   tenant-scoped (e.g. `module_statuses`, the partner scope catalog, finance).
 - **End-user / role** — A person acting inside a Tenant with a role
   (account admin, administrative staff, teacher, student, guardian, guardian
-  delegate). See [`../docs/roles-and-entities/end-users.md`](../docs/roles-and-entities/end-users.md). The mobile
+  delegate). See [`../docs/roles-and-entities/role-scopes.md`](../docs/roles-and-entities/role-scopes.md). The mobile
   client resolves an **active role** per session.
 - **Active context** — The `(scope, tenant_id, active_role_id)` selection a user
   makes after login in `okta-app` (`scope` = `tenant` or `system`). Drives which

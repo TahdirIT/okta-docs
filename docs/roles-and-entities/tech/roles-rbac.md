@@ -1,6 +1,6 @@
 # الأدوار والصلاحيات (RBAC) — تقنيًا
 
-كيف تتحوّل أدوار المستخدم النهائي في [`end-users.md`](../end-users.md) وعلاقات
+كيف تتحوّل أدوار المستخدم النهائي في [`role-scopes.md`](../role-scopes.md) وعلاقات
 [`role-hierarchy.md`](../role-hierarchy.md) إلى جداول ونماذج داخل `okta-web`.
 الأساس: حزمة **`spatie/laravel-permission 6`** مع ميزة **Teams** مفعّلة.
 
@@ -167,7 +167,7 @@ flowchart TD
 
 ## مراجع
 
-- المفاهيم: [`end-users.md`](../end-users.md) · [`role-hierarchy.md`](../role-hierarchy.md)
+- المفاهيم: [`role-scopes.md`](../role-scopes.md) · [`role-hierarchy.md`](../role-hierarchy.md)
 - المعيار: [`permissions-naming`](../../tech-standards/permissions-naming.md)
 - الخدمة: [`role-based-access-control/guide`](../../services/role-based-access-control/guide/README.md)
 - العضوية: [`tenant-members-management/tech/models`](../../services/tenant-members-management/tech/models/README.md)
