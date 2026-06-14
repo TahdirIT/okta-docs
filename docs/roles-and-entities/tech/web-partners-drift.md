@@ -31,8 +31,8 @@
 
 **التكامل المطلوب:**
 - اشتقاق `GetCountryCatalog::canonicalTenantTypes()` من `EntityType` (إنهاء قائمة
-  يدوية رابعة بعد التي عولِجت في
-  [`entities-tenancy.md`](entities-tenancy.md#2-نوع-الكيان-type)) + اختبار تطابق.
+  أنواع يدوية في web ضمن توحيدها على المصدر الكنسي — راجع
+  [`entities-tenancy.md`](entities-tenancy.md)) + اختبار تطابق.
 - data-migration في partners لمواءمة الصفوف المخزّنة
   (`partner_supported_tenant_types` + جداول التسعير) أو alias مرحلي
   `educational_company → education_company`.
@@ -90,5 +90,5 @@ defaults المنحرفة في البند 1) **لا يستدعيه أحد**؛ ا
 
 ## مراجع
 - العقد السليم: [`partner-apps-and-roles.md`](partner-apps-and-roles.md)
-- كتالوج الأنواع على web: [`entities-tenancy.md`](entities-tenancy.md#2-نوع-الكيان-type) · [`roles-rbac.md`](roles-rbac.md)
+- كتالوج الأنواع على web: [`entities-tenancy.md`](entities-tenancy.md) · [`roles-rbac.md`](roles-rbac.md)
 - منصّة الشركاء: [`claude/partners.md`](../../../claude/partners.md)
