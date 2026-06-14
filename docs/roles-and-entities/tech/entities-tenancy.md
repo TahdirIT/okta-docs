@@ -43,10 +43,9 @@
 
 ```php
 'individual_teacher' => 'معلم فردي',   'school'           => 'مدرسة',
-'kindergarten'       => 'روضة',        'complex'          => 'مجمع',
-'college'            => 'كلية',         'university'       => 'جامعة',
-'institute'          => 'معهد',         'academy'          => 'أكاديمية',
-'education_company'  => 'شركة تعليمية',
+'complex'            => 'مجمع',         'college'          => 'كلية',
+'university'         => 'جامعة',        'institute'        => 'معهد',
+'academy'            => 'أكاديمية',     'education_company' => 'شركة تعليمية',
 ```
 
 - **حاجز على مستوى القاعدة**: قيد `CHECK (type IN (...))` على `tenants.type`
@@ -57,8 +56,9 @@
   يرفضان أي نوع ليس مفتاحًا كنسيًّا. لكل دولة يمكن **تمكين/تعطيل** مجموعة فرعية عبر
   `GetEntityRegistrationCustomization`. ووصول مُنمَّط آمن عبر `Tenant::entityType()`.
 - بعض الأنواع تتطلّب اختيار مرحلة تعليمية عند التسجيل — يحدّدها
-  `EntityTypesRequiringEducationLevel::KEYS = ['school', 'individual_teacher']`
-  (روضة غير مُلزَمة بمرحلة حاليًا).
+  `EntityTypesRequiringEducationLevel::KEYS = ['school', 'individual_teacher']`.
+  والمراحل نفسها (الروضة، الابتدائي، المتوسط، الثانوي) تُعرَّف في
+  `global_education_levels` — **مراحل** تعليمية لا أنواع جهات.
 - **متابعة تنظيف مُعلَّقة**: لا تزال قوائم يدوية مكرّرة (`SubjectModal`،
   بعض الـ presenters/blade، وتعليق الـ migration الأقدم) غير مشتقّة من الـ enum
   وتُسقِط بعض المفاتيح — اعتمد دائمًا `App\Enums\EntityType` / `GetSettings::ENTITY_TYPES`.
@@ -67,7 +67,7 @@
 
 ### الاحتواء
 
-العلاقة «شركة تعليمية → مجمع → مدرسة/روضة» و«جامعة → كلية» الموصوفة في
+العلاقة «شركة تعليمية → مجمع → مدرسة» و«جامعة → كلية» الموصوفة في
 [`role-hierarchy.md`](../role-hierarchy.md) **منفَّذة** كقائمة جوار
 (adjacency list):
 
@@ -78,8 +78,8 @@
 - **قواعد النوع** في `App\Enums\EntityType`: `allowedChildTypes()` /
   `isContainer()` / `canContain()` / `containerTypes()` — مثلًا
   `EducationCompany` يحتوي {Complex, University, College, Institute, Academy,
-  Kindergarten, School}، و`Complex` يحتوي {School, Kindergarten}، و`University`
-  يحتوي {College}؛ والبقية أوراق (لا تحتوي).
+  School}، و`Complex` يحتوي {School}، و`University` يحتوي {College}؛ والبقية أوراق
+  (لا تحتوي).
 - **الربط**: خدمة `App\Services\Tenants\Containment\SetTenantParent` تفرض تطابق
   الأنواع وتمنع self-parent والدورات (الأب ليس من نسل الابن). تُستدعى من
   `TenantEditorModal` — **عملية مسؤول منصّة** (نطاق system).
@@ -88,7 +88,7 @@
 > علاقة له بالاحتواء التعليمي.
 
 **التجميع للقراءة (مُنفَّذ):** لوحة التحكم (`pages/dashboard`) تعرض لوحة خاصّة لكل
-حاوية — المجمع (عدّ المدارس/الروضات + إجمالي طلاب/موظفي الأبناء) والشركة التعليمية
+حاوية — المجمع (عدّ المدارس + إجمالي طلاب/موظفي الأبناء) والشركة التعليمية
 (تجميع الشجرة كاملة عبر `Tenant::descendantIds()` + `Model::withoutTenantScope()`
 مقيَّدًا بمعرّفات التابعين، فيتجاوز عزل `BelongsToTenant` بأمان دون `makeCurrent`).
 

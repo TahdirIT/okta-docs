@@ -14,21 +14,20 @@
 
 ---
 
-## 1) كتالوج أنواع الجهات — مفتاح «شركة تعليمية» + غياب «روضة» — 🔴
+## 1) كتالوج أنواع الجهات — مفتاح «شركة تعليمية» — 🔴
 
 | | okta-web | okta-partners |
 |---|---|---|
-| المصدر الكنسي | `App\Enums\EntityType` — **9 أنواع**، مفتاح **`education_company`** + **`kindergarten`** (+ قيد CHECK على `tenants.type`) | مرآة `partner_country_catalog` (+ defaults) — **8 أنواع**، مفتاح **`educational_company`**، **بلا `kindergarten`** |
+| المصدر الكنسي | `App\Enums\EntityType` — مفتاح **`education_company`** (+ قيد CHECK على `tenants.type`) | مرآة `partner_country_catalog` (+ defaults) — مفتاح **`educational_company`** |
 
 **المنبع داخل web نفسه:** الدالة التي تغذّي الجسر
 (`App\Services\PartnerCountries\Catalog\GetCountryCatalog::canonicalTenantTypes()`،
 المكشوفة على `GET /api/partners/countries/catalog`) هي **نسخة يدوية ثانية لا تُشتقّ
-من `EntityType`**، فتُصدِّر `educational_company` وتُسقط `kindergarten`. لذا مرآة
-partners «متزامنة بأمانة من مصدرٍ منحرف».
+من `EntityType`**، فتُصدِّر `educational_company`. لذا مرآة partners «متزامنة
+بأمانة من مصدرٍ منحرف».
 
 **الأثر:** أي استهداف/تسعير لتطبيق على نوع `educational_company` **لن يطابق أي جهة
-فعلية أبدًا** (قيمة الجهة الحقيقية `education_company`)؛ وروضة غير قابلة للاستهداف
-عبر partners.
+فعلية أبدًا** (قيمة الجهة الحقيقية `education_company`).
 
 **التكامل المطلوب:**
 - اشتقاق `GetCountryCatalog::canonicalTenantTypes()` من `EntityType` (إنهاء قائمة
@@ -36,7 +35,7 @@ partners «متزامنة بأمانة من مصدرٍ منحرف».
   [`entities-tenancy.md`](entities-tenancy.md#2-نوع-الكيان-type)) + اختبار تطابق.
 - data-migration في partners لمواءمة الصفوف المخزّنة
   (`partner_supported_tenant_types` + جداول التسعير) أو alias مرحلي
-  `educational_company → education_company`، وإضافة `kindergarten`.
+  `educational_company → education_company`.
 
 ---
 
@@ -82,7 +81,7 @@ defaults المنحرفة في البند 1) **لا يستدعيه أحد**؛ ا
 
 | # | الفرق | web | partners | الحالة | التكامل |
 |---|---|---|---|---|---|
-| 1 | مفتاح «شركة تعليمية» + روضة | `education_company` + `kindergarten` (enum + CHECK) | `educational_company`، بلا روضة | 🔴 | اشتقاق كتالوج web من `EntityType` + مواءمة partners |
+| 1 | مفتاح «شركة تعليمية» | `education_company` (enum + CHECK) | `educational_company` | 🔴 | اشتقاق كتالوج web من `EntityType` + مواءمة partners |
 | 2 | كتالوج أدوار audiences | لا كتالوج أدوار مكشوف؛ tenant-admin فقط مزروع | config ساكن بأدوار غير مضمونة | 🟠 | كشف عبر الجسر أو تحقّق publish-time |
 | 3 | مزامنة الدول/الأنواع | — | cron/يدوي بلا webhook | ⚠️ | webhook `country_catalog.changed` |
 | 4 | `GetCanonicalTenantTypes` يتيم | — | غير مُستدعى | تنظيف | حذف/توحيد |
