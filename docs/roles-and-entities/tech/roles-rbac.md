@@ -144,10 +144,17 @@ $user->isSuperAdmin();                        // دور system
   (`getPermissionsInTenant`)، وإلا `PermissionEscalationException`. الواجهة:
   `settings/tenant/administrator-groups`. كل ذلك عبر جداول spatie القائمة (إسناد +
   فحوص `can` تعمل بلا منطق إضافي).
-- **ولي أمر → مفوّض ولي أمر**: **مفاهيمي اليوم** — الـ seeder الحالي يُنشئ دور
-  `guardian` فقط. عند تنفيذ المفوَّض سيتبع النمط نفسه: دور `guardian-delegate`
-  (scope `general`) + جدول ربط للتفويض على طالب محدّد. اعتبره **غير مُنفَّذ بعد** في
-  الكود.
+- **ولي أمر → مفوّض ولي أمر**: **مُنفَّذ** بتفويض مقيَّد بطلاب محدّدين. دور
+  `guardian-delegate` (scope `general`، `kind='guardian_delegate'`) يُسنَد للمفوَّض،
+  والتفويض نفسه في جدولين: `tenant_guardian_delegations` (المفوِّض/المفوَّض/الحالة/
+  القدرات) + `tenant_guardian_delegation_student` (الطلاب المشمولون، فصل ناعم).
+  الخدمات: `App\Services\GuardianDelegation\{Create,Update,Revoke}GuardianDelegation`
+  + `ResolveDelegateUser` (دعوة: حلّ بمعرّف أو إنشاء مستخدم) + `AssignGuardianDelegateRole`
+  + `GetDelegatedChildrenForUser`. **حارس النطاق** (`GuardsDelegableScope`): لا تفويض
+  إلا على أبناء ولي الأمر النشطين وبقدرات من كتالوج `App\Support\GuardianCapabilities`،
+  وإلا `DelegationScopeException`. البوابة: `/my-children/delegates`، و`GetGuardianPortal`
+  يدمج الأبناء المفوَّضين. **تحسين مؤجَّل**: gating كل قدرة داخل الموديولز (الإطار يُنفِّذ
+  تقييد الطلاب + ظهور البوابة + كتالوج القدرات اليوم).
 
 ---
 
