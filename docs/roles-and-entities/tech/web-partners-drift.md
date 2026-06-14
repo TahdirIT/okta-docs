@@ -9,33 +9,39 @@
 > يستهلك فيها partners كتالوجًا من web بدل قائمة محلية، أو أن يُشتقّ كتالوج web من
 > مصدره الكنسي بدل نسخة يدوية.
 
-> دليل الحالة: 🔴 انحراف يكسر المطابقة · 🟠 لا مصدر مشترك (خطر انحراف) · ⚠️ مزامنة
-> ناقصة.
+> دليل الحالة: ✅ مُعالَج · 🔴 انحراف يكسر المطابقة · 🟠 لا مصدر مشترك (خطر انحراف)
+> · ⚠️ مزامنة ناقصة.
 
 ---
 
-## 1) كتالوج أنواع الجهات — مفتاح «شركة تعليمية» — 🔴
+## 1) كتالوج أنواع الجهات — مفتاح «شركة تعليمية» — ✅ مُعالَج
 
 | | okta-web | okta-partners |
 |---|---|---|
-| المصدر الكنسي | `App\Enums\EntityType` — مفتاح **`education_company`** (+ قيد CHECK على `tenants.type`) | مرآة `partner_country_catalog` (+ defaults) — مفتاح **`educational_company`** |
+| المصدر الكنسي | `App\Enums\EntityType` — مفتاح **`education_company`** (+ قيد CHECK على `tenants.type`) | `App\Enums\EntityType` محلي (مرآة من web) + مرآة `partner_country_catalog` المُزامَنة — مفتاح **`education_company`** |
 
-**المنبع داخل web نفسه:** الدالة التي تغذّي الجسر
+**الانحراف الأصلي:** كانت الدالة التي تغذّي الجسر
 (`App\Services\PartnerCountries\Catalog\GetCountryCatalog::canonicalTenantTypes()`،
-المكشوفة على `GET /api/partners/countries/catalog`) هي **نسخة يدوية ثانية لا تُشتقّ
-من `EntityType`**، فتُصدِّر `educational_company`. لذا مرآة partners «متزامنة
-بأمانة من مصدرٍ منحرف».
+المكشوفة على `GET /api/partners/countries/catalog`) **نسخة يدوية ثانية لا تُشتقّ
+من `EntityType`**، فتُصدِّر `educational_company`؛ ومرآة partners كانت «متزامنة
+بأمانة من مصدرٍ منحرف». الأثر كان: أي استهداف/تسعير على `educational_company` لا
+يطابق أي جهة فعلية (قيمتها الحقيقية `education_company`).
 
-**الأثر:** أي استهداف/تسعير لتطبيق على نوع `educational_company` **لن يطابق أي جهة
-فعلية أبدًا** (قيمة الجهة الحقيقية `education_company`).
-
-**التكامل المطلوب:**
-- اشتقاق `GetCountryCatalog::canonicalTenantTypes()` من `EntityType` (إنهاء قائمة
-  أنواع يدوية في web ضمن توحيدها على المصدر الكنسي — راجع
-  [`entities-tenancy.md`](entities-tenancy.md)) + اختبار تطابق.
-- data-migration في partners لمواءمة الصفوف المخزّنة
-  (`partner_supported_tenant_types` + جداول التسعير) أو alias مرحلي
-  `educational_company → education_company`.
+**ما طُبِّق:**
+- **web** — `GetCountryCatalog::canonicalTenantTypes()` صار يشتقّ المفاتيح من
+  `EntityType::cases()` (التسميات ثنائية اللغة عبر `match` بلا `default`، فأي حالة
+  enum جديدة بلا تسمية تُسقِط الاختبار). يحرسه
+  `tests/Feature/PartnerBridge/CountryCatalogTenantTypesTest.php`.
+- **partners** — استُنسِخ `App\Enums\EntityType` محليًّا بالمفتاح الكنسي
+  `education_company`، واشتُقّت منه `AppStorePricing\Countries\GetCountryCatalog`
+  defaults، وحُذف الكود اليتيم `GetCanonicalTenantTypes`. يحرسه
+  `tests/Feature/AppStorePricing/EntityTypeCatalogTest.php`.
+- **مواءمة البيانات** — المرآة `partner_country_catalog` تُصحَّح ذاتيًّا عند أوّل
+  مزامنة بعد إصلاح الجسر (تغيّر الكتالوج ⇒ تغيّر الـ hash ⇒ إعادة سحب). والصفوف
+  المحفوظة التي لا تلمسها المزامنة صحّحها migration
+  `2026_06_14_000000_normalize_educational_company_tenant_type_code`
+  (`partner_supported_tenant_types` + `partner_module_pricings` +
+  `partner_payouts`).
 
 ---
 
@@ -68,12 +74,13 @@
 
 ---
 
-## 4) كود يتيم في partners — تنظيف
+## 4) كود يتيم في partners — ✅ مُعالَج (حُذف)
 
-`App\Services\AppStorePricing\TenantTypes\GetCanonicalTenantTypes` (صاحب الـ
-defaults المنحرفة في البند 1) **لا يستدعيه أحد**؛ المستخدَم فعليًّا هو
-`AppStorePricing\Countries\GetCountryCatalog`. يُحذف أو يُوحَّد كي لا يلتقطه كود
-مستقبلي ويعيد إدخال الانحراف.
+كان `App\Services\AppStorePricing\TenantTypes\GetCanonicalTenantTypes` (صاحب الـ
+defaults المنحرفة في البند 1) **لا يستدعيه أحد**، والمستخدَم فعليًّا هو
+`AppStorePricing\Countries\GetCountryCatalog`. حُذف ضمن إصلاح البند 1 كي لا يلتقطه
+كود مستقبلي ويعيد إدخال الانحراف؛ صار `GetCountryCatalog` يشتقّ من
+`App\Enums\EntityType` المحلي.
 
 ---
 
@@ -81,10 +88,10 @@ defaults المنحرفة في البند 1) **لا يستدعيه أحد**؛ ا
 
 | # | الفرق | web | partners | الحالة | التكامل |
 |---|---|---|---|---|---|
-| 1 | مفتاح «شركة تعليمية» | `education_company` (enum + CHECK) | `educational_company` | 🔴 | اشتقاق كتالوج web من `EntityType` + مواءمة partners |
+| 1 | مفتاح «شركة تعليمية» | `education_company` (enum + CHECK) | `education_company` (enum محلي + مرآة) | ✅ | اشتُقّ كتالوج web من `EntityType` + enum محلي في partners + migration مواءمة |
 | 2 | كتالوج أدوار audiences | لا كتالوج أدوار مكشوف؛ tenant-admin فقط مزروع | config ساكن بأدوار غير مضمونة | 🟠 | كشف عبر الجسر أو تحقّق publish-time |
 | 3 | مزامنة الدول/الأنواع | — | cron/يدوي بلا webhook | ⚠️ | webhook `country_catalog.changed` |
-| 4 | `GetCanonicalTenantTypes` يتيم | — | غير مُستدعى | تنظيف | حذف/توحيد |
+| 4 | `GetCanonicalTenantTypes` يتيم | — | حُذف | ✅ | حُذف ضمن إصلاح البند 1 |
 
 ---
 
