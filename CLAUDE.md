@@ -65,6 +65,7 @@ Diagrams, the workspace tree, and the dependency map:
 | How does the mobile/desktop client list and launch a Tenant's apps? | [`claude/app.md`](./claude/app.md) |
 | What contract must an application follow to be installable and dual-surfaced? | [`claude/installed-apps.md`](./claude/installed-apps.md) |
 | End-to-end: from publish to appearing in both `okta-web` and `okta-app`. | [`claude/deployment.md`](./claude/deployment.md) |
+| How does self-service **account deletion** work across `okta-web` and `okta-app` (grace period, confirmation, scheduler)? | [`claude/account-deletion.md`](./claude/account-deletion.md) |
 | What does a term mean (Tenant, scope, installed app, environment, …)? | [`claude/glossary.md`](./claude/glossary.md) |
 | Product vision (Arabic). | [`docs/README.md`](./docs/README.md) |
 | Entity types (Tenants), end-user roles, and the relationships between them. | [`docs/roles-and-entities/README.md`](./docs/roles-and-entities/README.md) |
