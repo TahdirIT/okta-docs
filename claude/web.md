@@ -133,6 +133,25 @@ What `okta-app` calls (see [app.md](./app.md)):
 - `POST /api/mobile/app-catalog/{slug}/launch` — returns either a short-lived
   **signed** URL to `/app/{slug}` (embedded) or the partner URL + optional role
   JWT (external).
+- <a id="partner-notifications"></a>**Notifications surface** (plain
+  `auth:sanctum`, no min-version gate):
+  `POST /api/mobile/notification-tokens` (+ `/revoke`) maintains the central
+  push-device registry (`notification_device_tokens` — one row per FCM token,
+  reassigned on login, pruned when FCM reports `UNREGISTERED`);
+  `GET /api/mobile/notifications` (+ `/unread-count`,
+  `POST …/{id}/read`, `POST …/read-all`) reads the standard `notifications`
+  table through `App\Services\Notifications\Center\*` — the same services the
+  web `/notifications-center` page uses. Push delivery is FCM **HTTP v1**
+  (`App\Services\Notifications\Push\*`): the service-account JSON is stored
+  encrypted in platform settings (platform-delivery page), minted into a
+  cached OAuth token, and sent per device by
+  `SendPushNotificationJob` — wired as the `push` arm of the partner
+  `DispatchNotification` fan-out. Unconfigured platforms record
+  `skipped_no_transport`. Dynamic audiences from partner dispatch payloads
+  (`recipient: {type: parent_of_student | school_admin | host_user, id}`)
+  resolve to concrete users via
+  `App\Services\PartnerApi\Notifications\ResolveAudience`, falling back to
+  the tenant-configured recipients.
 
 > The catalog route is registered as `GET`; the client sends `tenant_id`/
 > `role_id` as query parameters. `> TODO: confirm` — one server-side comment

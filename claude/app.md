@@ -68,9 +68,37 @@ Endpoints consumed (all on `okta-web`):
 | `GET  /api/mobile/app-catalog` | **installed-app cards** for the active `(tenant, role)` |
 | `POST /api/mobile/app-catalog/{slug}/launch` | resolve launch URL (signed embedded URL or external URL + optional JWT) |
 | `POST /api/mobile/auth/logout` | best-effort logout |
+| `POST /api/mobile/notification-tokens` | register this device's FCM token `{token, platform, app_version?, locale?}` |
+| `POST /api/mobile/notification-tokens/revoke` | unregister on logout (called **before** the Sanctum token is destroyed) |
+| `GET  /api/mobile/notifications` | in-app feed, paginated (`filter=all\|unread\|read`) |
+| `GET  /api/mobile/notifications/unread-count` | badge count for the Home bell |
+| `POST /api/mobile/notifications/{id}/read` · `/read-all` | mark read (single / all) |
 
 > The client passes `tenant_id`/`role_id` as query parameters on the catalog
 > `GET`. See the matching server note in [web.md](./web.md#2-mobile-client-api).
+
+## Notifications & push
+
+`lib/features/notifications/` renders the in-app feed at `/notifications`
+(unread accents, optimistic mark-read, mark-all, pagination) and the Home
+AppBar shows a bell + live unread badge. Push is an **optional capability**:
+
+- Firebase initializes from compile-time defines
+  (`--dart-define=FIREBASE_{API_KEY,APP_ID,SENDER_ID,PROJECT_ID}`, see
+  `lib/core/push/push_config.dart`) — no `google-services.json` /
+  `GoogleService-Info.plist` in the repo. With the defines absent the push
+  layer is a silent no-op and the feed still works.
+- On login the FCM token is registered into `okta-web`'s **central device
+  registry** (`notification_device_tokens`); it re-registers on token
+  rotation and is revoked on logout. Installed apps never see device
+  tokens — push fan-out happens host-side (see
+  [web.md](./web.md#partner-notifications)).
+- Foreground display: `flutter_local_notifications` channel on Android,
+  native presentation options on iOS. Tapping a push (foreground,
+  background, or cold start) opens `/notifications`.
+- iOS additionally requires the APNs key in the Firebase project and the
+  `aps-environment` entitlement (commented template in
+  `ios/Runner/Runner.entitlements`).
 
 ---
 
