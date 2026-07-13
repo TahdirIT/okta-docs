@@ -1,3 +1,0 @@
-- Laravel Events
-- Redis Streams
-- Database Outbox Pattern
