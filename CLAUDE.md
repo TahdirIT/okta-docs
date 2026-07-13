@@ -64,6 +64,7 @@ Diagrams, the workspace tree, and the dependency map:
 | How are applications authored/published/installed? The dev→prod (sandbox→prod) flow? | [`claude/partners.md`](./claude/partners.md) · [`claude/deployment.md`](./claude/deployment.md) |
 | How does the mobile/desktop client list and launch a Tenant's apps? | [`claude/app.md`](./claude/app.md) |
 | What contract must an application follow to be installable and dual-surfaced? | [`claude/installed-apps.md`](./claude/installed-apps.md) |
+| **Build** an installed app's pages — where/how they're developed & appear in `okta-web` and `okta-app` (developer how-to). | [`docs/app-development/`](./docs/app-development/README.md) |
 | End-to-end: from publish to appearing in both `okta-web` and `okta-app`. | [`claude/deployment.md`](./claude/deployment.md) |
 | What does a term mean (Tenant, scope, installed app, environment, …)? | [`claude/glossary.md`](./claude/glossary.md) |
 | Product vision (Arabic). | [`docs/README.md`](./docs/README.md) |
