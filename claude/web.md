@@ -22,20 +22,25 @@ Related: [partners.md](./partners.md) · [app.md](./app.md) ·
 okta-web/
 ├── app/
 │   ├── Http/Controllers/
-│   │   ├── Api/Apps/            # external-app runtime controllers (WhoAmI, Students, ...)
-│   │   ├── Api/Mobile/          # the okta-app client API (MobileAuth, MobileContext, MobileAppCatalog)
-│   │   └── Api/Partners/        # bridge endpoints for okta-partners (ScopeCatalogController)
+│   │   ├── Api/Apps/            # external-app runtime controllers (WhoAmI, Students, Payments, ...)
+│   │   ├── Api/Mobile/          # the okta-app client API (MobileAuth, MobileContext, MobileAppCatalog, MobilePortal)
+│   │   └── Api/Partners/        # bridge endpoints for okta-partners (ScopeCatalog, Sandbox, Modules)
 │   ├── Http/Middleware/         # AuthenticateAppInstallation, EnsureAppScope, EnsureIdempotentRequest, ...
 │   ├── Services/
 │   │   ├── PartnerApi/          # the in-process partner-facing API surface
-│   │   └── PartnerScopes/       # Catalog, Tokens, Database, Guard, Webhooks
-│   ├── Modules/Core/            # InstallModule, UninstallModule, ManifestValidator
+│   │   ├── PartnerScopes/       # Catalog, Tokens, Database, Guard, Webhooks
+│   │   ├── MobileAuth/          # Context, Portal, Sandbox, Sessions, Tokens
+│   │   ├── MobileAppCatalog/    # GetMobileCatalogForUser, GetPortalCatalogForUser, IssueWebviewLaunch, ...
+│   │   └── Modules/             # SandboxTenantProvisioner, PartnerSandboxModuleInstaller, ModuleSourcePuller
+│   ├── Modules/Core/            # ManifestValidator + Services/{InstallModule,UninstallModule}
 │   ├── Modules/Activators/      # DatabaseActivator
 │   └── Support/PartnerScopes/   # AppContextManager (singleton), ModuleContext (DTO)
-├── Modules/                     # embedded installed applications (nwidart modules)
-├── routes/                      # web.php, api.php, apps.php, app.php, webhooks.php, finance.php
+├── Modules/                     # created at runtime — embedded installed applications are pulled
+│                                #   into it on install; the repo itself ships no modules
+├── routes/                      # web.php, api.php, apps.php, app.php, account.php, webhooks.php,
+│                                #   finance.php, ai.php, crm.php, payment.php, ...
 ├── config/partners.php          # partner-runtime feature flags + limits
-└── scripts/partner-policy/      # Scanner.php + PHPStan rule (source of truth)
+└── scripts/partner-policy/      # Scanner.php + UiScanner.php + PHPStan rule (source of truth)
 ```
 
 ---
@@ -51,17 +56,24 @@ one use-case per `app/Services/<Feature>/<Resource>/<Function>.php` with a singl
 The **only** sanctioned way an installed application reads/writes Tenant data.
 Organized by domain, returning DTOs (not Eloquent models):
 
-- `Education/Students/` — `ListStudents`, `GetStudent`, `CreateStudent`,
-  `UpdateStudent`; likewise `Grades/`, `Sections/`, `Subjects/`, `Terms/`,
-  `AcademicYears/`.
-- `Employees/Directory/` — employee CRUD.
+- `Education/` — `Students/`, `Guardians/`, `Subjects/`, `Grades/`, `Sections/`,
+  `Terms/`, `AcademicYears/` (list/get/create/update use-cases per resource).
+- `Employees/Directory/` — employee directory read/write.
 - `Notifications/` — `SendNotification`, `DispatchNotification`,
-  `GetNotificationCapabilities`, and `Providers/` (ConnectWhatsApp, Http,
-  Embedded, Hybrid).
+  `GetNotificationCapabilities`, `ResolveAudience`, and `Providers/`
+  (ConnectWhatsApp, Http, Embedded, Hybrid).
+- `Payments/` — the unified payment runtime: `ListAvailableMethods`,
+  `CreateCharge`, `GetCharge`, `ListCharges`, `RefundCharge`,
+  `UpdateChargeStatus`, plus `Providers/{Http,Embedded,Hybrid}PaymentProvider`
+  and `ResolveTenantPaymentProvider` (details in `okta-web/CLAUDE.md`).
 - `Reports/Builder/` — `ListReports`, `RunReport`.
-- `Dto/` — `StudentDto`, `EmployeeDto`, `ReportDto`, … (the stable shapes apps
-  consume).
-- `OpenApi/` — `GenerateOpenApiSpec`, `GeneratePostmanCollection`.
+- `AppSettings/` — `GetAppSetting`/`GetAppSettings` (read the app's own
+  developer-panel data store at runtime).
+- `DeveloperPanel/` — cross-tenant aggregates for the partner dev panel
+  (installs count, charges summary, notification stats) + `Settings/`.
+- `Bridge/` — `ResolveUlid`, `ResolveTenantSupportedCountry` (opaque-ID helpers).
+- `Health/GetModulesHealth`, `OpenApi/` (`GenerateOpenApiSpec`,
+  `GeneratePostmanCollection`), `Dto/` (the stable shapes apps consume).
 
 **Embedded apps** call these classes **in-process** (with a `class_exists` guard
 so a missing host service degrades gracefully). **External apps** reach the same
@@ -90,25 +102,33 @@ capabilities over HTTP via `routes/apps.php` (below).
 
 Used by **external** integrations. Every route:
 
-1. is gated by `app.installation` (`AuthenticateAppInstallation`) — verifies a
-   Bearer **installation token** (or session + `X-Module-Slug` for embedded),
-   resolves the installation, and builds a `ModuleContext` in the
-   `AppContextManager` singleton;
+1. is gated by `auth.app` (`AuthenticateAppInstallation`) — verifies a Bearer
+   **installation token** (or session + module slug for embedded), resolves the
+   installation, and builds a `ModuleContext` in the `AppContextManager`
+   singleton;
 2. declares `app.scope:<feature>.<resource>.<action>` (`EnsureAppScope`, → 403
-   `X-Missing-Scope` on failure);
+   on failure);
 3. delegates to an `App\Services\PartnerApi\*` service — the controller never
    touches Eloquent directly;
 4. write routes add `idempotent` (`EnsureIdempotentRequest`, honors
    `Idempotency-Key` for 24h).
 
 Also rate-limited (`throttle:partner-app`, default 600/min) and audited
-(`LogPartnerApiCall`). Example shape:
+(`LogPartnerApiCall`).
 
-```php
-Route::get('/education/students', [StudentsController::class, 'index'])
-    ->middleware('app.scope:education.students.read')
-    ->name('education.students.index');
-```
+Route groups and their scopes:
+
+| Group | Scopes used |
+|---|---|
+| `whoami` | — (auth only) |
+| `education/{students,guardians,subjects,grades,sections}` | `education.<resource>.read` / `.write` |
+| `education/{academic-years,terms}` | `education.academic_years.read`, `education.terms.read` |
+| `employees/directory` | `employees.directory.read` / `.write` |
+| `reports/builder` | `reports.builder.read` |
+| `notifications/{send,capabilities,dispatch}` | `notifications.providers.send`, `notifications.dispatch.send` |
+| `payments/{methods,charges,refunds,status}` | `payments.methods.read`, `payments.charges.{create,read,update}`, `payments.refunds.create` |
+| `ai/agent/{stream,summarize}` | — (gated by `EnsureAiPlatformApproved`) |
+| `partner-bridge/resolve-numeric` | — (opaque-ID bridge) |
 
 `GET /api/apps/whoami` returns the active `{module_slug, tenant_id,
 installation_id, scopes}`. The whole surface is feature-flagged by
@@ -117,24 +137,33 @@ installation_id, scopes}`. The whole surface is feature-flagged by
 <a id="2-mobile-client-api"></a>
 ### 2. Mobile client API — `routes/api.php` (`/api/mobile/*`)
 
-What `okta-app` calls (see [app.md](./app.md)):
+What `okta-app` calls (see [app.md](./app.md)). Four groups, all
+`auth:sanctum` except login:
 
-- `POST /api/mobile/auth/login` — identifier + password → Bearer token + tenant/
-  role list (`throttle:10,1`).
-- `POST /api/mobile/auth/context` — select `{scope, tenant_id, role_ids}`.
-- `GET /api/mobile/app-catalog` — the **installed-app catalog** for the active
-  `(tenant_id, role_id)`. Returns `{ modules: [ {slug, display_name, mode,
-  entry, allowed_platforms, allowed_roles, required_scope, pass_role_claim,
-  allowed_origins, icon} ], _debug }`. Built by
-  `App\Services\MobileAppCatalog\GetMobileCatalogForUser` from each installed
-  module's manifest `mobile` block, filtered by platform / role / scope.
-  Version-gated by `EnforceMobileMinVersion` (HTTP 426 if the client is too old)
-  and silenceable via a `mobile.app_catalog.kill_switch` platform setting.
-- `POST /api/mobile/app-catalog/{slug}/launch` — returns either a short-lived
-  **signed** URL to `/app/{slug}` (embedded) or the partner URL + optional role
-  JWT (external).
-- <a id="partner-notifications"></a>**Notifications surface** (plain
-  `auth:sanctum`, no min-version gate):
+- **Auth** (`/api/mobile/auth/*`): `POST /login` (identifier + password →
+  Sanctum token, `throttle:10,1`), `POST /qr-login` (sandbox one-scan login;
+  404 outside sandbox), `GET /me`, `GET|POST /context` (list / select
+  `{scope, tenant_id, role_ids}`), `POST /logout`.
+- **App catalog** (gated by `mobile.min-version` — HTTP 426 if the client is
+  too old; silenceable via a `mobile.app_catalog.kill_switch` platform
+  setting):
+  - `GET /api/mobile/app-catalog` — the **installed-app catalog** for the
+    active `(tenant_id, role_id)` (sent as query parameters). Built by
+    `App\Services\MobileAppCatalog\GetMobileCatalogForUser` from each installed
+    module's manifest `mobile` block (including its per-audience `audiences[]`
+    entries), filtered by platform / role / scope.
+  - `POST /api/mobile/app-catalog/{slug}/launch` — returns either a
+    short-lived **signed** URL to `/app/{slug}` (embedded) or the partner URL +
+    optional role JWT (external) — `IssueWebviewLaunch` / `IssueExternalJwt`.
+  - `GET /api/mobile/app-catalog/portal?portal=student|guardian` — the
+    **cross-tenant portal catalog**: dependent-audience cards a guardian/
+    student sees in the general scope (`GetPortalCatalogForUser`).
+  - `POST /api/mobile/app-catalog/portal/{slug}/launch` — launch a portal card
+    for one of the user's tenants.
+- **Portals** (`/api/mobile/portal/*`): `GET /student`, `GET /guardian`
+  (cross-tenant portal data) and `POST /students/{hashid}/profile-launch`.
+- <a id="partner-notifications"></a>**Notifications** (plain `auth:sanctum`,
+  no min-version gate):
   `POST /api/mobile/notification-tokens` (+ `/revoke`) maintains the central
   push-device registry (`notification_device_tokens` — one row per FCM token,
   reassigned on login, pruned when FCM reports `UNREGISTERED`);
@@ -143,52 +172,58 @@ What `okta-app` calls (see [app.md](./app.md)):
   table through `App\Services\Notifications\Center\*` — the same services the
   web `/notifications-center` page uses. Push delivery is FCM **HTTP v1**
   (`App\Services\Notifications\Push\*`): the service-account JSON is stored
-  encrypted in platform settings (platform-delivery page), minted into a
-  cached OAuth token, and sent per device by
-  `SendPushNotificationJob` — wired as the `push` arm of the partner
-  `DispatchNotification` fan-out. Unconfigured platforms record
+  encrypted in platform settings, minted into a cached OAuth token, and sent
+  per device by `SendPushNotificationJob` — wired as the `push` arm of the
+  partner `DispatchNotification` fan-out. Unconfigured platforms record
   `skipped_no_transport`. Dynamic audiences from partner dispatch payloads
   (`recipient: {type: parent_of_student | school_admin | host_user, id}`)
   resolve to concrete users via
   `App\Services\PartnerApi\Notifications\ResolveAudience`, falling back to
   the tenant-configured recipients.
 
-> The catalog route is registered as `GET`; the client sends `tenant_id`/
-> `role_id` as query parameters. `> TODO: confirm` — one server-side comment
-> describes a `POST` body; treat `GET` (the route definition) as authoritative.
-
 ### 3. Embedded WebView — `routes/app.php` (`/app/{slug}`)
 
 `GET /app/{slug}` (middleware `web`, `signed`, `app.webview`, `throttle:30,1`)
-renders the embedded module's `mobile.entry` Blade file from its `mobile/`
-directory, re-confirming that the active role holds the required scope, with
+renders the embedded module's `mobile` entry Blade file from its `mobile/`
+directory (per-audience entries resolve to the audience the launch was issued
+for), re-confirming that the active role holds the required scope, with
 `Cache-Control: no-store` and `Content-Security-Policy: frame-ancestors 'none'`.
 This is the page the `okta-app` WebView loads for embedded cards.
 
-### 4. Scope-catalog bridge — `routes/api.php` (`/api/partners/*`)
+### 4. Bridge endpoints for okta-partners — `routes/api.php` (`/api/partners/*`)
 
 Consumed by `okta-partners` (guarded by `partner.api` shared Bearer token):
 
 - `GET /api/partners/permissions/catalog` → `{hash, count, data[], generated_at}`
-  with an `ETag` (`App\Http\Controllers\Api\Partners\ScopeCatalogController` →
-  `GetCatalog`).
-- `GET /api/partners/permissions/catalog/hash` → `{hash, generated_at}` for cheap
-  drift detection.
+  with an `ETag` (`ScopeCatalogController` → `GetCatalog`); plus
+  `…/catalog/hash` for cheap drift detection.
+- Sibling mirrored catalogs on the same pattern:
+  `GET /api/partners/countries/catalog[/hash]` and
+  `GET /api/partners/account-types/catalog[/hash]`.
+- Publish/install machinery: `/api/partners/modules/*` (publish, status),
+  `/api/partners/sandbox/{ensure,install,install-status,reset}`
+  (`PartnerSandboxController`), `/api/partners/app-store/catalog/resync`, and
+  `/api/partners/openapi.json`. See [deployment.md](./deployment.md).
 
-Plus the publish and sandbox-install endpoints `okta-partners` posts to (see
-[deployment.md](./deployment.md)).
+### 5. Tenant store API — `routes/api.php` (`/api/store/*`, session auth)
+
+The in-platform marketplace UI: `GET /modules`, `GET /modules/{slug}`,
+`POST /modules/{slug}/install|uninstall`, `GET /modules/{slug}/status`,
+`GET /installed`, plus installation-token management
+(`show/rotate/revoke`). Container tenants can bulk-install for their children
+via `BulkInstallModuleForChildren` (see `okta-web/CLAUDE.md`).
 
 ---
 
 ## How applications get installed into okta-web
 
-`App\Modules\Core\InstallModule::execute()` (idempotent; reactivates if
+`App\Modules\Core\Services\InstallModule::execute()` (idempotent; reactivates if
 previously uninstalled). Steps:
 
 1. Load the module row + decode its `manifest`; **validate** with
    `ManifestValidator`.
 2. Reject if already `active`; enforce that all `required` scopes are approved.
-3. Upsert `tenant_module_installations` (status `active`) + a `free`
+3. Upsert `tenant_module_installations` (status `active`) + a
    `tenant_module_subscriptions` row (in a transaction).
 4. **Issue an installation token** (`IssueInstallationToken`) bound to the
    granted scopes (default TTL 90 days).
@@ -201,6 +236,11 @@ previously uninstalled). Steps:
 8. Grant `rbac_permissions` to roles; sync `cross_module_access`.
 9. In sandbox, `SandboxAutoApprover` may auto-approve platform-AI access.
 10. Dispatch the `ModuleInstalled` event.
+
+The embedded module's **code** arrives on the host via
+`App\Services\Modules\ModuleSourcePuller` (pulls the pinned commit from the
+partner repo into `Modules/<StudlyName>/`) — the okta-web repo itself ships no
+modules; `Modules/` is populated per deployment.
 
 `UninstallModule::execute()` reverses this: mark `uninstalled`, cancel the
 subscription, revoke RBAC + cross-module access, **revoke installation tokens**,
@@ -219,14 +259,27 @@ published/installed manifest passes. Highlights:
 - `scopes[].key` must match `^[a-z][a-z0-9_]*(\.[a-z][a-z0-9_]*){2}$`
   (`<feature>.<resource>.<action>`), at least one `required:true`, **and every
   key must exist in `partner_scopes` with `is_active=true`** (no orphan grants).
-- `integrationType` ∈ `embedded | external | notification` with cross-field
-  checks: `external` requires an `external.webhookUrl` (HTTPS) + `webhookEvents`;
-  `embedded` must not carry an `external` block; `notification` requires its
-  `notification` block (channels + delivery).
+- `integrationType` ∈ `embedded | external | notification | payment` with
+  cross-field checks: `external` requires an `external.webhookUrl` (HTTPS) +
+  `webhookEvents`; `embedded` must not carry an `external` block;
+  `notification` requires its `notification` block (channels + delivery);
+  `payment` requires its `payment` block (methods, delivery, capabilities,
+  optional `custom_methods` with a bidirectional cross-check).
 - `database` block: `requiresDatabase`, optional `schema`/`prefix`,
   `migrations[].version` timestamp + (`path` XOR `sql_up`).
-- `mobile` block shape (consumed for the client surface — see
-  [installed-apps.md](./installed-apps.md)).
+- `mobile` block: block-level defaults (`supported`, `mode`, `entry`,
+  `passRoleClaim`, `requiredScope`, `allowedRoles[]`, `allowedPlatforms[]`,
+  `allowedOrigins[]`) plus multi-audience `audiences[]` — each
+  `{key, kind: primary|dependent, roles[] XOR portal: student|guardian, mode,
+  entry, …}`; embedded entries must live under `mobile/` with no `..`.
+- Also validated: `pricing`, store metadata (icon/screenshots/keywords/…),
+  `developer`, `rbac_permissions`, `aiSupport`/`aiMode`, and `developer_ui`
+  (the partner dev-panel block).
+
+> The `menu` block is **not** part of `ManifestValidator` — it is a runtime
+> concept read by `App\Livewire\AppsMenu` to place the sidebar/launch entry:
+> `menu.route` (falling back to `sidebar.route`, then `<slug>.dashboard`), with
+> optional per-account-type `menu.audiences[]`.
 
 The full manifest contract is in [installed-apps.md](./installed-apps.md).
 
@@ -235,8 +288,10 @@ The full manifest contract is in [installed-apps.md](./installed-apps.md).
 ## Modules (`nwidart/laravel-modules`)
 
 Embedded applications live under `Modules/<ModuleName>/` with a `module.json`
-descriptor and a service provider. Activation state is stored in the DB, not the
-filesystem:
+descriptor and a service provider. **The okta-web repo ships no modules** — the
+`Modules/` directory is created on the host when the first application is
+installed (source pulled from the partner repo at the pinned commit).
+Activation state is stored in the DB, not the filesystem:
 
 - **`DatabaseActivator`** (`MODULES_ACTIVATOR=database`) keeps enable/disable
   state in the landlord `module_statuses` table, so `git pull` on production
@@ -245,31 +300,41 @@ filesystem:
 - First migration from file → database:
   `php artisan migrate && php artisan modules:import-statuses-from-json`.
 
+Three real installed-application repos live in this workspace —
+`okta-smart-timetable`, `okta-exams`, `okta-hdor` — see
+[installed-apps.md](./installed-apps.md#real-examples).
+
 ---
 
 ## Environments: sandbox & production
 
 okta-web is operated as **sandbox** (development/testing) and **production** —
-the dev → prod progression in [deployment.md](./deployment.md). Distinctions seen
-in config/`.env`:
+the dev → prod progression in [deployment.md](./deployment.md). Distinctions
+seen in config/`.env`:
 
+- **Instance flag**: `OKTA_IS_SANDBOX` (`config/okta.php → is_sandbox`),
+  honored by `SandboxAutoApprover::isInstanceSandbox()` (which also accepts
+  `APP_ENV=sandbox`).
 - **Module databases**: `MODULES_DB_NAME` (production) vs
-  `MODULES_SANDBOX_DB_NAME` (sandbox tenants), each with optional host/port/cred
-  overrides.
-- **Sandbox tenants**: `is_sandbox=true` on a Tenant; instance-level sandbox via
-  `APP_ENV=sandbox`. Sandbox installs auto-approve platform-AI access
+  `MODULES_SANDBOX_DB_NAME` (sandbox tenants), each with optional
+  host/port/cred overrides. Installed apps' isolated DBs are named
+  `<slug>_<hashid>_<sandbox|production>`.
+- **Sandbox tenants**: `is_sandbox=true` on a Tenant; provisioned by
+  `App\Services\Modules\SandboxTenantProvisioner` and installed into by
+  `PartnerSandboxModuleInstaller` (driven from okta-partners through
+  `/api/partners/sandbox/*`). Sandbox installs auto-approve platform-AI access
   (`SandboxAutoApprover`) so partners can test without manual approval.
 - **Partner-runtime config** (`config/partners.php`):
   `PARTNER_APP_RUNTIME_ENABLED`, `PARTNER_APP_RATE_LIMIT_PER_MINUTE` (600),
   `PARTNER_INSTALLATION_TOKEN_TTL_DAYS` (90), `PARTNER_DB_ISOLATION_ENABLED`,
   `PARTNER_NOTIFICATIONS_ENABLED`.
-- **Bridge auth**: `OKTA_PARTNERS_API_TOKEN` (shared Bearer for `/api/partners/*`),
-  plus outbound webhook URL/secret to notify `okta-partners`.
+- **Bridge auth**: `OKTA_PARTNERS_API_TOKEN` (shared Bearer for
+  `/api/partners/*`), plus outbound webhook URL/secret to notify
+  `okta-partners`.
 
-The production base host observed in client config is `https://getokta.io`
-(`okta-app` default base URL). `> TODO: confirm` the exact sandbox/production
-hostnames for the bridge (the partners side resolves them dynamically through
-`BridgeSettings`).
+Base hosts as configured in the `okta-app` client: production
+`https://getokta.io`, development `https://dev.getokta.io` (the partners side
+resolves its own bridge URLs dynamically through `BridgeSettings`).
 
 ---
 
@@ -278,7 +343,10 @@ hostnames for the bridge (the partners side resolves them dynamically through
 `PartnerInstallationToken` (bearer credential), `PartnerInstallDbCredential`
 (isolated role/schema), `PartnerScope` (catalog mirror),
 `TenantModuleInstallation` / `TenantModuleSubscription`,
-`PartnerWebhookSubscription` / `PartnerWebhookDelivery`, `Module` (the registry
-row holding the validated `manifest`). The request-scoped `ModuleContext` (DTO) +
-`AppContextManager` (singleton) carry tenant + module + installation + granted
-scopes through a request.
+`PartnerWebhookSubscription` / `PartnerWebhookDelivery`,
+`PartnerSandboxCredential` / `SandboxModuleInstallation` (sandbox machinery),
+`PartnerModuleDevSetting` (dev-panel data store), `PartnerPaymentCharge`
+(unified payment runtime), and `Module` (the registry row holding the validated
+`manifest`). The request-scoped `ModuleContext` (DTO) + `AppContextManager`
+(singleton) carry tenant + module + installation + granted scopes through a
+request.

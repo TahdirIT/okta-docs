@@ -58,7 +58,14 @@ This block is the entire contract for the client surface:
     "allowedPlatforms": ["ios", "android", "windows", "linux"],  // [] = all
     "allowedRoles": ["tenant-admin"],  // [] = no role filter
     "requiredScope": "education.students.read",       // empty = no scope gate
-    "passRoleClaim": true              // external: include a signed role JWT
+    "passRoleClaim": true,             // external: include a signed role JWT
+
+    "audiences": [                     // optional: one card/entry per account type
+      { "key": "admin",    "kind": "primary",   "roles": ["tenant-admin"],
+        "entry": "mobile/screens/admin.blade.php" },
+      { "key": "guardian", "kind": "dependent", "portal": "guardian",
+        "entry": "mobile/screens/guardian.blade.php" }
+    ]
   }
 }
 ```
@@ -69,6 +76,26 @@ must be held by the active role). A `mobile.app_catalog.kill_switch` platform
 setting and a minimum-app-version gate (`HTTP 426`) can also suppress cards.
 
 Field reference: [`./manifest-reference.md`](./manifest-reference.md).
+
+### Audiences — different screens per account type
+
+Without `audiences[]`, the whole app has **one** entry and one role list. With
+`audiences[]`, each account type gets its own screen (two audiences may share
+one entry):
+
+- **`kind: primary` + `roles[]`** — tenant-scoped audiences (e.g. the school
+  admin, a teacher/observer). Their cards appear in the normal per-tenant
+  catalog above.
+- **`kind: dependent` + `portal: student|guardian`** — cross-tenant audiences.
+  When the school installs your app, it automatically surfaces to its students/
+  guardians in their **general-scope portals** — no Tenant selection. okta-app
+  fetches these via `GET /api/mobile/app-catalog/portal?portal=student|guardian`
+  and launches via `POST /api/mobile/app-catalog/portal/{slug}/launch`
+  (`GetPortalCatalogForUser` server-side). Block-level fields act as defaults
+  for every audience.
+
+`okta-exams` is a live example: admin/observer tenant audiences plus
+student/guardian portal audiences, each with its own `mobile/screens/*.blade.php`.
 
 ---
 

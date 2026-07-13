@@ -5,17 +5,27 @@ This is the **general contract** any application must follow to be installable v
 [`okta-web`](./web.md) (platform) and [`okta-app`](./app.md) (client) — the
 [dual surface](./architecture.md#dual-surface).
 
-The model below is reverse-engineered from a real installed application in the
-workspace and from the boilerplate `okta-partners` pushes to every new
-application repo. Where something is likely specific to one application rather
-than a general requirement, it is marked
-`> TODO: confirm (may be specific to the example, not general)`.
+The model below is grounded in the real installed applications in the workspace
+and in the boilerplate `okta-partners` pushes to every new application repo.
 
 > Throughout, an application is referred to generically as **an installable
 > application** / **a Tenant's installed application**. Placeholders:
 > `<module-name>` (StudlyCase, e.g. `ExampleApp`), `<module-slug>` (kebab-case,
 > e.g. `example-app`), `<module_lower>` (snake_case), `<MODULE_UPPER>`
 > (UPPER_SNAKE). These mirror the boilerplate's substitution tokens.
+
+<a id="real-examples"></a>
+## Real examples in this workspace
+
+Three installed-application repos live alongside the platform repos and are the
+concrete references for this contract (each is an **embedded** module authored
+by the platform team's partner account):
+
+| Repo | App | Traits worth studying |
+|---|---|---|
+| `okta-smart-timetable` | «اوكتا الجدول الذكي» — AI-assisted school timetable generation + daily class operations (attendance, substitutes). | Platform-AI usage (`aiSupport: true`, `aiMode: platform`, `app/AiTools/`), read-only education scopes, richest partner-policy toolset (adds `UiScanner` + `NotificationScanner`). |
+| `okta-exams` | «اوكتا الاختبارات النهائية» — final-exam periods, committees, seat distribution, observers, attendance, printable reports. | **Paid** app (pricing block), `rbac_permissions` grants (~26 fine-grained permissions), mpdf report suite, a public marketing landing route, a student-profile panel injected into the platform, AI committee tools, per-audience mobile screens (admin/observer/student/guardian). |
+| `okta-hdor` | «اوكتا حضور» — student check-in/out, absence cutoff, leave requests, parent notifications. | Richest **notifications** manifest (7 types incl. WhatsApp), a module scheduler (`daily-closure`) + console commands, outbound signed webhooks with a management UI, mobile check-in API (barcode/NFC/face/…), the most complete in-module `Services/PartnerApi/` wrapper layer. |
 
 ---
 
@@ -37,15 +47,23 @@ shape:
   "displayNameEn": "…",
   "version": "1.0.0",
   "category": "…",
-  "integrationType": "embedded",          // embedded | external | notification
+  "integrationType": "embedded",          // embedded | external | notification | payment
   "description": "…",
   "icon": "https://…",
+  "screenshots": ["https://…"],
   "developer": { "tenantSlug": "…", "name": "…" },
+  "releaseType": "manual",                 // or after_approval
+  "aiSupport": true,                        // optional: app uses the platform AI agent
+  "aiMode": "platform",
 
   "scopes": [
     { "key": "education.students.read",  "required": true,  "reason": "" },
     { "key": "education.students.write", "required": true,  "reason": "" }
   ],
+
+  "rbac_permissions": {                     // optional: created on install, granted to roles
+    "tenant-admin": ["<module_lower>.reports.view"]
+  },
 
   "menu": { "route": "<module-slug>.dashboard" },   // the platform (okta-web) surface
 
@@ -55,8 +73,16 @@ shape:
     "entry": "mobile/screens/dashboard.blade.php",
     "passRoleClaim": true,
     "allowedPlatforms": ["ios", "android", "windows", "linux"],
-    "allowedRoles": ["tenant-admin"]
+    "allowedRoles": ["tenant-admin"],
+    "audiences": [                                   // optional: per-account-type entries
+      { "key": "admin",    "kind": "primary",   "roles": ["tenant-admin"],
+        "entry": "mobile/screens/admin.blade.php" },
+      { "key": "guardian", "kind": "dependent", "portal": "guardian",
+        "entry": "mobile/screens/guardian.blade.php" }
+    ]
   },
+
+  "pricing": { "…": "…" },                  // optional: paid apps (billing cycles per country/tenant type)
 
   "notifications": [
     {
@@ -92,13 +118,19 @@ shape:
 - Partners get only `read` / `write` actions — never `delete`.
 - `integrationType` coherence: `external` ⇒ requires an `external.webhookUrl`
   (HTTPS) + `webhookEvents[]`; `embedded` ⇒ must **not** carry an `external`
-  block; `notification` ⇒ requires its `notification` block.
+  block; `notification` ⇒ requires its `notification` block (channels +
+  delivery); `payment` ⇒ requires its `payment` block (methods, delivery,
+  capabilities, optional custom methods).
+- `mobile` block: block-level defaults plus optional `audiences[]` — each
+  audience declares `kind` (`primary` | `dependent`) and **either** tenant
+  `roles[]` **or** a `portal` (`student` | `guardian`), never both; embedded
+  entries must live under `mobile/` with no `..`.
 - `database` block: `migrations[].version` is a timestamp and each migration has
   `path` XOR `sql_up`.
 
-**`integrationType` / `scopes` set, channels, table names** in the example above
-are illustrative — the specific scopes (`education.*`), notification keys, and
-schema name belong to one application, not the general model.
+**The specific scopes (`education.*`), notification keys, and schema names** in
+the example above are illustrative — see the real manifests in the three
+workspace app repos for live values.
 
 ### `module.json` — the loader descriptor (`nwidart/laravel-modules`)
 
@@ -142,13 +174,14 @@ at the service provider. Both are required for an embedded application.
 │   ├── Models/                    # module-owned models only
 │   ├── Services/
 │   │   └── PartnerApi/            # thin wrappers that call the host (§4)
+│   ├── AiTools/                   # optional: tools exposed to the platform AI agent
 │   ├── Jobs/ Events/ Listeners/ Console/Commands/ Support/
 ├── config/
 │   ├── config.php                 # merged under config('<module-slug>')
 │   └── database.php               # the module's dedicated DB connection
 ├── database/migrations/           # module-owned tables only
 ├── lang/{ar,en}/
-├── mobile/screens/<entry>.blade.php   # the client-surface WebView entry (§ client)
+├── mobile/screens/<entry>.blade.php   # the client-surface WebView entry (§8)
 ├── resources/{views,assets,lang}/
 ├── routes/{web.php,api.php}        # web = platform UI; api = mobile/machine API
 ├── scripts/partner-policy/         # Scanner.php + check.php + phpstan/ (§6)
@@ -166,6 +199,9 @@ at the service provider. Both are required for an embedded application.
   ] } }
 }
 ```
+
+The module's isolated database is provisioned per install as
+`<slug>_<hashid>_<sandbox|production>` with schema `m_<module_lower>`.
 
 ---
 
@@ -185,11 +221,12 @@ boot responsibilities that generalize:
 - Load translations + views under the `<module-slug>` namespace.
 - Register migrations from `database/migrations/`.
 - Register Livewire components, event listeners, console commands, and scheduled
-  jobs.
+  jobs (e.g. `okta-hdor` registers a `dailyAt` closure job with
+  `withoutOverlapping`).
 
 > The exact set of components/events/commands is application-specific; the
 > *mechanism* (one provider that registers routes + migrations + views + i18n +
-> events) is the general requirement.
+> events + schedule) is the general requirement.
 
 ---
 
@@ -212,10 +249,12 @@ if (! class_exists($platform)) { return ['data' => []]; }   // graceful degradat
 return ['data' => app($platform)($studentId)->toArray()];
 ```
 
-Cross-cutting actions (parent messaging, push, in-app) are delegated to the host
-too — e.g. a queued job calls the host's `DispatchNotification` service rather
-than talking to WhatsApp/FCM directly. The notification *types* it may send must
-be declared in `manifest.json → notifications`.
+Cross-cutting actions (parent messaging, push, in-app, payments) are delegated
+to the host too — e.g. a queued job calls the host's `DispatchNotification`
+service rather than talking to WhatsApp/FCM directly, and charges go through
+the host's `PartnerApi\Payments\*` services. The notification *types* an app
+may send must be declared in `manifest.json → notifications` (undeclared keys
+are rejected at runtime).
 
 ### External — HTTP runtime API + signed webhooks
 
@@ -230,8 +269,9 @@ validate both). The set of events is declared in `external.webhookEvents`.
 
 The application owns its own tables (module-prefixed, on its dedicated
 connection/schema). They reference host entities by **opaque string IDs**
-(e.g. ULIDs) with **no foreign keys** to platform tables (cross-database). The
-number and shape of owned tables is application-specific.
+(ULIDs) with **no foreign keys** to platform tables (cross-database) — the host
+offers `PartnerApi\Bridge\ResolveUlid` to map references. The number and shape
+of owned tables is application-specific.
 
 ---
 
@@ -262,9 +302,14 @@ Every installable application repo ships static-analysis gates copied from
   (`database.*`, `auth.*`, `partners.*`, …); and casting opaque ULID references to
   int. An audited line may opt out with a
   `// partner-policy:allow=<rule-id> reason=…` comment. <a id="policy-scanner"></a>
+- **`scripts/partner-policy/UiScanner.php`** — design-system scanner on
+  `*.blade.php`: rejects raw `<button>`/`<input>`/`<select>`/`<textarea>`/
+  `<table>` (use the platform `<x-…>` components), off-theme palettes
+  (`gray/zinc/slate/indigo`), and `max-w-*`; `mobile/` screens are exempt
+  (the sandboxed WebView can't resolve platform components).
 - **`scripts/partner-policy/phpstan/PartnerInternalAccessRule.php`** — an
-  AST-based PHPStan rule enforcing the same boundaries more precisely, configured
-  with the module's namespace + env/config prefixes (`phpstan.neon`).
+  AST-based PHPStan rule enforcing the same data boundaries more precisely,
+  configured with the module's namespace + env/config prefixes (`phpstan.neon`).
 - **`.github/workflows/partner-module-policy.yml`** — CI that runs the scanner on
   every PR/push and blocks the merge on any violation.
 
@@ -278,7 +323,9 @@ At runtime the platform reinforces this: sensitive host models use the
 
 ## 7. The platform surface (okta-web)
 
-- Declared by `manifest.json → menu.route`.
+- Declared by `manifest.json → menu.route` (resolved at runtime by the host's
+  `AppsMenu`; falls back to `sidebar.route`, then `<slug>.dashboard`, and may
+  carry per-account-type `menu.audiences[]`).
 - An embedded application mounts `routes/web.php` under its module prefix
   (e.g. `/<module-slug>/…`) using host gating middleware
   (`module.access:<module-slug>` plus context/tenant middleware). It does **not**
@@ -286,6 +333,10 @@ At runtime the platform reinforces this: sensitive host models use the
   installation.
 - The UI is built from host UI components/Livewire and appears in the web
   sidebar for users of that Tenant who hold the relevant permissions.
+- Optional deeper integrations: `rbac_permissions` (permissions created on
+  install and granted to roles) and **student-profile panels** an app registers
+  from its provider (`okta-exams` injects an exam-schedule panel — see
+  `okta-web/CLAUDE.md`, «ملف الطالب»).
 
 ---
 
@@ -293,7 +344,7 @@ At runtime the platform reinforces this: sensitive host models use the
 ## 8. The client surface (okta-app)
 
 Declared by `manifest.json → mobile`. The platform turns this block into the
-catalog card `okta-app` renders (see
+catalog card(s) `okta-app` renders (see
 [app.md](./app.md#rendering-a-tenants-installed-applications)):
 
 - `supported` — if false, the application is hidden from the mobile catalog.
@@ -304,36 +355,48 @@ catalog card `okta-app` renders (see
 - `allowedPlatforms` — filters cards by `X-App-Platform` (empty = all).
 - `allowedRoles` — filters by the user's active role (empty = no filter).
 - `passRoleClaim` — if true, an external launch receives a signed role JWT.
+- `audiences[]` — optional **per-account-type entries**. Each audience is
+  either a set of tenant-scoped `roles[]` (`kind: primary` — shown in the
+  tenant catalog) or a cross-tenant `portal` (`student`/`guardian`,
+  `kind: dependent` — shown in the **portal catalog** without picking a
+  Tenant), with its own `entry`/`mode`/options. Two audiences may share one
+  entry. This is how one install surfaces different screens to the school
+  admin, the observer/teacher, the student, and the guardian.
 
 How discovery + render works:
 
-1. `okta-app` calls `GET /api/mobile/app-catalog` for the active `(tenant, role)`.
-2. `okta-web` (`GetMobileCatalogForUser`) reads each installed module's `mobile`
-   block, filters by platform + role + `requiredScope`, and returns cards.
+1. `okta-app` calls `GET /api/mobile/app-catalog` for the active `(tenant, role)`
+   — and, for guardians/students, `GET /api/mobile/app-catalog/portal` for the
+   cross-tenant portal cards.
+2. `okta-web` (`GetMobileCatalogForUser` / `GetPortalCatalogForUser`) reads each
+   installed module's `mobile` block, resolves the matching audience, filters by
+   platform + role + `requiredScope`, and returns cards.
 3. Launching an **embedded** card → `okta-web` issues a short-lived **signed**
-   URL to `/app/<module-slug>`, which renders the application's `entry` Blade.
+   URL to `/app/<module-slug>`, which renders the audience's `entry` Blade.
    That page typically **mints a host token server-side** and hands it to its JS,
    so the in-WebView SPA calls the application's own `/api/<module-slug>/*`
    endpoints. Launching an **external** card → the partner URL (+ role JWT).
 
 > The in-WebView SPA details (hash routing, token minting, `okta-app://close`
-> bridge) are how one example implements its mobile entry; the **requirement** is
-> only that `mobile.entry` renders a page the client WebView can host and that all
-> data access still flows through the Partner API.
+> bridge) are conventions documented in
+> [`../docs/app-development/app-surface.md`](../docs/app-development/app-surface.md);
+> the **requirement** is only that each `entry` renders a page the client WebView
+> can host and that all data access still flows through the Partner API.
 
 ---
 
 ## 9. Checklist — making an application installable
 
 1. Scaffold the repo from the `okta-partners` boilerplate (gets the structure,
-   policy scanner, and CI for free).
+   policy scanners, and CI for free).
 2. Set identity: `composer.json` (`Modules\<module-name>\`), `module.json`,
    `manifest.json`.
 3. Choose `integrationType` and declare `scopes` (must exist in the platform
-   catalog), `menu` (platform surface), and `mobile` (client surface).
+   catalog), `menu` (platform surface), and `mobile` (+ `audiences` if the app
+   serves more than one account type).
 4. Implement UI/logic; reach host data **only** via the Partner API; own your
    tables on your dedicated connection.
 5. Declare notifications + database migrations in the manifest.
-6. Pass the policy scanner + PHPStan rule + CI.
+6. Pass the policy scanners + PHPStan rule + CI.
 7. Version, submit, review, **test on sandbox**, then **publish to production**
    (see [deployment.md](./deployment.md)).

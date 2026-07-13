@@ -143,7 +143,9 @@ app/
 
 ## المراجع
 
-- [`app/Contracts/PaymentProviderInterface.php`](../../../okta-web/app/Contracts/PaymentProviderInterface.php)
-- [`app/Services/Payment/PaymentProcessor.php`](../../../okta-web/app/Services/Payment/PaymentProcessor.php)
-- [`app/Services/Payment/Providers/NeoleapProvider.php`](../../../okta-web/app/Services/Payment/Providers/NeoleapProvider.php)
-- [`app/Services/Payment/Wafeq/WafeqPaymentSyncService.php`](../../../okta-web/app/Services/Payment/Wafeq/WafeqPaymentSyncService.php)
+مسارات داخل مستودع `okta-web`:
+
+- `app/Contracts/PaymentProviderInterface.php`
+- `app/Services/Payment/PaymentProcessor.php`
+- `app/Services/Payment/Providers/NeoleapProvider.php`
+- `app/Services/Payment/Wafeq/WafeqPaymentSyncService.php`

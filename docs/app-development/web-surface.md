@@ -154,12 +154,13 @@ item links to:
 ```
 
 Name your landing route to match (`->name('dashboard')` under the `example-app.`
-group → `example-app.dashboard`). The platform reads installed apps' `menu` blocks
-to render the entry for Tenants that have the app installed.
-
-> TODO: confirm — richer `menu` fields (label/icon/ordering, nested children) if
-> your design needs them; the minimum verified field is `menu.route`. See
-> [`./manifest-reference.md`](./manifest-reference.md).
+group → `example-app.dashboard`). The platform reads installed apps' `menu`
+blocks at runtime (`App\Livewire\AppsMenu` in okta-web) to render the entry for
+Tenants that have the app installed. Resolution order for the launch route:
+`menu.route` → `sidebar.route` → `<slug>.dashboard`. A `menu.audiences[]` array
+can point different account types (tenant `roles[]` or a student/guardian
+`portal`) at different routes — mirroring the mobile `audiences` concept. See
+[`./manifest-reference.md`](./manifest-reference.md).
 
 ---
 

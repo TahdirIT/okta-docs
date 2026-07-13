@@ -85,11 +85,11 @@ example-app/
 | Understand auth/identity across the surfaces and the install lifecycle | [`./auth-and-lifecycle.md`](./auth-and-lifecycle.md) |
 | See the whole product picture / publish flow | [`../../claude/`](../../claude/) |
 
-### Proposals / design specs (not yet implemented)
+### Design specs
 
 | Spec | Status |
 |---|---|
-| [`proposals/dependent-accounts.md`](./proposals/dependent-accounts.md) — primary + dependent accounts, per-audience entries, and surfacing dependent apps to guardians/students in the **general (cross-tenant) scope**. | **Proposed** — design under review |
+| [`proposals/dependent-accounts.md`](./proposals/dependent-accounts.md) — primary + dependent accounts, per-audience entries, and surfacing dependent apps to guardians/students in the **general (cross-tenant) scope**. | **Implemented** — audiences ship in the manifest `mobile.audiences[]` block and the portal catalog (`GET /api/mobile/app-catalog/portal`); see [`./manifest-reference.md`](./manifest-reference.md) and [`./app-surface.md`](./app-surface.md). The spec is kept for design rationale. |
 
 ---
 

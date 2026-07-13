@@ -1,11 +1,17 @@
 # Design spec — Dependent accounts & per-audience entries
 
-> **Status: PROPOSED (design only — not yet implemented).** This document
-> specifies a change to the installed-application model. It describes the target
-> design and the gap from today's code; nothing here is live yet. The "how it
-> works today" guides under [`../`](../README.md) remain the source of truth for
-> current behaviour. Statements about current code cite real files; design
-> decisions still open are marked `> TODO: confirm`.
+> **Status: IMPLEMENTED.** This design has since shipped: the manifest `mobile`
+> block accepts per-account-type `audiences[]` (validated by okta-web's
+> `ManifestValidator` — `kind: primary|dependent`, `roles[]` XOR
+> `portal: student|guardian`, per-audience `entry`), okta-partners stores them
+> on `partner_module_versions.audiences`, okta-web serves the cross-tenant
+> **portal catalog** (`GET /api/mobile/app-catalog/portal` +
+> `POST /api/mobile/app-catalog/portal/{slug}/launch`,
+> `GetPortalCatalogForUser`), and okta-app renders portal cards in the
+> student/guardian portals (`lib/features/portal_app_catalog/`).
+> For current behaviour read [`../manifest-reference.md`](../manifest-reference.md)
+> and [`../app-surface.md`](../app-surface.md); this document is retained for the
+> design rationale and the state of the code **before** the change.
 >
 > Written generically (no specific app named), per the docs convention.
 

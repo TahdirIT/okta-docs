@@ -14,13 +14,14 @@ Companion files: [installed-apps.md](./installed-apps.md) (the contract) ·
 ## The two environments
 
 `okta-web` runs as two environments — **sandbox** (development / testing) and
-**production**. This is the dev → prod progression. The two are selected from the
+**production**; there is no third/staging tier. The two are selected from the
 `okta-partners` side by `BridgeSettings`:
 
 | | Sandbox (dev/test) | Production |
 |---|---|---|
 | Bridge base URL | `BridgeSettings::sandboxApiUrl()` | `BridgeSettings::apiUrl()` |
 | Bridge token | `sandboxOutboundToken()` | `outboundToken()` |
+| okta-web instance | `OKTA_IS_SANDBOX=true` (or `APP_ENV=sandbox`) | normal |
 | okta-web tenants | `is_sandbox=true`, `MODULES_SANDBOX_DB_NAME` | normal tenants, `MODULES_DB_NAME` |
 | AI approval | auto-approved on install (`SandboxAutoApprover`) | manual approval |
 
@@ -30,8 +31,7 @@ sandbox URL and token are set, which prevents test traffic from leaking into
 production.
 
 > Terminology bridge: the product overview calls this "dev → prod". In code the
-> environments are named **sandbox** and **production**. `> TODO: confirm` whether
-> any third/staging environment exists beyond these two.
+> environments are named **sandbox** and **production**.
 
 ---
 
@@ -40,25 +40,29 @@ production.
 ```
  author in okta-partners ─▶ publish manifest ─▶ okta-web validates & registers
         │                                              │
-        │ (embedded) push boilerplate to GitHub repo   │
-        ▼                                              ▼
-   build app code                          install into a Tenant (InstallModule)
+        │ (embedded) push boilerplate to the           │
+        │  partner's connected GitHub repo             ▼
+        ▼                                   install into a Tenant (InstallModule
+   build app code                            + ModuleSourcePuller pulls the code)
                                                        │
                           ┌────────────────────────────┴───────────────────────┐
                           ▼                                                      ▼
               PLATFORM surface (okta-web)                          CLIENT surface (okta-app)
-        embedded module UI in the web sidebar                 card in /api/mobile/app-catalog,
-        at manifest `menu.route`                              launched via WebView (/app/{slug}
-                                                              embedded, or partner URL external)
+        embedded module UI in the web sidebar                 card in /api/mobile/app-catalog
+        at manifest `menu.route`                              (+ portal catalog for dependent
+                                                              audiences), launched via WebView
+                                                              (/app/{slug} embedded, or partner
+                                                              URL external)
 ```
 
 ### 1. Author (okta-partners)
 
 Create a `PartnerModule` (pick `integrationType`) and a `PartnerModuleVersion`;
 select scopes from the **mirrored** catalog (`partner_available_scopes`). For
-embedded apps, link GitHub — `GitHubAppService::pushBoilerplate()` scaffolds the
-repo and `syncModuleMetadataToBranch()` keeps `manifest.json` on the branch in
-sync with the DB. See [installed-apps.md](./installed-apps.md) for what gets
+embedded apps, connect GitHub (the partner installs the platform GitHub App and
+picks a repo) — `GitHubAppService::pushBoilerplate()` scaffolds the skeleton
+into it and `syncModuleMetadataToBranch()` keeps `manifest.json` on the branch
+in sync with the DB. See [installed-apps.md](./installed-apps.md) for what gets
 built.
 
 ### 2. Lifecycle review (okta-partners)
@@ -72,14 +76,20 @@ Draft ─▶ Submitted ─▶ InReview ─▶ Approved ─▶ Beta / Published
         Published ─▶ Suspended / Deprecated
 ```
 
-Only `Draft` and `ChangesRequested` are editable.
+Only `Draft` and `ChangesRequested` are editable; only `Approved` is
+publishable. Platform admins run the review from `Admin/Modules/ModuleReviewIndex`
+and `ModuleShow`; every transition is logged to `PartnerModuleReview`.
 
 ### 3. Test on sandbox (okta-partners → okta-web sandbox)
 
 `OktaWebService::ensureSandbox()` then `installOnSandbox()` installs the version
-into the partner's **sandbox** tenant in `okta-web`. The call is **async** —
-okta-partners polls an install-status URL with backoff until done. The partner
-exercises both surfaces against sandbox before going live.
+into the partner's **sandbox** tenant in `okta-web`
+(`/api/partners/sandbox/{ensure,install,install-status,reset}` →
+`SandboxTenantProvisioner` + `PartnerSandboxModuleInstaller`). The call is
+**async** — okta-partners polls the install-status URL with backoff until done.
+The partner exercises both surfaces against sandbox before going live (the
+mobile client can even one-scan into sandbox via QR login). CI pipelines can
+trigger a preview install through `POST /api/ci/preview-install`.
 
 ### 4. Publish to production (okta-partners → okta-web)
 
@@ -87,8 +97,9 @@ exercises both surfaces against sandbox before going live.
 
 1. promote draft migrations; adopt AI/notification declarations from the repo;
 2. `PartnerModuleVersion::buildManifest()`;
-3. prepare git source (pin `commit_sha`);
-4. `OktaWebService::publishModule()` → POST to `okta-web` with manifest + source;
+3. prepare git source (pin `commit_sha` via `resolveCommitSha`);
+4. `OktaWebService::publishModule()` → `POST /partners/modules/publish` with
+   manifest + source;
 5. okta-web runs `ManifestValidator::validate()` and records the `Module` row
    (storing the validated `manifest`);
 6. mark prior versions `Deprecated`; store `okta_web_module_id`; set status
@@ -103,7 +114,10 @@ When a Tenant installs the published application, `InstallModule::execute()`
 ([web.md](./web.md#how-applications-get-installed-into-okta-web)) issues an
 installation token, grants scopes + RBAC, optionally provisions an isolated DB
 schema, runs the module's migrations, and (for external apps) syncs webhook
-subscriptions. This single install is what lights up **both** surfaces.
+subscriptions; `ModuleSourcePuller` fetches the pinned commit into
+`Modules/<StudlyName>/`. This single install is what lights up **both**
+surfaces. Container tenants (complexes/companies) can bulk-install for their
+child tenants.
 
 ### 6. Platform surface goes live (okta-web)
 
@@ -115,10 +129,12 @@ permissions.
 
 `okta-app` calls `GET /api/mobile/app-catalog` for the active `(tenant, role)`;
 `GetMobileCatalogForUser` builds a card from the module's `mobile` block
-(filtered by platform/role/scope). Launching it:
+(resolving the matching audience, filtered by platform/role/scope). Dependent
+audiences (guardian/student portals) surface through
+`GET /api/mobile/app-catalog/portal` without picking a Tenant. Launching:
 
 - **embedded** → a short-lived **signed** URL to `okta-web`'s `/app/{slug}`,
-  which renders the module's `mobile.entry` Blade inside the WebView;
+  which renders the audience's `entry` Blade inside the WebView;
 - **external** → the partner-hosted URL, with a signed role JWT if
   `passRoleClaim` is set.
 
@@ -131,13 +147,16 @@ The dev → prod progression repeats per environment: steps 3–7 run first agai
 
 - **Scope catalog**: `okta-web` is the source of truth; `okta-partners` mirrors it
   via hash-aware `SyncFromOktaWeb` (cron `partners:sync-scope-catalog`, the
-  `partner_scopes.catalog.changed` webhook, or `--force`).
+  `partner_scopes.catalog.changed` webhook, or `--force`). The countries and
+  account-types catalogs mirror the same way.
 - **Webhooks in** (web → partners): all events land on the unified
   `POST /webhooks/okta-web`, verified by `VerifyOktaWebWebhook` (HMAC envelope +
-  freshness + replay).
+  freshness + replay) — including `app_store.sale.recorded`/`.refunded` which
+  feed the partner payout ledger.
 - **Webhooks out** (web → external apps): `DispatchEvent` → queued
   `DeliverPartnerWebhook` jobs sign and deliver to each subscriber's
-  `webhookUrl`, with retry/backoff and a recovery scheduler.
+  `webhookUrl`, with retry/backoff and a per-minute recovery scheduler
+  (`partners:recover-webhook-deliveries`).
 - **Uninstall**: `UninstallModule` revokes installation tokens, deactivates
   webhook subscriptions (kept for audit), revokes RBAC + cross-module access, and
   drops the isolated schema — removing the application from both surfaces.
@@ -151,9 +170,11 @@ The dev → prod progression repeats per environment: steps 3–7 run first agai
 | Environment selection (prod/sandbox) | `okta-partners` · `app/Services/BridgeSettings.php` |
 | Publish / sandbox install client | `okta-partners` · `app/Services/OktaWebService.php` |
 | Lifecycle / publish orchestration | `okta-partners` · `app/Services/ModuleLifecycleService.php` |
-| Repo scaffolding | `okta-partners` · `app/Services/GitHubAppService.php` |
+| Repo scaffolding + managed files | `okta-partners` · `app/Services/GitHubAppService.php` |
 | Manifest validation | `okta-web` · `app/Modules/Core/ManifestValidator.php` |
-| Install / uninstall | `okta-web` · `app/Modules/Core/{InstallModule,UninstallModule}.php` |
-| Mobile catalog (client surface) | `okta-web` · `app/Services/MobileAppCatalog/GetMobileCatalogForUser.php` |
+| Install / uninstall | `okta-web` · `app/Modules/Core/Services/{InstallModule,UninstallModule}.php` |
+| Module source pull | `okta-web` · `app/Services/Modules/ModuleSourcePuller.php` |
+| Sandbox provisioning | `okta-web` · `app/Services/Modules/{SandboxTenantProvisioner,PartnerSandboxModuleInstaller}.php` |
+| Mobile catalog (client surface) | `okta-web` · `app/Services/MobileAppCatalog/{GetMobileCatalogForUser,GetPortalCatalogForUser}.php` |
 | Embedded WebView render | `okta-web` · `routes/app.php` + `WebviewController` |
-| Catalog consumption (client) | `okta-app` · `lib/features/app_catalog/` |
+| Catalog consumption (client) | `okta-app` · `lib/features/{app_catalog,portal_app_catalog}/` |

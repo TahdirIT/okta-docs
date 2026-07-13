@@ -40,7 +40,15 @@ okta-web) on publish/install. For the complete contract and package structure, s
     "allowedPlatforms": ["ios", "android", "windows", "linux"],
     "allowedRoles": ["tenant-admin"],
     "requiredScope": "education.students.read",
-    "passRoleClaim": true
+    "passRoleClaim": true,
+    "audiences": [
+      { "key": "admin",    "kind": "primary",   "roles": ["tenant-admin"],
+        "entry": "mobile/screens/admin.blade.php" },
+      { "key": "student",  "kind": "dependent", "portal": "student",
+        "entry": "mobile/screens/student.blade.php" },
+      { "key": "guardian", "kind": "dependent", "portal": "guardian",
+        "entry": "mobile/screens/guardian.blade.php" }
+    ]
   },
 
   "rbac_permissions": { "tenant-admin": ["example_app.dashboard.view"] },
@@ -74,15 +82,18 @@ okta-web) on publish/install. For the complete contract and package structure, s
 
 | Block | Drives | Used by | More |
 |---|---|---|---|
-| `moduleId`, `version`, `category`, `displayName*`, `icon`, `developer` | Identity & marketplace listing | both | — |
-| `integrationType` | `embedded` / `external` / `notification` — the whole integration shape | both | [`./data-access-and-security.md`](./data-access-and-security.md) |
+| `moduleId`, `version`, `category`, `displayName*`, `icon`, `screenshots`, `developer` | Identity & marketplace listing | both | — |
+| `integrationType` | `embedded` / `external` / `notification` / `payment` — the whole integration shape | both | [`./data-access-and-security.md`](./data-access-and-security.md) |
 | `scopes[]` | What Tenant data you may read/write | both | [`./data-access-and-security.md`](./data-access-and-security.md) |
-| **`menu`** | The **okta-web sidebar entry** + landing route | platform surface | [`./web-surface.md`](./web-surface.md) |
-| **`mobile`** | The **okta-app catalog card** + how it launches | client surface | [`./app-surface.md`](./app-surface.md) |
+| **`menu`** | The **okta-web sidebar entry** + landing route (supports per-account-type `menu.audiences[]`) | platform surface | [`./web-surface.md`](./web-surface.md) |
+| **`mobile`** | The **okta-app catalog card(s)** + how they launch; `audiences[]` maps each account type (tenant roles or student/guardian portal) to its own entry | client surface | [`./app-surface.md`](./app-surface.md) |
 | `rbac_permissions` | Permissions created on install + granted to roles | platform surface | [`./web-surface.md`](./web-surface.md#6-permissions-rbac) |
 | `notifications[]` | The notification types your app may emit (via the host) | both | [`./data-access-and-security.md`](./data-access-and-security.md) |
 | `database` | Declares your owned schema + migrations the platform tracks/runs | both | [`./data-access-and-security.md`](./data-access-and-security.md#owning-data) |
 | `external` (external apps only) | `webhookUrl` + `webhookEvents[]` (+ `redirectUrls[]`) | external | [`../../claude/web.md`](../../claude/web.md) |
+| `pricing` (paid apps) | Billing cycles + prices per country/tenant type (managed from the okta-partners pricing matrix) | marketplace | [`../../claude/partners.md`](../../claude/partners.md) |
+| `aiSupport` / `aiMode` | Opts the app into the platform AI agent (`ai/agent/*` runtime; sandbox auto-approves) | both | [`../../claude/web.md`](../../claude/web.md) |
+| `notification` (notification providers) / `payment` (payment providers) | Provider-type contracts: channels + delivery / methods + delivery + capabilities | provider apps | [`../../claude/partners.md`](../../claude/partners.md) |
 
 ---
 
@@ -96,9 +107,15 @@ okta-web) on publish/install. For the complete contract and package structure, s
   `read`/`write` only — never `delete`.
 - `integrationType` coherence: `embedded` must **not** carry an `external` block;
   `external` **requires** `external.webhookUrl` (HTTPS) + `webhookEvents[]`;
-  `notification` requires its `notification` block.
+  `notification` requires its `notification` block; `payment` requires its
+  `payment` block (methods, delivery, capabilities — custom methods are
+  cross-checked bidirectionally).
 - `mobile`: when `mode: embedded`, `entry` must be a path under `mobile/`
   (re-checked at render time — must `realpath` inside `<module>/mobile/`, no `..`).
+- `mobile.audiences[]`: each audience declares `kind` (`primary` | `dependent`)
+  and **either** tenant `roles[]` **or** a `portal` (`student` | `guardian`) —
+  never both; each needs a resolvable `mode` + `entry` (block-level values act
+  as defaults).
 - `database.migrations[].version` is a timestamp; each migration has `path` XOR
   `sql_up`.
 
