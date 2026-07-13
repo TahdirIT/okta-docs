@@ -13,7 +13,7 @@
 ### الأعمدة من الحزمة
 
 - **id**: `bigint` (PK)
-- **name**: `varchar` (اسم الدور، مثل: `superadmin`, `admin`, `teacher`)
+- **name**: `varchar` (اسم الدور، مثل: `superadmin`, `tenant-admin`, `finance-admin`)
 - **guard_name**: `varchar` (الحارس، عادة `web`)
 - **team_id**: `bigint` nullable (من ميزة Teams في الحزمة - يمثل `tenant_id`)
 - **created_at** / **updated_at**: `timestamptz`
@@ -60,36 +60,29 @@
 
 - الأدوار على مستوى النظام لا يمكن ربطها بمستأجر
 - الأدوار على مستوى المستأجر يجب أن تكون مرتبطة بمستأجر
-- لا يمكن حذف الأدوار الثابتة (`superadmin`, `platform-admin`, `tenant-admin`, `reviewer`, `member`)
+- لا تُحذف الأدوار الثابتة المبذورة (`superadmin`, `finance-admin`, `tenant-admin`)
 - لا يمكن حذف دور مرتبط بمستخدمين (Soft Delete)
 
-## الأدوار الثابتة
+## الأدوار الثابتة (كما يبذرها okta-web)
 
-### على مستوى النظام
+المصدر الكنسي لكل أسماء الأدوار وترتيبها:
+[`roles-and-entities/role-scopes.md`](../../../../roles-and-entities/role-scopes.md).
+يبذر `RoleSeeder` ثلاثة أدوار ثابتة فقط، ويضيف `CrmRolesSeeder` أدوار CRM
+النظامية (`crm_*`):
 
-- **superadmin**: المدير العام للنظام
-  - يملك جميع صلاحيات `scope = system`
-  - لا يمكن حذفه
-  - يمكن إضافة أدوار جديدة على مستوى النظام
+### على مستوى النظام (System)
+- **superadmin**: يملك جميع صلاحيات `scope = system`.
+- **finance-admin**: يملك `finance.%` فقط.
 
-- **platform-admin**: مدير المنصة
-  - يملك صلاحيات `rbac.*` + `tenants.*`
-  - لا يمكن حذفه
+### على مستوى المستأجر (Tenant)
+- **tenant-admin**: مسؤول الكيان؛ يُمنح عبر أنماط الـ seeder
+  (`users.%`, `roles.*`, `tenants.members.%`, `landing.%`, `notifications.%`,
+  `payments.%`, `messaging.%`, …).
 
-### على مستوى المستأجر
-
-- **tenant-admin**: مسؤول الكيان التعليمي
-  - يملك `users.*` + `roles.assign/revoke` + `tenants.members.*`
-  - لا يمكن حذفه
-  - يمكن إضافة أدوار مخصصة لمستأجره
-
-- **reviewer**: مراجع
-  - يملك جميع صلاحيات `*.view` (tenant)
-  - لا يمكن حذفه
-
-- **member**: عضو عادي
-  - يملك `users.view` فقط
-  - لا يمكن حذفه
+> `platform-admin` أُزيل بترحيل، و`reviewer`/`member` أُسقِطا بترحيل (أُعيد
+> إسنادهما إلى `tenant-admin`). أدوار المستخدم النهائي (`administrator` كمجموعات
+> لكل جهة، `teacher`، و`student`/`guardian` بنطاق `general` لكل جهة،
+> `guardian-delegate`) تُنشأ/تُسنَد ديناميكياً — ليست أدواراً ثابتة مبذورة.
 
 ## الاستخدام
 

@@ -60,20 +60,26 @@
 
 ### الأدوار الثابتة المُنفّذة
 
+المصدر الكنسي لكل الأدوار:
+[`roles-and-entities/role-scopes.md`](../../../roles-and-entities/role-scopes.md).
+يبذر `RoleSeeder` ثلاثة أدوار (و`CrmRolesSeeder` أدوار `crm_*` نظامية).
+
 #### على مستوى النظام (System Scope)
 
 | الدور | الصلاحيات |
 |---|---|
 | `superadmin` | جميع صلاحيات `scope = system` |
-| `platform-admin` | `rbac.*` + `tenants.*` (system) |
+| `finance-admin` | `finance.%` |
 
 #### على مستوى المستأجر (Tenant Scope)
 
 | الدور | الصلاحيات |
 |---|---|
-| `tenant-admin` | `users.*` + `roles.assign/revoke` + `tenants.members.*` |
-| `reviewer` | جميع صلاحيات `*.view` (tenant) |
-| `member` | `users.view` فقط |
+| `tenant-admin` | `users.%` + `roles.*` + `tenants.members.%` + `landing.%` + `notifications.%` + `payments.%` + `messaging.%` … |
+
+> `platform-admin` أُزيل بترحيل، و`reviewer`/`member` أُسقِطا. أدوار المستخدم
+> النهائي (`administrator`، `teacher`، `student`، `guardian`،
+> `guardian-delegate`) ديناميكية لكل جهة، لا أدواراً ثابتة.
 
 > **ملاحظة:** الأدوار القوالب تُخزَّن بـ `tenant_id = null`. عند تعيين دور لمستخدم داخل مستأجر يُسجَّل الـ `tenant_id` في جدول `model_has_roles` عبر ميزة Teams في spatie/laravel-permission.
 

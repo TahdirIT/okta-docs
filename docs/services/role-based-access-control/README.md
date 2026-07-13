@@ -5,16 +5,19 @@
 `spatie/laravel-permission` (مع `teams` تمثّل المستأجرين) فوق
 `spatie/laravel-multitenancy`.
 
-> ⚠️ **المصدر الكنسي لأسماء الأدوار:**
-> [`roles-and-entities/role-scopes.md`](../../roles-and-entities/role-scopes.md)
-> هو مرجع الحقيقة لأسماء الأدوار وترتيبها (الأدوار الثابتة في okta-web:
-> `superadmin`, `tenant-admin`, `finance-admin`؛ وأدوار المستخدم النهائي
-> `administrator` / `teacher` / `student` / `guardian` / `guardian-delegate`).
-> **تنبيه اتساق:** بعض ملفات هذا المجلد تعرض مجموعتَي أدوار قديمتين متعارضتين
-> (مثل `reviewer`/`member` مقابل `admin`/`teacher`/`student`) وصيغ صلاحيات
-> تخالف [معيار تسمية الصلاحيات](../../tech-standards/permissions-naming.md)
-> (wildcards و`manage`). عند التعارض قدّم `roles-and-entities` والمعيار.
-> توحيد هذه الملفات مُدرَج كعمل لاحق.
+> **المصدر الكنسي لأسماء الأدوار:**
+> [`roles-and-entities/role-scopes.md`](../../roles-and-entities/role-scopes.md).
+> الأدوار الثابتة المبذورة في okta-web ثلاثة: `superadmin` و`finance-admin`
+> (نظام) و`tenant-admin` (مستأجر) — بالإضافة إلى أدوار CRM النظامية (`crm_*`).
+> أدوار المستخدم النهائي (`administrator` كمجموعات لكل جهة، `teacher`،
+> `student`/`guardian` بنطاق `general`، `guardian-delegate`) تُسنَد ديناميكياً
+> لكل جهة، وليست أدواراً ثابتة.
+>
+> تمّت **مواءمة هذا المجلد مع كود okta-web** (يوليو 2026): أُزيلت الأدوار
+> الوهمية (`platform-admin` مُزال بترحيل، و`reviewer`/`member` مُسقَطان)، وصُحِّح
+> القيد الفريد للصلاحيات إلى `unique(name, guard_name, scope)`، وأُكملت قائمة
+> الـ middleware الفعلية، وأُزيلت صلاحيات wildcard الوهمية (`rbac.*`) بما يوافق
+> [معيار تسمية الصلاحيات](../../tech-standards/permissions-naming.md).
 
 ## المحتوى
 

@@ -19,23 +19,24 @@
 
 ### الأعمدة الإضافية المضافة للمشروع
 
-- **scope**: `varchar` (`system` | `tenant`) - نطاق الصلاحية
-- **tenant_id**: `bigint` nullable (FK إلى `tenants`) - للمستأجر المرتبط بالصلاحية
+- **scope**: `varchar` (`system` | `tenant`، الافتراضي `tenant`) - نطاق الصلاحية
 - **title_ar**: `varchar` nullable - عنوان الصلاحية بالعربية للعرض
 - **title_en**: `varchar` nullable - عنوان الصلاحية بالإنجليزية للعرض
 - **deleted_at**: `timestamptz` nullable (Soft Deletes)
 
+> **مهم:** جدول `permissions` **لا يحمل عمود `tenant_id`** — التعريف عالمي
+> ومقيَّد بالـ `scope` فقط. مفتاح المستأجر (`tenant_id`، ميزة Teams) يعيش على
+> جداول الربط `model_has_roles` / `model_has_permissions`، لا على `permissions`.
+
 ## العلاقات
 
-- **belongsTo**: `Tenant` (via `tenant_id`)
 - **belongsToMany**: `Role` (via `role_has_permissions`)
 - **morphToMany**: `User` (via `model_has_permissions`)
 
 ## الفهارس/القيود
 
-- **unique**: (`name`, `guard_name`, `scope`, `tenant_id`) - يضمن عدم تكرار الصلاحية في نفس النطاق والمستأجر
+- **unique**: (`name`, `guard_name`, `scope`) - القيد الفعلي في okta-web (migration `extend_permissions_table_for_scope`).
 - **index**: (`scope`)
-- **index**: (`tenant_id`)
 - **index**: (`deleted_at`)
 
 ## القواعد

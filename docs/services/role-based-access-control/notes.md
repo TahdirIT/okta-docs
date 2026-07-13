@@ -11,20 +11,26 @@
 - كل صلاحية أو دور يملك عنوان (`title_ar` / `title_en`, nullable) يُعرض للمستخدمين في الواجهة.
 - **الأدوار القوالب** تُخزَّن بـ `tenant_id = null`؛ التعيين الفعلي للمستأجر يتم في `model_has_roles.tenant_id`.
 
-## الأدوار المُنفَّذة
+## الأدوار المُنفَّذة (المبذورة)
+
+`RoleSeeder` يبذر ثلاثة أدوار ثابتة (و`CrmRolesSeeder` أدوار `crm_*` نظامية).
+المصدر الكنسي لكل الأدوار:
+[`roles-and-entities/role-scopes.md`](../../roles-and-entities/role-scopes.md).
 
 ### System Scope
 | الدور | الصلاحيات |
 |---|---|
 | `superadmin` | جميع صلاحيات `scope = system` |
-| `platform-admin` | `rbac.*` + `tenants.*` |
+| `finance-admin` | `finance.%` |
 
 ### Tenant Scope
 | الدور | الصلاحيات |
 |---|---|
-| `tenant-admin` | `users.*` + `roles.assign/revoke` + `tenants.members.*` |
-| `reviewer` | `*.view` (tenant) |
-| `member` | `users.view` |
+| `tenant-admin` | `users.%` + `roles.*` + `tenants.members.%` + `tenants.children.%` + `landing.%` + `notifications.%` + `payments.%` + `messaging.%` + `settings.notifications.%` + `tenant.profile.manage` |
+
+> `platform-admin` أُزيل بترحيل، و`reviewer`/`member` أُسقِطا. أدوار المستخدم
+> النهائي (`administrator` مجموعات لكل جهة، `teacher`، `student`/`guardian`
+> بنطاق `general`، `guardian-delegate`) ديناميكية لكل جهة — ليست ثابتة.
 
 ## السياق (Context)
 

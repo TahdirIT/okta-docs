@@ -28,10 +28,9 @@
 - `title_en`: `varchar` nullable - عنوان الصلاحية بالإنجليزية للعرض
 - `deleted_at`: `timestamptz` nullable (Soft Deletes)
 
-**القيود:**
-- `unique(['name', 'guard_name', 'scope', 'tenant_id'])` - يضمن عدم تكرار الصلاحية في نفس النطاق والمستأجر
+**القيود (كما هي في okta-web):**
+- `unique(['name', 'guard_name', 'scope'])` - القيد الفعلي (migration `extend_permissions_table_for_scope`). لا يدخل `tenant_id` في القيد الفريد للصلاحيات.
 - `index(['scope'])`
-- `index(['tenant_id'])`
 
 ### 2) `roles`
 
@@ -39,7 +38,7 @@
 
 **الأعمدة الأساسية من الحزمة:**
 - `id`: `bigint` (PK)
-- `name`: `varchar` (اسم الدور، مثل: `superadmin`, `admin`, `teacher`)
+- `name`: `varchar` (اسم الدور، مثل: `superadmin`, `tenant-admin`, `finance-admin`)
 - `guard_name`: `varchar` (الحارس، عادة `web`)
 - `team_id`: `bigint` nullable (من ميزة Teams في الحزمة - يمثل `tenant_id`)
 - `created_at` / `updated_at`: `timestamptz`
@@ -101,18 +100,27 @@
 **القيود:**
 - Primary key: `['permission_id', 'role_id']`
 
-## الأدوار الثابتة (Fixed Roles)
+## الأدوار الثابتة (Fixed/Seeded Roles)
+
+الأدوار الثابتة التي يبذرها `RoleSeeder` في okta-web هي **ثلاثة فقط**:
 
 ### على مستوى النظام (System Scope)
-- `superadmin` - المدير العام للنظام، يملك جميع صلاحيات `scope = system`
-- `platform-admin` - مدير المنصة، يملك صلاحيات `rbac.*` + `tenants.*`
+- `superadmin` - يملك **جميع** صلاحيات `scope = system`.
+- `finance-admin` - يملك `finance.%` فقط (وصول كامل للنظام المالي دون superadmin).
 
 ### على مستوى المستأجر (Tenant Scope)
-- `tenant-admin` - مسؤول الكيان التعليمي، يدير الأعضاء والأدوار داخل المستأجر
-- `reviewer` - مراجع، يملك صلاحيات `*.view` فقط
-- `member` - عضو عادي، يملك `users.view` فقط
+- `tenant-admin` - مسؤول الكيان التعليمي؛ يُمنح عبر نمط في الـ seeder:
+  `users.%` + `roles.{assign,revoke,view,create,update,delete}` + `tenant.profile.manage`
+  + `tenants.members.%` + `tenants.children.%` + `landing.%` + `notifications.%`
+  + `payments.%` + `messaging.%` + `settings.notifications.%`.
 
-> جميع الأدوار القوالب تُخزَّن بـ `tenant_id = null`. التعيين الفعلي للمستخدم يتم عبر `model_has_roles.tenant_id` (ميزة Teams).
+> **ملاحظة:** `platform-admin`/`reviewer`/`member` و`admin`/`teacher`/`student`
+> **ليست** أدواراً ثابتة مبذورة. أدوار المستخدم النهائي داخل الجهة (administrator،
+> teacher، student، guardian، guardian-delegate) تُعرَّف وتُسنَد لكل جهة، ومصدرها
+> الكنسي [`roles-and-entities/role-scopes.md`](../../../roles-and-entities/role-scopes.md).
+
+> الأدوار على مستوى النظام تُخزَّن بـ `team_id = null`؛ الأدوار على مستوى المستأجر
+> تُسنَد عبر `model_has_roles` مع `team_id = tenant_id` (ميزة Teams).
 
 ## العلاقات
 

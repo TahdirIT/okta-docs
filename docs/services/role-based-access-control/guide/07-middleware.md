@@ -58,14 +58,15 @@ Route::middleware(['auth', 'active-roles'])->group(function () {
 });
 ```
 
-### 4. CheckPermission
+### 4. CheckPermission (alias: `permission`)
 
 **الغرض:** التحقق من صلاحية محددة للمستخدم.
 
 **السلوك:**
-- يتحقق من وجود صلاحية محددة في الصلاحيات النشطة للمستخدم
-- يتم التحقق من الصلاحيات المحفوظة في الجلسة (`permission_names`)
-- إذا لم تكن الصلاحية موجودة، يتم إرجاع خطأ 403
+- يتحقق من امتلاك المستخدم للصلاحية المطلوبة عبر `spatie/laravel-permission`،
+  مُقيَّمةً ضمن **team = tenant الحالي** (لا توجد قائمة `permission_names` في
+  الجلسة — الصلاحيات تُحسَب من أدوار المستخدم تحت الـ team النشط).
+- إذا لم تكن الصلاحية موجودة، يتم إرجاع خطأ 403.
 
 **الاستخدام:**
 ```php
@@ -74,59 +75,52 @@ Route::middleware(['auth', 'permission:users.create'])->group(function () {
 });
 ```
 
-## Middleware لإدارة Teams (spatie/laravel-permission)
+> لا يوجد alias باسم `role`. للتحقق على مستوى المستأجر تحديداً تتوفّر أيضاً
+> `tenant.permission` (`EnsureTenantPermission`) و`tenant.role`
+> (`EnsureTenantRole`) و`tenant.scope` (`EnsureTenantScope`).
 
-### SetPermissionsTeamId Middleware (مقترح)
+### 5. الوسائط الإضافية المسجَّلة (aliases فعلية)
 
-**الغرض:** إدارة `team_id` في حزمة `spatie/laravel-permission` بناءً على سياق المستأجر.
+من `bootstrap/app.php` (نمط Laravel 12، لا يوجد `Http/Kernel.php`):
 
-**السلوك:**
-- إذا كان السياق على مستوى المستأجر:
-  - يتم استدعاء `setPermissionsTeamId($tenantId)` لتعيين معرف المستأجر كـ team_id
-- إذا كان السياق على مستوى النظام:
-  - يتم استدعاء `setPermissionsTeamId(null)` لإزالة team_id
-- عند تغيير المستأجر:
-  - يتم استدعاء `forgetCachedPermissions()` لمسح ذاكرة التخزين المؤقت
+| alias | الصنف | الغرض |
+|---|---|---|
+| `context` | `EnsureContext` | وجود سياق نشط |
+| `active-user` | `EnsureActiveUser` | المستخدم نشط (غير معلَّق) |
+| `active-tenant-context` | `EnsureActiveTenantContext` | صحة سياق المستأجر |
+| `active-roles` | `EnsureActiveRoles` | وجود أدوار نشطة |
+| `permission` | `CheckPermission` | صلاحية محددة |
+| `tenant.permission` | `EnsureTenantPermission` | صلاحية بنطاق المستأجر |
+| `tenant.role` | `EnsureTenantRole` | دور بنطاق المستأجر |
+| `tenant.scope` | `EnsureTenantScope` | فرض نطاق المستأجر |
 
-**التكامل مع EnsureActiveTenantContext:**
+## إدارة Teams (spatie/laravel-permission) — الآلية الفعلية
 
-يمكن دمج هذا Middleware مع `EnsureActiveTenantContext` أو إنشاؤه كـ Middleware منفصل يتم تنفيذه قبل التحقق من الصلاحيات.
+الحزمة مُفعَّل فيها `teams => true` مع `team_foreign_key => 'tenant_id'` و
+`team_resolver => App\Permission\TenantTeamResolver`. **لا يوجد alias باسم
+`SetPermissionsTeamId`**؛ يُدار الـ team id تلقائياً لا يدوياً عبر route:
 
-**مثال التطبيق:**
-```php
-public function handle(Request $request, Closure $next)
-{
-    $context = session('context');
-    
-    if ($context && $context['scope'] === 'tenant' && $context['tenant_id']) {
-        // Set team ID for tenant context
-        app(\Spatie\Permission\PermissionRegistrar::class)->setPermissionsTeamId($context['tenant_id']);
-    } else {
-        // Remove team ID for system context
-        app(\Spatie\Permission\PermissionRegistrar::class)->setPermissionsTeamId(null);
-    }
-    
-    // Check if tenant changed
-    $previousTenantId = session('previous_tenant_id');
-    if ($previousTenantId !== ($context['tenant_id'] ?? null)) {
-        app(\Spatie\Permission\PermissionRegistrar::class)->forgetCachedPermissions();
-        session(['previous_tenant_id' => $context['tenant_id'] ?? null]);
-    }
-    
-    return $next($request);
-}
-```
+- الوسيط العالمي `App\Http\Middleware\SyncSpatieTenantFromSessionContext`
+  (مُلحَق عالمياً في `bootstrap/app.php`) يستدعي `Tenant::makeCurrent()` من
+  `session('context.tenant_id')`.
+- `makeCurrent()` يُطلق مهمة تعدد المستأجرين
+  `App\Multitenancy\Tasks\SyncPermissionTeamTask` التي تنادي
+  `setPermissionsTeamId($tenant->getKey())` (و`null` عند `forgetCurrent()`).
+- `TenantTeamResolver::getPermissionsTeamId()` يحلّ: `setPermissionsTeamId()`
+  الصريح ← `Tenant::current()` ← `session('context.tenant_id')`.
+- الخدمات التي تكتب أدواراً (مثل `SelectRoleService`) تستدعي
+  `setPermissionsTeamId()` صراحةً حول الكتابة.
 
 ## ترتيب تنفيذ Middleware
 
-الترتيب الموصى به في `bootstrap/app.php`:
+الترتيب الفعلي (مبسّط) في `bootstrap/app.php`:
 
 1. **SetLocale** - تعيين اللغة
-2. **EnsureContext** - التحقق من وجود سياق
-3. **SetPermissionsTeamId** (مقترح) - تعيين team_id بناءً على السياق
+2. **SyncSpatieTenantFromSessionContext** (عالمي) - ضبط team id من السياق
+3. **EnsureContext** - التحقق من وجود سياق
 4. **EnsureActiveTenantContext** - التحقق من صحة سياق المستأجر
 5. **EnsureActiveRoles** - التحقق من وجود أدوار نشطة
-6. **CheckPermission** - التحقق من صلاحيات محددة
+6. **CheckPermission** / `tenant.permission` - التحقق من صلاحيات محددة
 
 ## التكامل مع spatie/laravel-permission
 
