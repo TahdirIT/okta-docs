@@ -1,6 +1,0 @@
-from: register-tenant
-description: Guided wizard to register a new entity and owner account.
-relations:
-  - to: auth.finish-tenant-registration
-    relation: form
-

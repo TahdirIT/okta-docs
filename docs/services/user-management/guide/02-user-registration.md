@@ -33,5 +33,5 @@
 
 - `app/Services/UserManagement/Users/RegisterUser.php`
 
-> تفاصيل قائمة الوظائف: `docs/services/user-management/tech/service_functions.md`
+> تفاصيل قائمة الوظائف: `docs/services/user-management/tech/service-functions.md`
 

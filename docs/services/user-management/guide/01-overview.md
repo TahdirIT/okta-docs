@@ -15,7 +15,7 @@
 - **إكمال بيانات ناقصة**: إذا كان لدى المستخدم حساب موجود لكن تنقصه بيانات إلزامية حسب إعدادات الدولة.
 
 > ملاحظة: قواعد إلزامية الهوية/الجوال/البريد أثناء التسجيل تعتمد على إعدادات الدولة (Country) في:
-> - `docs/services/contries-management/guide/entity-registration-customizations.md`
+> - `docs/services/countries-management/guide/entity-registration-customizations.md`
 
 ## التكامل مع خدمة التحكم في الوصول (RBAC)
 

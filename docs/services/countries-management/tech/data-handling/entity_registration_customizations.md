@@ -14,8 +14,8 @@
   - إلزامية الإدخال عند الظهور
   - التحقق/القيود (Validations) مثل: عدة Regex مع رسائل خطأ متعددة اللغات، وحدود min/max حسب النوع
 
-> المرجع الوظيفي/المنتجي: `docs/services/contries-management/guide/entity-registration-customizations.md`  
-> المرجع UX: `docs/services/contries-management/user-experience/entity-registration-customizations-ux.md`
+> المرجع الوظيفي/المنتجي: `docs/services/countries-management/guide/entity-registration-customizations.md`  
+> المرجع UX: `docs/services/countries-management/user-experience/entity-registration-customizations-ux.md`
 
 ## أين تُخزّن؟
 

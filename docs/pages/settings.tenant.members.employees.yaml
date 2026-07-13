@@ -1,6 +1,0 @@
-from: settings.tenant.members.employees
-description: Tenant members management - Employees list, roles, and membership management page.
-relations:
-  - to: settings.tenant.members
-    relation: navigation
-

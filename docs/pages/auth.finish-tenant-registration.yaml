@@ -1,6 +1,0 @@
-from: auth.finish-tenant-registration
-description: Finalizes entity registration and signs in the owner to continue.
-relations:
-  - to: auth.context
-    relation: navigation
-

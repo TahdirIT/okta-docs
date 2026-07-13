@@ -1,6 +1,0 @@
-from: two-factor.show
-description: Configure two-factor authentication settings for enhanced account security.
-relations:
-  - to: account.index
-    relation: parent-child
-

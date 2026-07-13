@@ -26,5 +26,5 @@
 
 - مفهوم "تحقق الجوال/البريد" يتم تمثيله عبر `user_identifiers.verified_at` لكل Identifier (راجع: `user_identifiers.md`).
 - في سياق `tenant-registration`، تقييد الاستخدام قبل التفعيل يعتمد على إلزامية القنوات حسب إعدادات الدولة في:
-  - `docs/services/contries-management/guide/entity-registration-customizations.md`
+  - `docs/services/countries-management/guide/entity-registration-customizations.md`
 

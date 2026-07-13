@@ -5,5 +5,5 @@
 ## الملفات
 
 - [نماذج البيانات (Models)](./models/README.md)
-- [وظائف/Use-cases الخدمة](./service_functions.md)
+- [وظائف/Use-cases الخدمة](./service-functions.md)
 

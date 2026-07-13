@@ -1,6 +1,0 @@
-from: settings.country.academic-years
-description: Define academic years and terms for the selected country.
-relations:
-  - to: settings.countries
-    relation: parent-child
-

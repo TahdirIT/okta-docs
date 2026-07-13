@@ -21,7 +21,7 @@ apps) تُثبَّت لكل جهة من المتجر ولها مستودعاته
 | تسجيل الكيان | تسجيل جهة جديدة وإنشاء حساب المالك | [`tenant-registration/`](tenant-registration/) |
 | إدارة منسوبي الجهة | الطلاب والموظفون وأولياء الأمور داخل الجهة | [`tenant-members-management/`](tenant-members-management/overview.md) |
 | الأدوار والصلاحيات (RBAC) | الأدوار، الصلاحيات، النطاقات، تبديل السياق | [`role-based-access-control/`](role-based-access-control/) |
-| إدارة الدول | الدول والمناطق والمراحل والتقويم والمواد والأعوام الدراسية | [`contries-management/`](contries-management/) |
+| إدارة الدول | الدول والمناطق والمراحل والتقويم والمواد والأعوام الدراسية | [`countries-management/`](countries-management/) |
 | الإشعارات | مركز الإشعارات والقنوات والقوالب | [`notifications-management/`](notifications-management/overview.md) |
 | خدمة OTP | إرسال والتحقق من رموز التحقق (مفاهيمي) | [`otp-service/`](otp-service/guide/README.md) |
 | منشئ صفحة الهبوط | محرّر الموقع العام لكل جهة | [`landing-builder/`](landing-builder/README.md) |
@@ -29,14 +29,10 @@ apps) تُثبَّت لكل جهة من المتجر ولها مستودعاته
 
 ## قدرات تُقدَّم كتطبيقات مثبَّتة (لا خدمات جوهرية)
 
-هذه القدرات لم تعد موديولات داخل `okta-web` — بل **تطبيقات شريكة مثبَّتة** لكل
-مستودعها الخاص، تُثبَّت من المتجر:
-
-| القدرة | التطبيق المثبَّت | التوثيق |
-|---|---|---|
-| إدارة الاختبارات النهائية | `okta-exams` | [`exams-management/`](exams-management/overview.md) · [`claude/installed-apps.md`](../../claude/installed-apps.md) |
-| الجدول الدراسي الذكي | `okta-smart-timetable` | [`claude/installed-apps.md`](../../claude/installed-apps.md) |
-| الحضور والانصراف | `okta-hdor` | [`claude/installed-apps.md`](../../claude/installed-apps.md) |
+قدرات مثل **الاختبارات** و**الجدول الدراسي** و**الحضور** لم تعد موديولات داخل
+`okta-web` — بل **تطبيقات شريكة مثبَّتة** لكل مستودعها الخاص. توثيقها انتقل إلى
+مجلد مستقل: [`../installed-apps/`](../installed-apps/README.md)
+(`okta-exams` · `okta-smart-timetable` · `okta-hdor`).
 
 > قدرات أخرى وردت تاريخياً في قائمة «الخدمات الأساسية» (الدرجات، السلوك،
 > الأعذار، النداء، الإجازات…) لم تُفرَد بعد بمجلد توثيق مستقل؛ تُضاف هنا عند

@@ -27,8 +27,8 @@
 
 هذه الخدمة تعتمد على إعدادات يتم إدارتها ضمن:
 
-- `docs/services/contries-management/guide/entity-registration-customizations.md`
-- `docs/services/contries-management/guide/stages-management.md`
+- `docs/services/countries-management/guide/entity-registration-customizations.md`
+- `docs/services/countries-management/guide/stages-management.md`
 
 وبشكل خاص:
 

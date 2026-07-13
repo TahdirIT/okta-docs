@@ -8,7 +8,7 @@
 
 المرجع الخاص بتخصيصات الدولة:
 
-- `docs/services/contries-management/guide/entity-registration-customizations.md`
+- `docs/services/countries-management/guide/entity-registration-customizations.md`
 
 ## الهدف
 
@@ -50,7 +50,7 @@
 
 قائمة **مجاميع المراحل التعليمية** تُستمد من إعدادات الدولة وفق المفهوم الموضح في:
 
-- `docs/services/contries-management/guide/stages-management.md`
+- `docs/services/countries-management/guide/stages-management.md`
 
 ### تجربة الاختيار
 

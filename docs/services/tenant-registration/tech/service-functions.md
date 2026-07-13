@@ -14,7 +14,7 @@
   - `stages` (اختياري): قائمة/شجرة مراحل الدولة لاستخدامها عند اختيار نوع كيان يتطلب مرحلة
 
 > ملاحظة: المراحل مبنية على مفهوم “إدارة المراحل” في:
-> `docs/services/contries-management/guide/stages-management.md`
+> `docs/services/countries-management/guide/stages-management.md`
 
 ## 2) تسجيل كيان جديد
 

@@ -50,5 +50,5 @@
 - Use-case:
   - `app/Services/UserManagement/Credentials/UpdateUserPassword.php`
 
-> الفهرس الكامل: `docs/services/user-management/tech/service_functions.md`
+> الفهرس الكامل: `docs/services/user-management/tech/service-functions.md`
 

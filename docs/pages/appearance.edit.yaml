@@ -1,6 +1,0 @@
-from: appearance.edit
-description: Adjust personal appearance settings such as theme or layout preferences.
-relations:
-  - to: account.index
-    relation: parent-child
-

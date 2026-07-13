@@ -1,6 +1,0 @@
-from: settings.country.subjects
-description: Configure subjects available within the country’s education system.
-relations:
-  - to: settings.countries
-    relation: parent-child
-

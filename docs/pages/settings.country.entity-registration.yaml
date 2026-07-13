@@ -1,6 +1,0 @@
-from: settings.country.entity-registration
-description: Configure custom fields and requirements for entity registration in the country.
-relations:
-  - to: settings.countries
-    relation: parent-child
-

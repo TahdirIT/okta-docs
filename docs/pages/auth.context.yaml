@@ -1,6 +1,0 @@
-from: auth.context
-description: Context selection page where users choose tenant or system role to proceed.
-relations:
-  - to: dashboard
-    relation: form
-

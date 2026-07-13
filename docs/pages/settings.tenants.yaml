@@ -1,6 +1,0 @@
-from: settings.tenants
-description: Tenant management hub to create, edit, and manage tenants on the platform.
-relations:
-  - to: settings.tenant.members
-    relation: parent-child
-

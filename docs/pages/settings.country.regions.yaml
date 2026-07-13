@@ -1,6 +1,0 @@
-from: settings.country.regions
-description: Manage a country’s regions and cities sourced from world data.
-relations:
-  - to: settings.countries
-    relation: parent-child
-

@@ -1,6 +1,0 @@
-from: login-identifiers.show
-description: Manage login identifiers such as username, email, phone, or national ID.
-relations:
-  - to: account.index
-    relation: parent-child
-

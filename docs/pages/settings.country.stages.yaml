@@ -1,6 +1,0 @@
-from: settings.country.stages
-description: Configure education level groups and stages for a specific country.
-relations:
-  - to: settings.countries
-    relation: parent-child
-

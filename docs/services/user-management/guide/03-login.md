@@ -19,5 +19,5 @@
 - `app/Services/UserManagement/Auth/LogoutUser.php`
 - `app/Services/UserManagement/Auth/RefreshSession.php` (إن كان أسلوب المصادقة يدعم refresh)
 
-> تفاصيل قائمة الوظائف: `docs/services/user-management/tech/service_functions.md`
+> تفاصيل قائمة الوظائف: `docs/services/user-management/tech/service-functions.md`
 

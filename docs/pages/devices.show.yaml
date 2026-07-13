@@ -1,6 +1,0 @@
-from: devices.show
-description: Review and manage devices associated with the user’s account.
-relations:
-  - to: account.index
-    relation: parent-child
-

@@ -6,9 +6,9 @@
 
 - بيانات الدولة + إعداداتها (Country settings)
 - إعدادات “تخصيصات تسجيل الكيان” على مستوى الدولة:
-  - `docs/services/contries-management/guide/entity-registration-customizations.md`
+  - `docs/services/countries-management/guide/entity-registration-customizations.md`
 - إعدادات “المراحل” على مستوى الدولة (عند الحاجة لاختيار مرحلة):
-  - `docs/services/contries-management/guide/stages-management.md`
+  - `docs/services/countries-management/guide/stages-management.md`
 
 ## مدخلات التسجيل
 

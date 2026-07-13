@@ -19,5 +19,5 @@
 - [تحديث بيانات المستخدم (User Update)](./guide/04-user-update.md)
 - [Tech](./tech/README.md)
 - [نماذج البيانات (Models)](./tech/models/README.md)
-- [وظائف/Use-cases الخدمة](./tech/service_functions.md)
+- [وظائف/Use-cases الخدمة](./tech/service-functions.md)
 

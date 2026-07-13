@@ -1,6 +1,0 @@
-from: settings.country.calendar
-description: Manage academic calendar settings and holidays for the country.
-relations:
-  - to: settings.countries
-    relation: parent-child
-

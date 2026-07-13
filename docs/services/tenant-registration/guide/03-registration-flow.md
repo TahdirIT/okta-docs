@@ -6,7 +6,7 @@
 
 - القائمة المرجعية لأنواع الكيانات وترتيبها مذكورة في `docs/roles-and-entities/tenants.md`.
 - إعدادات الدولة الخاصة بالتسجيل موثقة في:
-  - `docs/services/contries-management/guide/entity-registration-customizations.md`
+  - `docs/services/countries-management/guide/entity-registration-customizations.md`
 
 ## 1) اختيار الدولة (Country)
 
@@ -38,7 +38,7 @@
 
 قائمة **مجاميع المراحل التعليمية** تكون من “إعدادات الدولة” حسب المفهوم الموضح في:
 
-- `docs/services/contries-management/guide/stages-management.md`
+- `docs/services/countries-management/guide/stages-management.md`
 
 > الهدف: ربط الكيان الجديد بـ **مجموعة مراحل** مناسبة بحسب هيكلة الدولة (KG/Grades/…)، مثل: ابتدائي/متوسط/ثانوي.
 
@@ -61,7 +61,7 @@
 
 المرجع التفصيلي للأنواع والـ schema:
 
-- `docs/services/contries-management/guide/entity-registration-customizations.md`
+- `docs/services/countries-management/guide/entity-registration-customizations.md`
 
 ## 6) هل لديك حساب مسبق على المنصة؟
 

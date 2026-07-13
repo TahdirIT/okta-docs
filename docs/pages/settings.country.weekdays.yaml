@@ -1,6 +1,0 @@
-from: settings.country.weekdays
-description: Configure the working weekdays and weekend days for the country.
-relations:
-  - to: settings.countries
-    relation: parent-child
-

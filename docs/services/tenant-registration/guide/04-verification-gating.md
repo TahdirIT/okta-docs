@@ -31,7 +31,7 @@
 
 هذه القواعد يجب أن تُستمد من:
 
-- `docs/services/contries-management/guide/entity-registration-customizations.md`
+- `docs/services/countries-management/guide/entity-registration-customizations.md`
 
 ### 3) “الإلزامي = كامل” (ليس جزئياً)
 

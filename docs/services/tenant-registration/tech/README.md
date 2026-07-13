@@ -7,5 +7,5 @@
 - [نظرة عامة على المعالجة](./data-handling/overview.md)
 - [نماذج البيانات (Models)](./models/README.md)
 - [الصلاحيات (إن وجدت)](./permissions.md)
-- [وظائف/Endpoints الخدمة](./service_functions.md)
+- [وظائف/Endpoints الخدمة](./service-functions.md)
 

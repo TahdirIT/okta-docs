@@ -1,6 +1,0 @@
-from: settings.tenant.members.guardians
-description: Tenant members management - Guardians list and linking management page.
-relations:
-  - to: settings.tenant.members
-    relation: navigation
-

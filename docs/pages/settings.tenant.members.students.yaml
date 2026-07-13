@@ -1,6 +1,0 @@
-from: settings.tenant.members.students
-description: Tenant members management - Students list and management page.
-relations:
-  - to: settings.tenant.members
-    relation: navigation
-

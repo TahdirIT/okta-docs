@@ -2,7 +2,7 @@
 
 يوضح هذا المستند تجربة المستخدم (UX) لصفحة **تخصيصات تسجيل الكيان** ضمن إعدادات الدولة، والمبنية على الدليل:
 
-- `docs/services/contries-management/guide/entity-registration-customizations.md`
+- `docs/services/countries-management/guide/entity-registration-customizations.md`
 
 ## الوصول إلى الصفحة
 
