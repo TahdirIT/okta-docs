@@ -104,12 +104,15 @@
 ## الأدوار الثابتة (Fixed Roles)
 
 ### على مستوى النظام (System Scope)
-- `superadmin` - المدير العام للنظام
+- `superadmin` - المدير العام للنظام، يملك جميع صلاحيات `scope = system`
+- `platform-admin` - مدير المنصة، يملك صلاحيات `rbac.*` + `tenants.*`
 
 ### على مستوى المستأجر (Tenant Scope)
-- `admin` - مالك حساب المستأجر
-- `teacher` - المعلم
-- `student` - الطالب
+- `tenant-admin` - مسؤول الكيان التعليمي، يدير الأعضاء والأدوار داخل المستأجر
+- `reviewer` - مراجع، يملك صلاحيات `*.view` فقط
+- `member` - عضو عادي، يملك `users.view` فقط
+
+> جميع الأدوار القوالب تُخزَّن بـ `tenant_id = null`. التعيين الفعلي للمستخدم يتم عبر `model_has_roles.tenant_id` (ميزة Teams).
 
 ## العلاقات
 

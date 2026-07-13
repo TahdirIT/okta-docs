@@ -13,3 +13,4 @@
 - [السياق والانتقال بين الأدوار](./06-context-role-switching.md)
 - [الوسائط (Middleware)](./07-middleware.md)
 - [البذور (Seeders)](./08-seeders.md)
+- [Tenant Scoping للموديلات](./09-tenant-scoping.md)
