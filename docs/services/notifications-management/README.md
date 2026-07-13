@@ -12,13 +12,10 @@
 
 - [نظرة عامة على الخدمة](./overview.md)
 
-## الصفحات (pages)
-
-- [مركز الإشعارات](./pages/notifications-center.md) · [إعدادات المنصة](./pages/platform-settings.md) · [إعدادات الجهة](./pages/tenant-settings.md)
-
 ## تجربة المستخدم (user-experience)
 
-- [التدفقات](./user-experience/flows.md) · [الرحلات](./user-experience/journeys.md) · [الحالات الحدّية](./user-experience/edge-cases.md)
+- **التدفقات**: [التدفقات](./user-experience/flows.md) · [الرحلات](./user-experience/journeys.md) · [الحالات الحدّية](./user-experience/edge-cases.md)
+- **الشاشات**: [مركز الإشعارات](./user-experience/notifications-center.md) · [إعدادات المنصة](./user-experience/platform-settings.md) · [إعدادات الجهة](./user-experience/tenant-settings.md)
 
 ## الطبقة التقنية (tech)
 

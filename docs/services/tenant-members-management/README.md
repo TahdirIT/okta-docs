@@ -12,14 +12,11 @@
 
 - [نظرة عامة على الخدمة](./overview.md)
 
-## الصفحات (pages)
-
-- [الطلاب](./pages/students.md) · [تفاصيل الطالب](./pages/student-details.md) · [الموظفون](./pages/employees.md) · [أدوار الموظفين](./pages/employee-roles.md) · [أولياء الأمور](./pages/guardians.md)
-- **الاستيراد**: [استيراد الطلاب](./pages/import-students.md) · [استيراد الموظفين](./pages/import-employees.md) · [صيغ ملفات مدير النظام](./pages/system-admin-file-formats.md)
-
 ## تجربة المستخدم (user-experience)
 
-- [التدفقات](./user-experience/flows.md) · [الرحلات](./user-experience/journeys.md) · [الحالات الحدّية](./user-experience/edge-cases.md) · [سياسة الصف الإلزامي](./user-experience/mandatory-grade-policy.md)
+- **التدفقات**: [التدفقات](./user-experience/flows.md) · [الرحلات](./user-experience/journeys.md) · [الحالات الحدّية](./user-experience/edge-cases.md) · [سياسة الصف الإلزامي](./user-experience/mandatory-grade-policy.md)
+- **الشاشات**: [الطلاب](./user-experience/students.md) · [تفاصيل الطالب](./user-experience/student-details.md) · [الموظفون](./user-experience/employees.md) · [أدوار الموظفين](./user-experience/employee-roles.md) · [أولياء الأمور](./user-experience/guardians.md)
+- **الاستيراد**: [استيراد الطلاب](./user-experience/import-students.md) · [استيراد الموظفين](./user-experience/import-employees.md) · [صيغ ملفات مدير النظام](./user-experience/system-admin-file-formats.md)
 
 ## الطبقة التقنية (tech)
 

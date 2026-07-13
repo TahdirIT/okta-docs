@@ -18,14 +18,14 @@ apps) تُثبَّت لكل جهة من المتجر ولها مستودعاته
 | الخدمة | تغطّي | التوثيق |
 |---|---|---|
 | إدارة المستخدمين | حسابات المستخدمين، الهوية، منع التكرار، التحقق | [`user-management/`](user-management/README.md) |
-| تسجيل الكيان | تسجيل جهة جديدة وإنشاء حساب المالك | [`tenant-registration/`](tenant-registration/) |
-| إدارة منسوبي الجهة | الطلاب والموظفون وأولياء الأمور داخل الجهة | [`tenant-members-management/`](tenant-members-management/overview.md) |
-| الأدوار والصلاحيات (RBAC) | الأدوار، الصلاحيات، النطاقات، تبديل السياق | [`role-based-access-control/`](role-based-access-control/) |
-| إدارة الدول | الدول والمناطق والمراحل والتقويم والمواد والأعوام الدراسية | [`countries-management/`](countries-management/) |
-| الإشعارات | مركز الإشعارات والقنوات والقوالب | [`notifications-management/`](notifications-management/overview.md) |
-| خدمة OTP | إرسال والتحقق من رموز التحقق (مفاهيمي) | [`otp-service/`](otp-service/guide/README.md) |
+| تسجيل الكيان | تسجيل جهة جديدة وإنشاء حساب المالك | [`tenant-registration/`](tenant-registration/README.md) |
+| إدارة منسوبي الجهة | الطلاب والموظفون وأولياء الأمور داخل الجهة | [`tenant-members-management/`](tenant-members-management/README.md) |
+| الأدوار والصلاحيات (RBAC) | الأدوار، الصلاحيات، النطاقات، تبديل السياق | [`role-based-access-control/`](role-based-access-control/README.md) |
+| إدارة الدول | الدول والمناطق والمراحل والتقويم والمواد والأعوام الدراسية | [`countries-management/`](countries-management/README.md) |
+| الإشعارات | مركز الإشعارات والقنوات والقوالب | [`notifications-management/`](notifications-management/README.md) |
+| خدمة OTP | إرسال والتحقق من رموز التحقق | [`otp-service/`](otp-service/README.md) |
 | منشئ صفحة الهبوط | محرّر الموقع العام لكل جهة | [`landing-builder/`](landing-builder/README.md) |
-| بوابة الدفع والمحاسبة | فوترة الجهات مقابل الاشتراكات + مزامنة وافق | [`payment-gateway/`](payment-gateway/overview.md) |
+| بوابة الدفع والمحاسبة | فوترة الجهات مقابل الاشتراكات + مزامنة وافق | [`payment-gateway/`](payment-gateway/README.md) |
 
 ## قدرات تُقدَّم كتطبيقات مثبَّتة (لا خدمات جوهرية)
 
@@ -48,7 +48,7 @@ apps) تُثبَّت لكل جهة من المتجر ولها مستودعاته
 <service>/
 ├── README.md            # فهرس الخدمة (مدخل موحّد + جدول ملفات)
 ├── guide/               # دليل المنتج/التدفقات (مرقّم 01-, 02- عند الترتيب)
-├── user-experience/     # تفاصيل تجربة المستخدم (شاشات/تدفقات)
+├── user-experience/     # تفاصيل تجربة المستخدم: التدفقات والرحلات ومواصفات الشاشات
 └── tech/                # الطبقة التقنية
     ├── README.md
     ├── models/          # نماذج البيانات (+ README)
@@ -57,8 +57,7 @@ apps) تُثبَّت لكل جهة من المتجر ولها مستودعاته
     └── permissions.md
 ```
 
-**الحالة الحالية:** كل خدمة صارت تملك فهرس `README.md` جذرياً، والمجلدات موحّدة
-بالشرطة (`data-handling` / `service-functions`). تبايُنان مقبولان باقيان:
-خدمتان تفصلان `pages/` (مواصفات الشاشات) عن `user-experience/` (التدفقات)، وبعض
-ملفات النماذج/المحتوى لا تزال بأسماء `snake_case` تعكس أسماء الجداول — تُطبَّع
-لاحقاً عند الحاجة دون أن تعيق التنقّل.
+**الحالة الحالية:** كل خدمة تملك فهرس `README.md` جذرياً، والمجلدات موحّدة
+بالشرطة (`data-handling` / `service-functions`)، وكل محتوى تجربة المستخدم (بما فيه
+مواصفات الشاشات) صار تحت `user-experience/` (أُدمج `pages/` السابق فيه). تبايُن
+مقبول باقٍ: بعض ملفات النماذج تحمل أسماء `snake_case` تعكس أسماء الجداول الفعلية.

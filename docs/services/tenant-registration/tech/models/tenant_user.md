@@ -22,7 +22,8 @@
 - `TenantUser`:
   - **belongsTo**: `tenant`
   - **belongsTo**: `user`
-  - **belongsToMany**: `roles` عبر جدول `tenant_user_has_roles` (مع Soft Deletes على جدول الربط)
+  - **roles()**: تُحلّ عبر جدول Spatie القياسي `model_has_roles` مُفلتَراً بـ
+    `tenant_id` + `model_type = User` (ميزة Teams) — **لا** يوجد جدول ربط خاص.
 
 - `Tenant`:
   - **hasMany**: `userLinks`
@@ -34,8 +35,9 @@
 
 ## ملاحظات
 
-- يوجد جدولان مرتبطان بإسناد الأدوار للـ `tenant_user` في `okta-web`:  
-  - `tenant_user_roles`  
-  - `tenant_user_has_roles`  
-  وكلاهما يحتوي `deleted_at` و `unique(tenant_user_id, role_id)`. في الموديل الحالي (`TenantUser::roles()`) يتم استخدام `tenant_user_has_roles`.
+- جدول `tenant_user` يحمل عمودَي `tenant_id` و`user_id` فقط (+ الطوابع
+  و`deleted_at`) — **بلا** عمود `role` أو `is_owner`. إسناد الأدوار داخل الجهة
+  يتم عبر Spatie (`model_has_roles` مع `tenant_id`)، لا عبر أعمدة على هذا الجدول.
+- أثناء التسجيل، `RegisterTenant` ينشئ صفّ `tenant_user` ثم يُسند دور المالك
+  `tenant-admin` (الثابت `TENANT_OWNER_ROLE`) ضمن سياق team = الجهة الجديدة.
 
