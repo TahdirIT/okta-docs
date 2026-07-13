@@ -92,10 +92,9 @@ Diagrams, the workspace tree, and the dependency map:
 Conventions: don't create doc files at the repo root (put them under `docs/` or
 `claude/`); don't commit scratch/draft trees (drafts belong in a branch or
 outside the repo); when adding a tech-standard, update
-[`docs/tech-standards/README.md`](./docs/tech-standards/README.md). Documents
-under [`docs/prompts/`](./docs/prompts/) are **historical build prompts**, not
-current product documentation — don't treat them as a reference for how the
-system works today.
+[`docs/tech-standards/README.md`](./docs/tech-standards/README.md); when adding a
+service doc, list it in [`docs/services/README.md`](./docs/services/README.md)
+and follow the standard per-service layout documented there.
 
 Each code repo also ships its own `CLAUDE.md` (`okta-web/CLAUDE.md`,
 `okta-partners/CLAUDE.md`, and one per installed-app repo) with repo-local

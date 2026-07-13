@@ -6,7 +6,7 @@
 ## حزم PHP (composer)
 
 - `spatie/laravel-multitenancy` — تعدد المستأجرين (Tenants): تحديد المستأجر الحالي، والاستعلامات/الطوابير/الأوامر الواعية بالمستأجر.
-- `spatie/laravel-permission` — الأدوار والصلاحيات (RBAC) على مستوى قاعدة البيانات مع دعم harses وBlade directives.
+- `spatie/laravel-permission` — الأدوار والصلاحيات (RBAC) على مستوى قاعدة البيانات مع دعم الـ guards وBlade directives.
 - `nwidart/laravel-modules` — تنظيم التطبيق كوحدات (Modular Monolith)؛ وهي الآلية التي تُستضاف بها التطبيقات المثبَّتة (embedded) ككود داخل `Modules/`.
 - `mhmiton/laravel-modules-livewire` — ربط مكونات Livewire بالوحدات.
 - `livewire/livewire` + `wire-elements/modal` — الواجهات التفاعلية والنوافذ المنبثقة.
