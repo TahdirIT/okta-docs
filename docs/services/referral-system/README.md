@@ -1,32 +1,30 @@
 # نظام الإحالات (Referral System)
 
-برنامج إحالات كامل في `okta-web`: أكواد إحالة، مكافآت متعدّدة المستويات، محافظ
-وعملات، مؤثّرون (influencers)، تلعيب (badges/gamification)، ومنظومة مكافحة
-احتيال. المصدر: `app/Services/ReferralSystem/*` و`routes/referrals.php`.
+برنامج إحالات على مستوى المنصّة (landlord): أكواد إحالة، مكافآت متعدّدة المستويات،
+محافظ وعملات، مؤثّرون (influencers)، تلعيب (مستويات/أوسمة)، ومنظومة مكافحة احتيال.
+الخدمات تحت `app/Services/ReferralSystem/*` والنماذج تحت `app/Models/Referrals/*`.
 
-> توثيق مبدئي مبنيّ على جرد الكود (`app/Services/ReferralSystem/*`)؛ يُعمّق لاحقاً
-> بالتفاصيل الدقيقة عند الحاجة.
+## المحتوى
 
-## المكوّنات (`app/Services/ReferralSystem/*`)
+- [الدليل — محرّك المكافآت ودورة الحياة ومكافحة الاحتيال](./guide/README.md)
+- [الطبقة التقنية](./tech/README.md) — [نماذج البيانات](./tech/models/README.md) · [وظائف الخدمة](./tech/service-functions/README.md)
 
-- `Codes/` — إنشاء/حلّ أكواد الإحالة وربطها بالمستخدم/الجهة.
-- `Rewards/` — احتساب المكافآت متعدّدة المستويات وصرفها.
-- `Wallets/` — محافظ الرصيد والعملات وحركاتها.
-- `Influencers/` — حسابات المؤثّرين وروابطهم وتتبّع أدائهم.
-- `Gamification/` — الأوسمة/النقاط ومعايير منحها.
-- `Security/` — مكافحة الاحتيال: درجة مخاطرة، تحقق OTP، منع الإحالة الذاتية، حدود المعدّل.
-- `Lifecycle/` — وظائف دورة الحياة (jobs) لنضج المكافآت والاعتمادات.
-- `Reports/` · `Settings/` — تقارير البرنامج وإعداداته.
+## المكوّنات بإيجاز
+
+| المجال | المسؤولية |
+|---|---|
+| **Codes** | كود إحالة فريد لكل مستخدم؛ التقاط `?ref=` عبر middleware `referral.capture`. |
+| **Rewards** | احتساب وصرف المكافآت متعدّدة المستويات (idempotent) بلقطة إعدادات. |
+| **Wallets** | أرصدة/تجميد/تحويل عملات + حركات (`wallets` / `wallet_transactions`). |
+| **Influencers** | حسابات المؤثّرين، نقراتهم/تحويلاتهم، محافظهم وعمولاتهم. |
+| **Gamification** | مستويات (`referral_levels`) وأوسمة (`referral_badges`) وإنجازات المستخدم. |
+| **Security** | درجة مخاطرة، كشف الإحالة الذاتية، حدود IP/يومية، OTP، وسم المشبوه. |
+| **Lifecycle** | تأهيل زمني، إنهاء الإحالات الراكدة، تقرير يومي (أوامر مجدولة). |
+| **Settings** | مخزن KV (`referral_settings`) يقرأ منه محرّك المكافآت كامل إعداداته. |
 
 ## المسارات (`routes/referrals.php`)
 
-- **مستخدم**: `/referrals`، `/referrals/wallet`، `/referrals/history`، `/referrals/badges` (Livewire `Referrals/*`).
-- **إدارة**: `/admin/referrals/{settings,approvals,wallets,badges,currencies,influencers}` (Livewire `Admin/Referrals/*`).
-
-## ملاحظات للتوثيق العميق لاحقاً
-
-- التقاط كود الإحالة يتم عبر middleware `referral.capture` (`CaptureReferralCode`).
-- التحقق من الإحالة يستخدم OTP (`ReferralSystem\Security\{RequestReferralOtp,VerifyReferralOtp}`)
-  الذي يختم `otp_verified_at` على الإحالة — راجع [otp-service](../otp-service/README.md).
-- الأنماط المطلوب توثيقها: بنية المكافآت متعدّدة المستويات، نموذج المحفظة/العملة،
-  معايير درجة المخاطرة، ودورة حياة نضج المكافأة.
+- **مستخدم** (`/referrals`): `Dashboard` · `WalletPage` · `HistoryPage` · `BadgesPage`.
+- **إدارة** (`/admin/referrals`، كلٌّ بصلاحية `permission:*`): `Dashboard` ·
+  `SettingsPage` · `ApprovalsPage` · `WalletsManagerPage` · `BadgesManagerPage` ·
+  `CurrenciesPage` · `InfluencersIndex`/`InfluencerShow`.
