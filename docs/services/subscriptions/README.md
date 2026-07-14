@@ -8,15 +8,20 @@
 > الفرق: **Permission** (مستخدم×دور) · **Module** (تطبيق مشحون للجهة) · **Plan
 > Feature** (قدرة تتيحها الباقة). كثير من العمليات يجمع الثلاثة.
 
+## المحتوى
+
+- [الدليل — دورة الحياة، الفوترة، مميزات الباقات](./guide/README.md)
+- [الطبقة التقنية](./tech/README.md) — [نماذج البيانات](./tech/models/README.md) · [وظائف الخدمة](./tech/service-functions/README.md)
+
 ## إدارة الاشتراكات (`app/Services/SubscriptionManagement/*`)
 
 - `Plans/` · `Tiers/` — تعريف الباقات وفئاتها.
 - `Subscriptions/` + `Lifecycle/` — إنشاء/تجديد/تعليق/تفعيل/منح تجربة/فترة سماح
-  (`trial|active|grace_period|suspended`)، وتثبيت موديولات الباقة تلقائياً.
+  (`trial|active|grace_period|suspended|cancelled`)، وتثبيت موديولات الباقة تلقائياً.
 - `Payments/` — بوابات الاشتراك (Tabby/Tamara/Neoleap/Manual) — منفصلة عن
   [بوابة الدفع](../payment-gateway/README.md) الأساسية.
 - الواجهات: `Livewire/Settings/Subscriptions/*`، `Livewire/Tenant/Subscriptions/*`؛
-  المسارات `/subscription` و`/finance/subscription-plans`.
+  مسارات الجهة `/subscription`، وإدارة المنصّة `/settings/subscription-plans`.
 
 ## مميزات الباقات (Plan Features)
 
@@ -35,15 +40,15 @@ toggle لكل قدرة يمنحها superadmin للجهات حسب باقتها 
 
 ### الواجهة
 
-صفحة `/finance/subscription-plans` بها زر **Features** → modal
+صفحة `/settings/subscription-plans` بها زر **Features** → modal
 `settings.subscriptions.plan-features-modal` (`PlanFeaturesModal`): switches
 مجموعة حسب `group` مع تعطيل الـ child حين يكون `requires` معطّلاً.
 
-### أمثلة جاهزة
+### كتالوج المميزات
 
-`landing.edit`, `landing.manage_domains`, `landing.connect_custom_domain`
-(requires manage_domains)، `hierarchy.console`, `hierarchy.reports`,
-`hierarchy.bulk_install` (تتطلّب console). كلها `default ON`.
+المفاتيح الحالية موزّعة على مجموعات `landing`, `notifications`, `partner_apps`,
+`daycare`, `hierarchy` (كلها `default ON`). القائمة الكاملة مع علاقات `requires`
+في [الدليل](./guide/README.md#كتالوج-المميزات-الحالي).
 
 ## التغطية المركزية (covers_children)
 

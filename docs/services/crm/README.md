@@ -5,7 +5,10 @@
 إضافةً إلى **صندوق واتساب** مضمَّن. المصدر: `app/Services/Crm/*`،
 `routes/crm.php`، `routes/inbox.php`.
 
-> توثيق مبدئي مبنيّ على جرد الكود؛ صندوق الوارد موثَّق تفصيلاً في `okta-web/CLAUDE.md`.
+## المحتوى
+
+- [الدليل — الأنابيب والعقود والتقويم والمستندات](./guide/README.md)
+- [الطبقة التقنية](./tech/README.md) — [نماذج البيانات](./tech/models/README.md) · [وظائف الخدمة](./tech/service-functions/README.md)
 
 ## المكوّنات
 
@@ -27,8 +30,3 @@ okta-whatsapp بدلاً من بناء UI محلي (الواجهة هناك مك
 - **Unread badge**: `<livewire:crm.inbox.unread-badge />` — الـ iframe يُرسل `postMessage({type:"inbox.unread", count})` يُفلتَر بالـ origin ويُعاد بثّه كحدث Livewire.
 - **لا مرآة محلية**: حُذفت جداول `inbox_*` وخدماتها؛ أي استعلام محادثات يتمّ من okta-whatsapp مباشرة.
 - **الصلاحيات**: `crm.inbox.view` (الصفحة) و`crm.inbox.manage_settings` (إعدادات Connect) — نطاق system.
-
-## للتوثيق العميق لاحقاً
-
-بنية نماذج الحسابات/العملاء/العقود، دورة توقيع العقد الإلكتروني، تكرار أحداث
-التقويم وتصدير ICS، ونموذج الفواتير — تُوثَّق عند الحاجة.
