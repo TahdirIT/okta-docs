@@ -80,16 +80,11 @@ example-app/
 |---|---|
 | Build pages that appear in the **okta-web** admin UI (header apps menu + optional sidebar) | [`./web-surface.md`](./web-surface.md) |
 | Build the screen that appears as a **card in okta-app** and runs in its WebView | [`./app-surface.md`](./app-surface.md) |
+| Reach **guardians/students** (dependent accounts) with per-audience entries across web + mobile, incl. the cross-tenant portal catalog | [`./dependent-accounts.md`](./dependent-accounts.md) |
 | Know exactly which manifest blocks drive what | [`./manifest-reference.md`](./manifest-reference.md) |
 | Read/write Tenant data the sanctioned way, and stay inside the isolation rules | [`./data-access-and-security.md`](./data-access-and-security.md) |
 | Understand auth/identity across the surfaces and the install lifecycle | [`./auth-and-lifecycle.md`](./auth-and-lifecycle.md) |
 | See the whole product picture / publish flow | [`../../../claude/`](../../../claude/) |
-
-### Design specs
-
-| Spec | Status |
-|---|---|
-| [`proposals/dependent-accounts.md`](./proposals/dependent-accounts.md) — primary + dependent accounts, per-audience entries, and surfacing dependent apps to guardians/students in the **general (cross-tenant) scope**. | **Implemented** — audiences ship in the manifest `mobile.audiences[]` block and the portal catalog (`GET /api/mobile/app-catalog/portal`); see [`./manifest-reference.md`](./manifest-reference.md) and [`./app-surface.md`](./app-surface.md). The spec is kept for design rationale. |
 
 ---
 
