@@ -26,6 +26,9 @@ apps) تُثبَّت لكل جهة من المتجر ولها مستودعاته
 | خدمة OTP | إرسال والتحقق من رموز التحقق | [`otp-service/`](otp-service/README.md) |
 | منشئ صفحة الهبوط | محرّر الموقع العام لكل جهة | [`landing-builder/`](landing-builder/README.md) |
 | بوابة الدفع والمحاسبة | فوترة الجهات مقابل الاشتراكات + مزامنة وافق | [`payment-gateway/`](payment-gateway/README.md) |
+| النظام المالي (Finance) | محاسبة داخلية landlord: موردون، حوافظ صرف، اعتمادات، فواتير، عُهد، تقارير، وافق | [`finance/`](finance/README.md) |
+| الاشتراكات ومميزات الباقات | الباقات ودورة الاشتراك + toggle القدرات لكل باقة (PlanGate) | [`subscriptions/`](subscriptions/README.md) |
+| كونسول الجهات الحاوية | إدارة المجمعات لجهاتها التابعة (شجرة، دخول، تقارير، تعميم) | [`tenant-hierarchy/`](tenant-hierarchy/README.md) |
 
 ## قدرات تُقدَّم كتطبيقات مثبَّتة (لا خدمات جوهرية)
 

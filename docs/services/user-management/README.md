@@ -21,3 +21,22 @@
 - [نماذج البيانات (Models)](./tech/models/README.md)
 - [وظائف/Use-cases الخدمة](./tech/service-functions.md)
 
+## أدوات platform-admin: الحسابات المتشابهة + الدمج + الحذف
+
+أدوات للتعامل مع الحسابات المكررة وحذف الحسابات/العملاء (نطاق system):
+
+- **الحسابات المتشابهة**: `GET /settings/users/duplicates` (`DuplicateUsersPage`) —
+  يجمع المستخدمين المتشاركين `national_id`/`phone`/`email` أو الاسم بعد التطبيع
+  العربي عبر `App\Services\UserManagement\Users\FindSimilarUsers`.
+- **دمج الحسابات**: modal `settings.user-merge-modal` →
+  `UserManagement\Users\MergeUsers` — ينقل identifiers/credentials/روابط
+  `tenant_user`/العضويات/الأدوار والسجلات المساندة إلى الحساب الأساسي، ويحذف
+  المصدر soft-delete. ممنوع دمج superadmin أو الحساب الحالي.
+- **حذف مستخدم**: `settings.user-delete-modal` → `UserManagement\Users\DeleteUser`
+  (soft delete + إتلاف الجلسات؛ الأدوار وسجل النشاط يبقيان للتدقيق).
+- **حذف عميل (Tenant)**: `settings.tenant-delete-modal` (يتطلب كتابة الاسم) →
+  `Tenants\Tenants\DeleteTenant` (يمنع حذف جهة باشتراك `active`/`grace_period`).
+- **الصلاحيات**: `rbac.users.merge` + `rbac.users.delete` + `tenants.delete`.
+- **اختبارات**: `tests/Feature/UserManagement/{MergeUsers,FindSimilarUsers,DeleteUser}Test`،
+  `tests/Feature/Settings/DeleteTenantTest`.
+
