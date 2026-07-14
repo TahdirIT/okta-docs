@@ -151,8 +151,8 @@ Key edges (all code-grounded):
   (scope-catalog changes, publish results, app-store sales), verified by
   `VerifyOktaWebWebhook` (HMAC envelope + replay protection).
 - **`okta-app → okta-web`** (mobile API): Dio client with a Bearer token; calls
-  `/api/mobile/auth/*`, `/api/mobile/app-catalog` (+ the portal catalog and
-  portal data endpoints), and the per-app launch endpoints. No other repo is
+  `/api/mobile/auth/*`, `/api/mobile/app-catalog` (+ the portal card catalog
+  `/app-catalog/portal`), and the per-app launch endpoints. No other repo is
   contacted.
 - **`okta-partners → partner repo`** (GitHub App): `GitHubAppService::pushBoilerplate()`
   scaffolds the application repository the partner connected;

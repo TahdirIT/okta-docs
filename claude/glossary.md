@@ -169,5 +169,5 @@ grounded in the actual code of the workspace repositories.
 
 `App\Enums\ModuleStatus` (okta-partners): `Draft → Submitted → InReview →
 Approved → Beta/Published` (plus `ChangesRequested`, `Suspended`, `Deprecated`,
-`Rejected`). Only `Draft` and `ChangesRequested` are editable; only `Approved`
+`Rejected`). `Draft`, `ChangesRequested`, and `Rejected` are editable; only `Approved`
 is publishable. See [deployment.md](./deployment.md).

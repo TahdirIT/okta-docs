@@ -167,10 +167,12 @@ The lifecycle moves a version from authored draft to live-in-production:
    allowlist (`scripts/partner-policy/**`, the policy CI workflow, `CLAUDE.md`).
 3. **Submit → Review → Approve** — the `ModuleStatus` state machine
    (`Draft → Submitted → InReview → Approved`, with `ChangesRequested`/`Rejected`
-   loops). Only `Draft`/`ChangesRequested` are editable; only `Approved` is
-   publishable. Platform admins drive this from `Admin/Modules/ModuleReviewIndex`
-   (queue) and `Admin/Modules/ModuleShow` (per-app), with every transition logged
-   to `PartnerModuleReview`.
+   loops; `Rejected`/`ChangesRequested → Submitted` to resubmit). `isEditable()`
+   is **`Draft`, `ChangesRequested`, and `Rejected`** (a rejected version stays
+   editable to fix and re-submit); only `Approved` is publishable. Platform
+   admins drive this from `Admin/Modules/ModuleReviewIndex` (queue) and
+   `Admin/Modules/ModuleShow` (per-app), with every transition logged to
+   `PartnerModuleReview`.
 4. **Test on sandbox** — `installOnSandbox()` installs the version into the
    partner's sandbox tenant in `okta-web` for end-to-end testing (async + poll);
    partner UI `InstallSandboxWizard`, admin UI `Admin/Sandbox/SandboxConsole`.

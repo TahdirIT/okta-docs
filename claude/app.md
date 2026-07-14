@@ -75,16 +75,13 @@ Endpoints consumed (all on `okta-web`):
 
 | Endpoint | Purpose |
 |---|---|
-| `POST /api/mobile/auth/login` | identifier + password → `{token, user}` (Sanctum) |
-| `POST /api/mobile/auth/qr-login` | sandbox one-scan login (dev; 404 outside sandbox) |
+| `POST /api/mobile/auth/login` | identifier + password → `{token, user}` (Sanctum). Also the target of QR sandbox login (posted to the scanned host — the client does **not** call a separate `/auth/qr-login`). |
 | `GET  /api/mobile/auth/me` | validate session on cold start |
 | `GET/POST /api/mobile/auth/context` | list / select `{scope, tenant_id, role_ids}` |
 | `GET  /api/mobile/app-catalog` | **installed-app cards** for the active `(tenant, role)` |
 | `POST /api/mobile/app-catalog/{slug}/launch` | resolve launch URL (signed embedded URL or external URL + optional JWT) |
 | `GET  /api/mobile/app-catalog/portal?portal=student\|guardian` | **portal cards** (cross-tenant, dependent audiences) |
 | `POST /api/mobile/app-catalog/portal/{slug}/launch` | launch a portal card for one of the user's tenants |
-| `GET  /api/mobile/portal/student` · `/guardian` | cross-tenant portal data |
-| `POST /api/mobile/portal/students/{hashid}/profile-launch` | open a student profile surface |
 | `POST /api/mobile/auth/logout` | best-effort logout |
 | `POST /api/mobile/notification-tokens` | register this device's FCM token `{token, platform, app_version?, locale?}` |
 | `POST /api/mobile/notification-tokens/revoke` | unregister on logout (called **before** the Sanctum token is destroyed) |
@@ -133,8 +130,10 @@ AppBar shows a bell + live unread badge. Push is an **optional capability**:
    `okta.context`.
 4. **Home** (`/home`): greeting + tenant/role strip + the **app catalog
    section**. Guardian/student users also get the portal routes
-   (`/portal/guardian`, `/portal/student`) with cross-tenant data + portal app
-   cards.
+   (`/portal/guardian`, `/portal/student`) showing the greeting + **portal app
+   cards** (`/api/mobile/app-catalog/portal`). The client does **not** fetch a
+   separate cross-tenant "portal data" feed — `features/portal` has no data
+   layer beyond the card catalog.
 
 `go_router`'s `redirect` enforces this state machine (`unknown → splash`,
 `unauthenticated → login`, `needsContext → context`, `authenticated → home`).

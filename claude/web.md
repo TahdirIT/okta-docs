@@ -130,6 +130,19 @@ Route groups and their scopes:
 | `ai/agent/{stream,summarize}` | — (gated by `EnsureAiPlatformApproved`) |
 | `partner-bridge/resolve-numeric` | — (opaque-ID bridge) |
 
+> **Payments are the embedded-only exception.** Although the `payments/*` routes
+> live on this external-app surface, **consuming** them is restricted to
+> **embedded** apps: `App\Services\PartnerApi\Payments\PaymentCallerGuard`
+> `ensureEmbeddedConsumer()` throws `payment_consumption_embedded_only` (**403**)
+> for any non-embedded caller (create/list/read/refund). Reason: an external app
+> has no in-process `ChargeUpdated` path so it would be blind to the result. And
+> `POST /payments/charges/{ref}/status` (`payments.charges.update`) is further
+> restricted to the charge's **provider install** via `ensurePaymentProvider()`
+> (`payment_status_update_provider_only`, 403) — it is not a generic tenant
+> scope. The primary consumption path is in-process (embedded apps call
+> `PartnerApi\Payments\*` directly). See `okta-web/CLAUDE.md` for the full
+> unified-payment contract.
+
 `GET /api/apps/whoami` returns the active `{module_slug, tenant_id,
 installation_id, scopes}`. The whole surface is feature-flagged by
 `partners.app_runtime_enabled`.

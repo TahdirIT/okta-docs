@@ -67,18 +67,23 @@ built.
 
 ### 2. Lifecycle review (okta-partners)
 
-`App\Enums\ModuleStatus` state machine:
+`App\Enums\ModuleStatus` state machine (`allowedTransitions()`):
 
 ```
-Draft ─▶ Submitted ─▶ InReview ─▶ Approved ─▶ Beta / Published
-  ▲          │            │
-  └ ChangesRequested ◀────┘   (and Rejected ─▶ back to Draft)
-        Published ─▶ Suspended / Deprecated
+Draft ─▶ Submitted ─▶ InReview ─▶ Approved ─▶ Beta ⇄ Published
+              │           │                         │
+              ▼           ▼                    Suspended ─▶ Published
+         ChangesRequested / Rejected           Published/Beta ─▶ Deprecated
+              │  (Rejected ─▶ Submitted; ChangesRequested ─▶ Submitted)
+              └────────────────────────────────────────────────────────▶ (edit & resubmit)
 ```
 
-Only `Draft` and `ChangesRequested` are editable; only `Approved` is
-publishable. Platform admins run the review from `Admin/Modules/ModuleReviewIndex`
-and `ModuleShow`; every transition is logged to `PartnerModuleReview`.
+`isEditable()` = **`Draft`, `ChangesRequested`, and `Rejected`** (a rejected
+version stays editable so the partner can fix and re-submit — three editable
+statuses, not two); `isPublishable()` = **`Approved`** only; `isLive()` =
+`Beta`/`Published`. Platform admins run the review from
+`Admin/Modules/ModuleReviewIndex` and `ModuleShow`; every transition is logged to
+`PartnerModuleReview`.
 
 ### 3. Test on sandbox (okta-partners → okta-web sandbox)
 
