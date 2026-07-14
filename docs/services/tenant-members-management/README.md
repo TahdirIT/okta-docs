@@ -6,7 +6,7 @@
 
 > أسماء الأدوار والعلاقات مصدرها
 > [`roles-and-entities/`](../../roles-and-entities/README.md). الحضور يُقدَّم عبر
-> التطبيق المثبَّت [`okta-hdor`](../../apps/hdor/README.md).
+> التطبيق المثبَّت `okta-hdor` (موثَّق في مستودعه الخاص).
 
 ## نظرة عامة
 
