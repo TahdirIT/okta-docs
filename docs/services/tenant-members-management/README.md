@@ -5,8 +5,8 @@
 `App\Services\Tenants\*`.
 
 > أسماء الأدوار والعلاقات مصدرها
-> [`roles-and-entities/`](../../roles-and-entities/README.md). قدرات مثل الحضور
-> انتقلت إلى تطبيق مثبَّت ([`okta-hdor`](../../apps/hdor/README.md)).
+> [`roles-and-entities/`](../../roles-and-entities/README.md). الحضور يُقدَّم عبر
+> التطبيق المثبَّت [`okta-hdor`](../../apps/hdor/README.md).
 
 ## نظرة عامة
 

@@ -13,11 +13,9 @@
 > `student`/`guardian` بنطاق `general`، `guardian-delegate`) تُسنَد ديناميكياً
 > لكل جهة، وليست أدواراً ثابتة.
 >
-> تمّت **مواءمة هذا المجلد مع كود okta-web** (يوليو 2026): أُزيلت الأدوار
-> الوهمية (`platform-admin` مُزال بترحيل، و`reviewer`/`member` مُسقَطان)، وصُحِّح
-> القيد الفريد للصلاحيات إلى `unique(name, guard_name, scope)`، وأُكملت قائمة
-> الـ middleware الفعلية، وأُزيلت صلاحيات wildcard الوهمية (`rbac.*`) بما يوافق
-> [معيار تسمية الصلاحيات](../../tech-standards/permissions-naming.md).
+> القيد الفريد للصلاحيات `unique(name, guard_name, scope)`، والصلاحيات تتبع
+> [معيار التسمية](../../tech-standards/permissions-naming.md)
+> (`<feature>.<resource>.<action>` بلا wildcards).
 
 ## المحتوى
 

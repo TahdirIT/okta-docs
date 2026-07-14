@@ -28,9 +28,9 @@
 |---|---|
 | `tenant-admin` | `users.%` + `roles.*` + `tenants.members.%` + `tenants.children.%` + `landing.%` + `notifications.%` + `payments.%` + `messaging.%` + `settings.notifications.%` + `tenant.profile.manage` |
 
-> `platform-admin` أُزيل بترحيل، و`reviewer`/`member` أُسقِطا. أدوار المستخدم
-> النهائي (`administrator` مجموعات لكل جهة، `teacher`، `student`/`guardian`
-> بنطاق `general`، `guardian-delegate`) ديناميكية لكل جهة — ليست ثابتة.
+> أدوار المستخدم النهائي (`administrator` مجموعات لكل جهة، `teacher`،
+> `student`/`guardian` بنطاق `general`، `guardian-delegate`) ديناميكية لكل جهة —
+> ليست ثابتة.
 
 ## السياق (Context)
 

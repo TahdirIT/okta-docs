@@ -195,7 +195,7 @@ Full end-to-end (including how it then reaches both surfaces) is in
 1. probe `GET {apiUrl}/partners/permissions/catalog/hash`; **bail if unchanged**;
 2. on drift, pull the full catalog and upsert `partner_available_scopes`
    row-by-row;
-3. deactivate scopes no longer upstream.
+3. deactivate scopes absent upstream.
 
 Triggers: cron `partners:sync-scope-catalog` (interval
 `OKTA_WEB_SCOPE_CATALOG_SYNC_INTERVAL`, default 60 min), the inbound webhook
@@ -264,7 +264,7 @@ existing partner repos. The resulting structure is the
 
 ---
 
-## Partner-portal operations (previously undocumented subsystems)
+## Partner-portal operations
 
 Beyond the authoring/publish/bridge core above, the okta-partners portal ships
 several operational subsystems. These live only in this repo (the partner

@@ -29,7 +29,7 @@ title: بوابات الدفع والمحاسبة
 
 | الجدول | الوصف |
 |--------|-------|
-| `payment_gateways` | بوابات الدفع المتاحة في المنصة. **المُنفَّذ فعلاً هنا: Neoleap فقط** (`app/Services/Payment/Providers/NeoleapProvider.php`)؛ Tamara/Tabby يظهران كصفوف مستقبلية، وهما اليوم مزوّدا دفع عبر runtime الشركاء (`integrationType: payment`) لا عبر هذه البوابة. |
+| `payment_gateways` | بوابات دفع المنصة؛ المزوّد هنا **Neoleap** (`app/Services/Payment/Providers/NeoleapProvider.php`). Tamara/Tabby مزوّدا دفع عبر runtime الشركاء (`integrationType: payment`). |
 | `tenant_payment_gateway_configs` | إعدادات البوابة لكل مستأجر (بيانات الاتصال، الربط المحاسبي، العمولة) |
 | `payments` | سجل المدفوعات الرئيسي |
 | `payment_webhook_logs` | سجل Webhooks الواردة من البوابات |

@@ -79,9 +79,8 @@ Draft ─▶ Submitted ─▶ InReview ─▶ Approved ─▶ Beta ⇄ Published
 ```
 
 `isEditable()` = **`Draft`, `ChangesRequested`, and `Rejected`** (a rejected
-version stays editable so the partner can fix and re-submit — three editable
-statuses, not two); `isPublishable()` = **`Approved`** only; `isLive()` =
-`Beta`/`Published`. Platform admins run the review from
+version stays editable so the partner can fix and re-submit); `isPublishable()` =
+**`Approved`** only; `isLive()` = `Beta`/`Published`. Platform admins run the review from
 `Admin/Modules/ModuleReviewIndex` and `ModuleShow`; every transition is logged to
 `PartnerModuleReview`.
 

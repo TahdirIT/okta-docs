@@ -79,10 +79,9 @@
   (`users.%`, `roles.*`, `tenants.members.%`, `landing.%`, `notifications.%`,
   `payments.%`, `messaging.%`, …).
 
-> `platform-admin` أُزيل بترحيل، و`reviewer`/`member` أُسقِطا بترحيل (أُعيد
-> إسنادهما إلى `tenant-admin`). أدوار المستخدم النهائي (`administrator` كمجموعات
-> لكل جهة، `teacher`، و`student`/`guardian` بنطاق `general` لكل جهة،
-> `guardian-delegate`) تُنشأ/تُسنَد ديناميكياً — ليست أدواراً ثابتة مبذورة.
+> أدوار المستخدم النهائي (`administrator` كمجموعات لكل جهة، `teacher`،
+> و`student`/`guardian` بنطاق `general` لكل جهة، `guardian-delegate`)
+> تُنشأ/تُسنَد ديناميكياً — ليست أدواراً ثابتة مبذورة.
 
 ## الاستخدام
 

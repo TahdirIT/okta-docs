@@ -6,9 +6,8 @@
 [`tech-standards/permissions-naming.md`](../../../tech-standards/permissions-naming.md)):
 **بلا wildcards** (`*`)، وبأفعال محددة.
 
-> ⚠️ لا توجد صلاحيات «شاملة» مثل `rbac.*` أو `rbac.*.manage` في الكود — أي إشارة
-> لها سابقاً كانت اختراعاً توثيقياً. الوصول الشامل يأتي من **الدور** (superadmin
-> يملك كل صلاحيات `scope=system`)، لا من مفتاح صلاحية wildcard.
+> الوصول الشامل يأتي من **الدور** (superadmin يملك كل صلاحيات `scope=system`)،
+> لا من مفتاح صلاحية wildcard — لا توجد مفاتيح `*` في أسماء الصلاحيات.
 
 ## نطاق النظام (System) — إدارة RBAC المركزية
 

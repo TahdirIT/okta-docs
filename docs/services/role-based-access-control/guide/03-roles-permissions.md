@@ -77,8 +77,7 @@
 |---|---|
 | `tenant-admin` | `users.%` + `roles.*` + `tenants.members.%` + `landing.%` + `notifications.%` + `payments.%` + `messaging.%` … |
 
-> `platform-admin` أُزيل بترحيل، و`reviewer`/`member` أُسقِطا. أدوار المستخدم
-> النهائي (`administrator`، `teacher`، `student`، `guardian`،
+> أدوار المستخدم النهائي (`administrator`، `teacher`، `student`، `guardian`،
 > `guardian-delegate`) ديناميكية لكل جهة، لا أدواراً ثابتة.
 
 > **ملاحظة:** الأدوار القوالب تُخزَّن بـ `tenant_id = null`. عند تعيين دور لمستخدم داخل مستأجر يُسجَّل الـ `tenant_id` في جدول `model_has_roles` عبر ميزة Teams في spatie/laravel-permission.

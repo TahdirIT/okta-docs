@@ -5,10 +5,6 @@
 [`user-management`](../user-management/README.md) (إنشاء المالك) و
 [`countries-management`](../countries-management/README.md) (تخصيصات التسجيل).
 
-> **تنبيه دقّة:** ملفات النماذج هي مصدر الحقيقة عند التعارض. بعض المحتوى يصف
-> سلوكاً **مقترحاً لم يُنفَّذ بعد** (جدول `tenant_registration_sessions`، وحقول
-> أُزيلت من `tenants`) — وهو مُعلَّم كذلك داخل ملفاته.
-
 ## الدليل (guide)
 
 - [نظرة عامة](./guide/01-overview.md) · [هدف الميزة](./guide/02-feature-goal.md)

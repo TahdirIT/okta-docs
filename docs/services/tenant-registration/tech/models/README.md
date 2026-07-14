@@ -8,5 +8,4 @@
 - [Users (Owner account)](../../../user-management/tech/models/users.md)
 - [Tenant Users (Tenant ↔ User link)](./tenant_user.md)
 - [Tenant Login Methods](./tenant_login_methods.md)
-- [Tenant Registration Sessions (اختياري)](./tenant_registration_sessions.md)
 

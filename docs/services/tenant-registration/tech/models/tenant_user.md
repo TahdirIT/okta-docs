@@ -23,7 +23,7 @@
   - **belongsTo**: `tenant`
   - **belongsTo**: `user`
   - **roles()**: تُحلّ عبر جدول Spatie القياسي `model_has_roles` مُفلتَراً بـ
-    `tenant_id` + `model_type = User` (ميزة Teams) — **لا** يوجد جدول ربط خاص.
+    `tenant_id` + `model_type = User` (ميزة Teams).
 
 - `Tenant`:
   - **hasMany**: `userLinks`
@@ -35,9 +35,8 @@
 
 ## ملاحظات
 
-- جدول `tenant_user` يحمل عمودَي `tenant_id` و`user_id` فقط (+ الطوابع
-  و`deleted_at`) — **بلا** عمود `role` أو `is_owner`. إسناد الأدوار داخل الجهة
-  يتم عبر Spatie (`model_has_roles` مع `tenant_id`)، لا عبر أعمدة على هذا الجدول.
+- جدول `tenant_user` يحمل عمودَي `tenant_id` و`user_id` (+ الطوابع و`deleted_at`).
+  إسناد الأدوار داخل الجهة يتم عبر Spatie (`model_has_roles` مع `tenant_id`).
 - أثناء التسجيل، `RegisterTenant` ينشئ صفّ `tenant_user` ثم يُسند دور المالك
   `tenant-admin` (الثابت `TENANT_OWNER_ROLE`) ضمن سياق team = الجهة الجديدة.
 

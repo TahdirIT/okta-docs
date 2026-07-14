@@ -114,10 +114,10 @@
   + `tenants.members.%` + `tenants.children.%` + `landing.%` + `notifications.%`
   + `payments.%` + `messaging.%` + `settings.notifications.%`.
 
-> **ملاحظة:** `platform-admin`/`reviewer`/`member` و`admin`/`teacher`/`student`
-> **ليست** أدواراً ثابتة مبذورة. أدوار المستخدم النهائي داخل الجهة (administrator،
-> teacher، student، guardian، guardian-delegate) تُعرَّف وتُسنَد لكل جهة، ومصدرها
-> الكنسي [`roles-and-entities/role-scopes.md`](../../../roles-and-entities/role-scopes.md).
+> أدوار المستخدم النهائي داخل الجهة (administrator، teacher، student، guardian،
+> guardian-delegate) تُعرَّف وتُسنَد لكل جهة (ليست ضمن الثلاثة المبذورة أعلاه)،
+> ومصدرها الكنسي
+> [`roles-and-entities/role-scopes.md`](../../../roles-and-entities/role-scopes.md).
 
 > الأدوار على مستوى النظام تُخزَّن بـ `team_id = null`؛ الأدوار على مستوى المستأجر
 > تُسنَد عبر `model_has_roles` مع `team_id = tenant_id` (ميزة Teams).

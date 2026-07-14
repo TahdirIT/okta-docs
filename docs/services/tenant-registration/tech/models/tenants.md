@@ -34,11 +34,9 @@
 
 ## ملاحظات
 
-- **لا يوجد** عمود `created_by_user_id` ولا `subdomain` على `tenants` (النطاق الفرعي
-  قيمة من `tenant_domains.type`، لا عمود هنا). كذلك **لا يوجد** جدول
-  `tenant_registration_sessions` — راجع
-  [`tenant_registration_sessions.md`](./tenant_registration_sessions.md)
-  (اقتراح غير مُنفَّذ؛ المعالج يحفظ حالته في جلسة Laravel).
-- الحقول الديناميكية حسب الدولة/النوع **مُنفَّذة فعلاً** عبر
-  `registration_custom_fields` + `education_level_group_id` (الخطوة 3 من المعالج).
+- النطاق الفرعي قيمة من `tenant_domains.type` (لا عمود على `tenants`).
+- معالج التسجيل يحفظ حالة المسودّة في جلسة Laravel، ويكتب لقاعدة البيانات عند
+  نجاح التسجيل.
+- الحقول الديناميكية حسب الدولة/النوع عبر `registration_custom_fields` +
+  `education_level_group_id` (الخطوة 3 من المعالج).
 
