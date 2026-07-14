@@ -29,6 +29,9 @@ apps) تُثبَّت لكل جهة من المتجر ولها مستودعاته
 | النظام المالي (Finance) | محاسبة داخلية landlord: موردون، حوافظ صرف، اعتمادات، فواتير، عُهد، تقارير، وافق | [`finance/`](finance/README.md) |
 | الاشتراكات ومميزات الباقات | الباقات ودورة الاشتراك + toggle القدرات لكل باقة (PlanGate) | [`subscriptions/`](subscriptions/README.md) |
 | كونسول الجهات الحاوية | إدارة المجمعات لجهاتها التابعة (شجرة، دخول، تقارير، تعميم) | [`tenant-hierarchy/`](tenant-hierarchy/README.md) |
+| نظام الإحالات | أكواد إحالة، مكافآت، محافظ، مؤثّرون، مكافحة احتيال | [`referral-system/`](referral-system/README.md) |
+| نظام CRM | حسابات/عملاء/عقود/تقويم/مستندات/فواتير + صندوق واتساب مضمَّن | [`crm/`](crm/README.md) |
+| خدمات المنصّة المتفرّقة | Tours، Impersonation، Branding، Messaging، Comms، مراجعات المتجر، لوحات ملف الطالب | [`platform-services/`](platform-services/README.md) |
 
 ## قدرات تُقدَّم كتطبيقات مثبَّتة (لا خدمات جوهرية)
 
