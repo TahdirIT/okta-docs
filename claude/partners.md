@@ -261,3 +261,93 @@ policy scanner changes in okta-web it must be re-copied here — okta-web's scan
 is the source of truth; `syncManagedFiles()` re-pushes the managed set to
 existing partner repos. The resulting structure is the
 [installed-application contract](./installed-apps.md).
+
+---
+
+## Partner-portal operations (previously undocumented subsystems)
+
+Beyond the authoring/publish/bridge core above, the okta-partners portal ships
+several operational subsystems. These live only in this repo (the partner
+platform); grounded in `okta-partners/CLAUDE.md` + code inventory.
+
+### Onboarding & certification
+
+- **Application flow** — public `/apply` (`Livewire/Public/PartnerApplication`) →
+  admin review/approve (`Admin/Applications/ApplicationsIndex`) via
+  `PartnerOnboardingService`; states in `Enums/ApplicationStatus`, model
+  `PartnerApplication`. Approval provisions the partner tenant.
+- **Certification tiers** — auto-computed trust tier (Verified/Gold) shown on the
+  partner Overview + admin `ModuleShow`. `app/Services/Partners/Certification/*`,
+  `Enums/CertificationTier`, recomputed daily by cron
+  `partners:evaluate-certification`.
+
+### Module database authoring tooling
+
+A partner-facing suite for designing/operating an app's isolated DB (distinct
+from okta-web's per-install schema provisioning):
+
+- Livewire `Partner/Modules/{SchemaDesigner, MigrationsManager, DatabaseBrowser,
+  TestDatabasePanel, DatabaseManagementPanel}` — visual schema designer, a
+  migrations manager, a data browser (sandbox CRUD / **production read-only**), a
+  read-only SQL console, ER diagram, and a test-DB panel.
+- Services `Services/Partners/Databases/*`, `Services/Partners/Migrations/*`;
+  admin `Admin/Settings/ModuleDatabaseSettings`; models
+  `PartnerModuleDb{Binding,Write,AppliedMigration}`.
+
+### In-portal AI (assistant + prompt generator)
+
+- **Assistant** — streaming in-portal AI (`app/AI/`, `Livewire/Ai/*`,
+  `Http/Controllers/Ai/AssistantStreamController`, `routes/ai.php`, models
+  `Ai{Conversation,Message,Setting}`), with platform/tenant AI-provider settings.
+- **Prompt generator** — "describe your app → scaffold prompt + suggested scopes":
+  `Services/PartnerDocs/PromptGenerator/{GeneratePartnerAppPrompt,
+  SuggestScopesForBrief,EnrichFeatureBrief}` (route `docs/prompt-generator`).
+  Distinct from an installed app's own `aiSupport`/`aiMode` (that's the app using
+  okta-web's AI at runtime).
+
+### Public docs portal + API artifacts
+
+okta-partners hosts its **own** 3-pane public docs site + live-generated
+artifacts (separate from okta-web's OpenAPI generator): `routes/web.php`
+`/docs/*`, `/reference/{slug}`, `/llms.txt`; `Livewire/Public/Docs/*`,
+`Http/Controllers/Public/DocsController`, and
+`Services/PartnerDocs/ApiReference/{BuildApiReference,BuildOpenApiSpec,
+BuildPostmanCollection}`. The locale-aware **Developer Guide** page
+(`/partner/docs`) renders `docs/partner-platform/developer-guide{,.en}.md` with a
+sticky TOC (`Livewire/Partner/Docs/DeveloperGuide` + `RenderDeveloperGuide`).
+
+### WhatsApp / comms bridge (partners side)
+
+Tenant + platform WhatsApp settings, an inbound Connect webhook, and a comms
+bridge **distinct from the okta-web bridge**: `routes/whatsapp.php`,
+`Livewire/WhatsApp/Settings/*`, `Http/Controllers/Webhooks/WhatsAppWebhookController`
++ `Middleware/VerifyWhatsAppWebhook`, `Services/Comms/BridgeSettings`,
+`Admin/Settings/CommsBridge`; models `IncomingWhatsAppMessage`,
+`TenantWhatsAppSetting`.
+
+### Monetization mechanics
+
+The [data model](#the-application-data-model) names the models; the operational
+flows:
+
+- **Pricing matrix** — per country × tenant-type × billing-cycle grid
+  (`Services/AppStorePricing/Pricing/*`, `Livewire/Partner/Modules/Pricing/
+  {PricingMatrix,PricingFormModal}`).
+- **Discount codes** — partner-authored per-module codes with validation/usage,
+  `Enums/AppStore/{DiscountScope,DiscountType}`, `Api/AppStoreDiscountCodeController`.
+- **Payouts/withdrawals/clawbacks** — earnings ledger, payout **maturation**,
+  withdrawal state machine (`requested→approved→processing→completed`/reject/cancel),
+  clawback **holds**, refund-on-sale-refund. `Services/AppStorePricing/Payouts/*`
+  (11 use-cases), `Enums/AppStore/{PayoutStatus,WithdrawalStatus}`, admin
+  `Admin/AppStore/*`, partner `Partner/{Payouts,Earnings}/*`.
+
+### Per-module portal tabs
+
+Each module's portal exposes tabs backed by services:
+- **Analytics** (`Livewire/Partner/Modules/Analytics`, `Services/PartnerModules/Analytics`) — per-module usage.
+- **Dev panel** (`DevPanel` + `DeveloperPanelController`) — signed launcher/iframe into okta-web's host dev-panel (per environment).
+- **Diagnostics** (`Diagnostics`) — merged 5xx + webhook error log.
+- **Webhook delivery history** (`Partner/Webhooks/DeliveryHistory`) — external-app delivery log + replay of failed deliveries (`OktaWebService::{listWebhookDeliveries,replayWebhookDelivery}`).
+- **Notifications authoring** (`Partner/Modules/Notifications/*`) — type CRUD + `DiscoverNotificationsFromRepo`/`ImportDiscovered`/`PushCatalogToOktaWeb`.
+- **Deployment checks** (`Services/Modules/Deployment/*`, model `PartnerModuleDeploymentCheck`) — probe whether the published module is present per environment.
+- **Team invitations** (`Partner/Team/*`).

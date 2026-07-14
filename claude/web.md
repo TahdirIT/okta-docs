@@ -363,3 +363,35 @@ resolves its own bridge URLs dynamically through `BridgeSettings`).
 `manifest`). The request-scoped `ModuleContext` (DTO) + `AppContextManager`
 (singleton) carry tenant + module + installation + granted scopes through a
 request.
+
+---
+
+## Partner-runtime operations (monitor, dev panel, Pulse)
+
+Operational surfaces around the partner runtime (detail in `okta-web/CLAUDE.md`):
+
+- **Payments Monitor** — unified monitoring of `partner_payment_charges`. Tenant
+  page `GET /partner-apps/payment/charges` (`PaymentChargesIndex`) and
+  landlord-wide `…/charges/all` (`PaymentChargesAllIndex`); shared trait
+  `Concerns/MonitorsPaymentCharges` + `PaymentChargeDetail` modal (keyed by ULID
+  `chargeRef` only). Attribution to service (consumer install) + provider install
+  with no N+1 via `PartnerApi\Payments\ResolveInstallationApps`. Permissions
+  `payments.charges.view` (tenant) / `payments.charges.view_all` (system).
+- **Developer Panel (host runtime)** — a per-app dashboard the platform renders
+  for the app's author. Route `GET /partner-dev/{moduleSlug}/panel`
+  (`DeveloperPanelController`, gated only by `VerifyDevPanelToken` — no tenant
+  context). JWT handoff from okta-partners (HS256, `aud=okta-web-devpanel`,
+  `exp=iat+300`) writes a trusted session context (`Support/DevPanel/DevPanelContext`,
+  `dev_panel.<slug>`, TTL 60m) so later Livewire actions re-authorize without the
+  token. Editable per-app data store `partner_module_dev_settings`
+  (`PartnerModuleDevSetting`, ≤100 keys/module) via
+  `PartnerApi\DeveloperPanel\Settings\{List,Put,Delete}Setting`; read at runtime
+  by `PartnerApi\AppSettings\GetAppSetting[s]` (per-module 60s cache invalidated
+  on write). Manifest opt-in: `developer_ui` block.
+- **Pulse cards** — `App\Pulse\Recorders\{PartnerApiCalls,PartnerWebhookDeliveries}`
+  feed `<livewire:pulse.partner-api-activity />` and
+  `<livewire:pulse.partner-webhook-outcomes />` (keyed by scope / terminal outcome).
+- **Outbound webhook detail** — `Observers/PartnerEvents/*` turn domain changes
+  into canonical events → `DispatchEvent` → queued `DeliverPartnerWebhook` (sign +
+  send, backoff `30s → 6h` then `giving_up`; `PartnerWebhookDelivery` rows);
+  recovery scheduler `partners:recover-webhook-deliveries` every minute.

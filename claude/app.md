@@ -188,3 +188,17 @@ For **embedded** cards the WebView loads the signed `/app/{slug}` URL on
 `okta-web`; for **external** cards it loads the partner URL with the role JWT in
 the fragment (when `passRoleClaim` is set). Either way, the page authenticates to
 `okta-web`'s mobile API with the token minted for the session.
+
+---
+
+## Settings screen & design system
+
+- **Settings** (`lib/features/settings/`) exposes exactly three controls:
+  **theme** (light / dark / system), **locale** (ar / en), and **server
+  environment** (production / development / local, + a custom HTTPS URL field).
+  There is **no account management** in Settings (no profile edit, no
+  account-deletion — the app has none; see the platform doc set for the web-only
+  admin delete tooling).
+- **Design system** (`lib/core/widgets/`, `lib/core/theme/`): a shared widget kit
+  (`OktaBanner`, `OktaCard`, `OktaHero`, …) + theme tokens and motion, used by
+  every screen. Arabic-default, RTL, font *IBM Plex Sans Arabic*.
