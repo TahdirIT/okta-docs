@@ -10,7 +10,7 @@
 
 | السياق | `scope` | `tenant_id` | الأدوار النشطة | حالات الاستخدام |
 |---|---|---|---|---|
-| **النظام** | `system` | NULL | أدوار `system` (`superadmin`/`platform-admin`/`finance-admin`) | إدارة المنصّة. |
+| **النظام** | `system` | NULL | أدوار `system` (`superadmin`/`finance-admin`) | إدارة المنصّة. |
 | **الجهة** | `tenant` | معرّف الجهة | أدوار الجهة (`tenant-admin`, …) | لوحات إدارة المدرسة/الكلية. |
 | **عام** | `general` | NULL | `guardian` / `student` | ولي أمر/طالب يتابع عبر كل جهاته. |
 

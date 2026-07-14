@@ -54,7 +54,6 @@ snake_case) — راجع [`permissions-naming`](../../tech-standards/permissions
 | الدور | `scope` | `tenant_id` | يقابل في المفاهيم | مصدره في الكود |
 |---|---|---|---|---|
 | `superadmin` | `system` | NULL | — (مدير المنصّة) | `database/seeders/RoleSeeder.php` |
-| `platform-admin` | `system` | NULL | — (إدارة RBAC/الجهات) | `RoleSeeder` |
 | `finance-admin` | `system` | NULL | — (المالية) | `RoleSeeder` |
 | `tenant-admin` | `tenant` | لكل جهة | **مسؤول الحساب** | `RoleSeeder` (لكل جهة) |
 | `guardian` | `general` | لكل جهة | **ولي أمر** | migration backfill `2026_06_04_000001_seed_guardian_role_and_backfill.php` |

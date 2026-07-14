@@ -20,7 +20,7 @@
 | [`roles-rbac.md`](roles-rbac.md) | نظام **RBAC** المعتمِد على `spatie/laravel-permission` مع Teams: ربط `team_id ↔ tenant_id`، الأدوار الكنسيّة (`superadmin`/`tenant-admin`/`guardian`/`student`…)، واشتقاق الأدوار بالتفويض. |
 | [`context-and-switching.md`](context-and-switching.md) | **السياق (Context)**: كيف يختار المستخدم جهةً + دورًا، خدمة `ContextBuilder`، الـ middleware الحارسة، ومسار السياق على الموبايل (`/api/mobile/auth/context`). |
 | [`partner-apps-and-roles.md`](partner-apps-and-roles.md) | كيف ترى **تطبيقات الشركاء** (Embedded/External) الكياناتِ والأدوار: النطاقات (scopes)، `ModuleContext`، الجسر، عزل البيانات، وتمرير الدور للموبايل — مع مثال تطبيق Embedded. |
-| [`web-partners-drift.md`](web-partners-drift.md) | **انحرافات web ↔ partners** في كتالوج الجهات/الأدوار (مفتاح «شركة تعليمية»، أدوار audiences غير مضمونة، مزامنة بلا webhook) — والتكامل المطلوب. |
+| [`partners-integration-gaps.md`](partners-integration-gaps.md) | **تكامل web ↔ partners** في كتالوج الجهات/الأدوار: ما هو مُوحَّد اليوم (النطاقات، مفتاح «شركة تعليمية») والفجوات الحالية (أدوار audiences غير مضمونة، مزامنة بلا webhook). |
 
 ---
 
