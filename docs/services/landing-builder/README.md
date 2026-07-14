@@ -3,7 +3,7 @@
 > **توجيه (عربي):** هذا توثيق **منشئ صفحة الهبوط** — محرّر مرئي يمنح كل جهة موقعاً
 > عاماً على نطاق فرعي تلقائي أو نطاق مخصّص مُوثَّق، من مكتبة بلوكات قابلة للتحرير.
 > يُحفَظ هذا المجلد **بالإنجليزية** عمداً لأنه موجَّه للمطوّرين (كما
-> [`app-development/`](../../app-development/README.md))؛ بقية توثيق المنتج عربي.
+> [`apps/development/`](../../apps/development/README.md))؛ بقية توثيق المنتج عربي.
 
 Visual landing-page editor for okta-web tenants. Each tenant gets a public
 website rendered on either an auto-subdomain (`{slug}.{platform-base-domain}`)

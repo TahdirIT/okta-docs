@@ -11,9 +11,9 @@ on the two places an installed app lives —
 > Scope & audience. This is the *how-to-build-the-UI* guide. For the cross-product
 > map (how the repos relate), the full installable-application contract, and the
 > dev→prod publish flow, see the reference layer:
-> [`../../claude/installed-apps.md`](../../claude/installed-apps.md),
-> [`../../claude/architecture.md`](../../claude/architecture.md),
-> [`../../claude/deployment.md`](../../claude/deployment.md).
+> [`../../../claude/installed-apps.md`](../../../claude/installed-apps.md),
+> [`../../../claude/architecture.md`](../../../claude/architecture.md),
+> [`../../../claude/deployment.md`](../../../claude/deployment.md).
 >
 > Examples use **generic placeholders** — a slug `example-app`, StudlyCase
 > `ExampleApp`, namespace `Modules\ExampleApp`, env prefix `EXAMPLE_APP_`. Swap in
@@ -51,7 +51,7 @@ The same install, the same granted scopes, and the same data-access rules (the
 ## Where your code lives
 
 You scaffold from the partner boilerplate (see
-[`../../claude/partners.md`](../../claude/partners.md)) and get this layout. The
+[`../../../claude/partners.md`](../../../claude/partners.md)) and get this layout. The
 two files that drive the surfaces are highlighted:
 
 ```
@@ -83,7 +83,7 @@ example-app/
 | Know exactly which manifest blocks drive what | [`./manifest-reference.md`](./manifest-reference.md) |
 | Read/write Tenant data the sanctioned way, and stay inside the isolation rules | [`./data-access-and-security.md`](./data-access-and-security.md) |
 | Understand auth/identity across the surfaces and the install lifecycle | [`./auth-and-lifecycle.md`](./auth-and-lifecycle.md) |
-| See the whole product picture / publish flow | [`../../claude/`](../../claude/) |
+| See the whole product picture / publish flow | [`../../../claude/`](../../../claude/) |
 
 ### Design specs
 
@@ -101,7 +101,7 @@ example-app/
    `config` → the policy scanner fails your CI.
 2. **Use the platform design system** on the okta-web surface. Raw `<button>`/
    `<input>`/`<table>` or hard-coded palettes (`gray-*`, `indigo-*`) get a UI PR
-   rejected — see [`../tech-standards/design-standards.md`](../tech-standards/design-standards.md).
+   rejected — see [`../../tech-standards/design-standards.md`](../../tech-standards/design-standards.md).
 3. **Scopes are `read`/`write` only**, and every scope you request must already
    exist in the platform catalog. See [`./manifest-reference.md`](./manifest-reference.md).
 4. **Own your data.** Your tables live on your dedicated connection/schema, are

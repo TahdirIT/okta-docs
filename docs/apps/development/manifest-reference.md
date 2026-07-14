@@ -4,7 +4,7 @@
 This page is a quick reference focused on the blocks you touch while developing the
 two surfaces. The platform validates it (`App\Modules\Core\ManifestValidator` in
 okta-web) on publish/install. For the complete contract and package structure, see
-[`../../claude/installed-apps.md`](../../claude/installed-apps.md).
+[`../../../claude/installed-apps.md`](../../../claude/installed-apps.md).
 
 > `manifest.json` ≠ `module.json`. `manifest.json` is the **platform** descriptor
 > (this page). `module.json` is the **nwidart loader** descriptor (name, alias,
@@ -90,10 +90,10 @@ okta-web) on publish/install. For the complete contract and package structure, s
 | `rbac_permissions` | Permissions created on install + granted to roles | platform surface | [`./web-surface.md`](./web-surface.md#6-permissions-rbac) |
 | `notifications[]` | The notification types your app may emit (via the host) | both | [`./data-access-and-security.md`](./data-access-and-security.md) |
 | `database` | Declares your owned schema + migrations the platform tracks/runs | both | [`./data-access-and-security.md`](./data-access-and-security.md#owning-data) |
-| `external` (external apps only) | `webhookUrl` + `webhookEvents[]` (+ `redirectUrls[]`) | external | [`../../claude/web.md`](../../claude/web.md) |
-| `pricing` (paid apps) | Billing cycles + prices per country/tenant type (managed from the okta-partners pricing matrix) | marketplace | [`../../claude/partners.md`](../../claude/partners.md) |
-| `aiSupport` / `aiMode` | Opts the app into the platform AI agent (`ai/agent/*` runtime; sandbox auto-approves) | both | [`../../claude/web.md`](../../claude/web.md) |
-| `notification` (notification providers) / `payment` (payment providers) | Provider-type contracts: channels + delivery / methods + delivery + capabilities | provider apps | [`../../claude/partners.md`](../../claude/partners.md) |
+| `external` (external apps only) | `webhookUrl` + `webhookEvents[]` (+ `redirectUrls[]`) | external | [`../../../claude/web.md`](../../../claude/web.md) |
+| `pricing` (paid apps) | Billing cycles + prices per country/tenant type (managed from the okta-partners pricing matrix) | marketplace | [`../../../claude/partners.md`](../../../claude/partners.md) |
+| `aiSupport` / `aiMode` | Opts the app into the platform AI agent (`ai/agent/*` runtime; sandbox auto-approves) | both | [`../../../claude/web.md`](../../../claude/web.md) |
+| `notification` (notification providers) / `payment` (payment providers) | Provider-type contracts: channels + delivery / methods + delivery + capabilities | provider apps | [`../../../claude/partners.md`](../../../claude/partners.md) |
 
 ---
 
@@ -130,4 +130,4 @@ capability:
 2. okta-partners **mirrors** the catalog (hash-aware sync).
 3. Then it appears in the scope picker and you can add it to your manifest.
 
-See [`../../claude/partners.md`](../../claude/partners.md#scope-catalog-sync-mirror-never-invent).
+See [`../../../claude/partners.md`](../../../claude/partners.md#scope-catalog-sync-mirror-never-invent).

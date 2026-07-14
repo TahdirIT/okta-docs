@@ -6,7 +6,7 @@
 
 > أسماء الأدوار والعلاقات مصدرها
 > [`roles-and-entities/`](../../roles-and-entities/README.md). قدرات مثل الحضور
-> انتقلت إلى تطبيق مثبَّت ([`okta-hdor`](../../installed-apps/hdor/README.md)).
+> انتقلت إلى تطبيق مثبَّت ([`okta-hdor`](../../apps/hdor/README.md)).
 
 ## نظرة عامة
 

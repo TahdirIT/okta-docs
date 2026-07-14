@@ -41,11 +41,11 @@
 |---|---|
 | [نظرة عامة على المنتج](./docs/README.md) | مدخل توثيق المنتج (عربي). |
 | [فهرس الخدمات](./docs/services/README.md) | الخدمات الجوهرية داخل `okta-web` (مستخدمون، تسجيل جهة، منسوبون، RBAC، دول، إشعارات، OTP، منشئ الهبوط، بوابة الدفع). |
-| [التطبيقات المثبَّتة](./docs/installed-apps/README.md) | توثيق منتج `okta-exams` و`okta-smart-timetable` و`okta-hdor`. |
-| [دليل تطوير التطبيقات](./docs/app-development/README.md) | كيف تُطوَّر صفحات التطبيق المثبَّت وتظهر في `okta-web` و`okta-app` (إنجليزي). |
+| [التطبيقات المثبَّتة](./docs/apps/README.md) | توثيق منتج `okta-exams` و`okta-smart-timetable` و`okta-hdor`. |
+| [دليل تطوير التطبيقات](./docs/apps/development/README.md) | كيف تُطوَّر صفحات التطبيق المثبَّت وتظهر في `okta-web` و`okta-app` (إنجليزي). |
 | [الأدوار والكيانات](./docs/roles-and-entities/README.md) | أنواع الجهات، أدوار المستخدم النهائي، والعلاقات بينها. |
 | [المعايير التقنية](./docs/tech-standards/README.md) | معايير Feature Services وتسمية الصلاحيات والهوية البصرية. |
-| [منصّة الشراكات](./docs/partner-platform.md) · [الحزم](./docs/packages.md) · [نصوص المتجر](./docs/store-listings/store-listing.md) | مراجع مساندة. |
+| [منصّة الشراكات](./docs/apps/README.md) · [الحزم](./docs/reference/packages.md) · [نصوص المتجر](./docs/reference/store-listings/store-listing.md) | مراجع مساندة. |
 
 ---
 

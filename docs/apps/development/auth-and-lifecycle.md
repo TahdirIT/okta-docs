@@ -6,7 +6,7 @@ system obvious. This page also sketches the install/uninstall lifecycle and the
 sandbox → production progression.
 
 Companion: [`./web-surface.md`](./web-surface.md) · [`./app-surface.md`](./app-surface.md) ·
-[`../../claude/deployment.md`](../../claude/deployment.md).
+[`../../../claude/deployment.md`](../../../claude/deployment.md).
 
 ---
 
@@ -76,7 +76,7 @@ Uninstall reverses it: revokes tokens, deactivates webhook subscriptions (kept f
 audit), revokes permissions, drops your schema, fires `ModuleUninstalled`. Your app
 disappears from **both** surfaces.
 
-Full steps: [`../../claude/web.md`](../../claude/web.md#how-applications-get-installed-into-okta-web).
+Full steps: [`../../../claude/web.md`](../../../claude/web.md#how-applications-get-installed-into-okta-web).
 
 ---
 
@@ -88,6 +88,6 @@ exercise both surfaces end-to-end, then **published to production**. Sandbox ins
 auto-approve platform-AI access so you can test without manual approval.
 
 The authoring → review → sandbox → publish flow lives in
-[`../../claude/deployment.md`](../../claude/deployment.md) and
-[`../../claude/partners.md`](../../claude/partners.md). For local development against
+[`../../../claude/deployment.md`](../../../claude/deployment.md) and
+[`../../../claude/partners.md`](../../../claude/partners.md). For local development against
 a host checkout, see [`./web-surface.md`](./web-surface.md#7-local-development).

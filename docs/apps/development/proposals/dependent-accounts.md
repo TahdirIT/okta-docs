@@ -303,7 +303,7 @@ Phased, backward-compatible, on branch `claude/sleepy-volta-TgIyL`:
 7. **Docs** — promote this spec into the dev guide + update
    [`../manifest-reference.md`](../manifest-reference.md),
    [`../app-surface.md`](../app-surface.md),
-   [`../../../claude/installed-apps.md`](../../../claude/installed-apps.md).
+   [`../../../claude/installed-apps.md`](../../../../claude/installed-apps.md).
 
 ---
 

@@ -281,7 +281,7 @@ screen yourself:
 - Your backend consumes the okta-web HTTP runtime (`/api/apps/*`) with your
   installation Bearer token + receives signed webhooks — see
   [`./data-access-and-security.md`](./data-access-and-security.md) and
-  [`../../claude/web.md`](../../claude/web.md).
+  [`../../../claude/web.md`](../../../claude/web.md).
 
 ---
 

@@ -182,7 +182,7 @@ This is enforced on UI PRs.
 - Review **dark mode** and **RTL** (the platform is Arabic-first).
 - Follow the card pattern (`rounded-2xl + border + bg-white/dark + p-6`).
 
-Full, binding rules: [`../tech-standards/design-standards.md`](../tech-standards/design-standards.md).
+Full, binding rules: [`../../tech-standards/design-standards.md`](../../tech-standards/design-standards.md).
 (okta-web also keeps a stricter in-repo `docs/design.md` with the complete
 component list — read it before building UI.)
 
@@ -200,7 +200,7 @@ abort_unless(auth()->user()->can('example_app.dashboard.view'), 403);
 
 Permission names follow the platform standard `<feature>.<resource>.<action>`
 (lowercase, snake_case parts, verbs `view`/`create`/`update`/`delete`/`activate`,
-no wildcards) — see [`../tech-standards/permissions-naming.md`](../tech-standards/permissions-naming.md).
+no wildcards) — see [`../../tech-standards/permissions-naming.md`](../../tech-standards/permissions-naming.md).
 
 > Don't confuse the three gates: **permission** (user×role, above), **scope**
 > (your app's data access, [`./data-access-and-security.md`](./data-access-and-security.md)),
