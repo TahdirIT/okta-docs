@@ -5,9 +5,13 @@
 مقصور على حاملي صلاحيات `finance.*` (نطاق system؛ دور `finance-admin` يملكها
 كاملةً).
 
-> **مصدر التفصيل:** `okta-web/CLAUDE.md` (قسم «النظام المالي») هو المرجع
-> المُحدَّث؛ هذا الملف يلخّصه كموطن للخدمة في okta-docs. الصلاحيات نطاق system،
-> تتبع معيار [`<feature>.<resource>.<action>`](../../tech-standards/permissions-naming.md).
+> الصلاحيات نطاق system، تتبع معيار
+> [`<feature>.<resource>.<action>`](../../tech-standards/permissions-naming.md).
+
+## المحتوى
+
+- [الدليل — الدورات وآلات الحالة](./guide/README.md)
+- [الطبقة التقنية](./tech/README.md) — [نماذج البيانات](./tech/models/README.md) · [وظائف الخدمة](./tech/service-functions/README.md)
 
 ## القرارات المعمارية
 
