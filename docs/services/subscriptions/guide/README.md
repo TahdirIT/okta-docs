@@ -41,9 +41,10 @@ trial ──▶ active ──▶ grace_period ──▶ suspended
   (`payment_method` ∈ `neoleap|tabby|tamara|manual`، حالة
   `pending|completed|failed|refunded`).
 - `ProcessPayment(invoice, method, data)` يحلّ البوابة بـ `match($method)` ثم
-  ينادي `charge()`. البوابات الأربع تنفّذ عقد `PaymentGateway`؛ التكامل الفعلي
-  مع مزوّدات Tabby/Tamara/Neoleap مُعلَّم كنقاط توسعة (`// TODO`)، و`ManualGateway`
-  هو مسار الحوالة البنكية.
+  ينادي `charge()`. البوابات الأربع تنفّذ عقد `PaymentGateway`؛ `charge()` ينشئ
+  `SubscriptionPayment` بحالة `pending`، ونقطة الاتصال بمزوّدات
+  Tabby/Tamara/Neoleap هي نقطة التوسعة، بينما `ManualGateway` هو مسار الحوالة
+  البنكية.
 - `SubscriptionPaymentReceipt` يحفظ إثباتات التحويل اليدوي (حالة
   `pending|approved|rejected` بمراجعة إداري).
 

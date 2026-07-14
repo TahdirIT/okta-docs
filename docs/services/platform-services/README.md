@@ -1,7 +1,6 @@
 # خدمات المنصّة المتفرّقة (Platform Services)
 
 خدمات `okta-web` الأصغر والمتقاطعة التي لا يفرد كلٌّ منها شجرة توثيق مستقلة.
-توثيق مبدئي مبنيّ على جرد الكود؛ يُعمّق عند الحاجة.
 
 ## Tours — الجولات التعريفية
 
@@ -32,14 +31,13 @@
 إعدادات جسر okta-whatsapp: `app/Services/Comms/BridgeSettings.php` (base URL،
 `comms.connect.embed_sso_secret`، تفعيل Connect)، تُضبط من
 `/settings/platform-delivery` (`PlatformDeliveryProviderModal`). يغذّي
-[صندوق واتساب CRM](../crm/README.md#صندوق-واتساب-crm-inbox--مضمَّن-عبر-iframe)
-وسلسلة قنوات [OTP](../otp-service/README.md).
+[صندوق واتساب CRM](../crm/README.md) وسلسلة قنوات [OTP](../otp-service/README.md).
 
 ## Store — المراجعات والأوسمة + تجارة المتجر
 
 - **المراجعات/الأوسمة**: `app/Services/Store/{Reviews,Badges}`؛ `Livewire/Store/{ModuleReviews,ReviewFormModal}` —
   تقييمات موديولات المتجر (submit/delete/summary) + أوسمة.
-- **تجارة المتجر** (PARTIAL في الوثائق): `app/Services/AppStore/{Checkout,RevenueSplit,Refunds,Subscriptions,Catalog,Webhooks}` —
+- **تجارة المتجر**: `app/Services/AppStore/{Checkout,RevenueSplit,Refunds,Subscriptions,Catalog,Webhooks}` —
   `InitiateAppCheckout`، `CalculateRevenueSplit`، `IssueAppRefund`، أهلية التجربة،
   `ExpireDueSubscriptions`. تكمّل آلية التثبيت الموثّقة في
   [`claude/web.md`](../../../claude/web.md) و[`claude/installed-apps.md`](../../../claude/installed-apps.md).
