@@ -48,7 +48,7 @@ production.
                           ┌────────────────────────────┴───────────────────────┐
                           ▼                                                      ▼
               PLATFORM surface (okta-web)                          CLIENT surface (okta-app)
-        embedded module UI in the web sidebar                 card in /api/mobile/app-catalog
+        embedded module UI via the web apps menu              card in /api/mobile/app-catalog
         at manifest `menu.route`                              (+ portal catalog for dependent
                                                               audiences), launched via WebView
                                                               (/app/{slug} embedded, or partner
@@ -125,9 +125,10 @@ child tenants.
 
 ### 6. Platform surface goes live (okta-web)
 
-The embedded module's UI appears in the web sidebar at `manifest.menu.route`,
-gated by `module.access:<slug>` for users of that Tenant with the right
-permissions.
+The embedded module's UI surfaces in the okta-web shell — a header apps-launcher
+tile at `manifest.menu.route` (and, if the manifest declares a `sidebar` block, a
+left-sidebar entry) — gated by `module.access:<slug>` for users of that Tenant
+with the right permissions.
 
 ### 7. Client surface goes live (okta-app)
 

@@ -323,16 +323,25 @@ At runtime the platform reinforces this: sensitive host models use the
 
 ## 7. The platform surface (okta-web)
 
-- Declared by `manifest.json → menu.route` (resolved at runtime by the host's
-  `AppsMenu`; falls back to `sidebar.route`, then `<slug>.dashboard`, and may
-  carry per-account-type `menu.audiences[]`).
+- **Two entry points, two manifest blocks** (both keyed on an active install):
+  - `manifest.json → menu` drives the **header apps-launcher tile** (the host's
+    `App\Livewire\AppsMenu`, a dropdown grid of the Tenant's installed apps).
+    Launch route resolves `menu.route` → `sidebar.route` → `<slug>.dashboard` →
+    `<slug>.index` → `/<slug>` → `store.show`, and may carry per-account-type
+    `menu.audiences[]`.
+  - `manifest.json → sidebar` (a separate top-level block) optionally adds a
+    **left-sidebar** nav entry, spliced into the platform sidebar by
+    `app/Helpers/sidebar.php` and gated by `roles`/`can`/`scope`/`tenant_types`/
+    `plan_feature`.
 - An embedded application mounts `routes/web.php` under its module prefix
   (e.g. `/<module-slug>/…`) using host gating middleware
-  (`module.access:<module-slug>` plus context/tenant middleware). It does **not**
-  add `app.scope:*` on these web routes — the host's `module.access` already gates
+  (`module.access:<module-slug>` — `App\Http\Middleware\ModuleAccessMiddleware`,
+  the install gate — plus context/tenant middleware, and `module.context` /
+  `BootModuleContext` when it needs an in-process Partner-API context). It does
+  **not** add `app.scope:*` on these web routes — `module.access` already gates
   installation.
-- The UI is built from host UI components/Livewire and appears in the web
-  sidebar for users of that Tenant who hold the relevant permissions.
+- The UI is built from host UI components/Livewire and renders inside the okta-web
+  shell for users of that Tenant who hold the relevant permissions.
 - Optional deeper integrations: `rbac_permissions` (permissions created on
   install and granted to roles) and **student-profile panels** an app registers
   from its provider (`okta-exams` injects an exam-schedule panel — see

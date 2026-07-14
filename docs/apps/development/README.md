@@ -34,8 +34,8 @@ You build **one** application (one repo, one manifest). A single install lights 
   PLATFORM surface (okta-web)                       CLIENT surface (okta-app)
   ───────────────────────────                       ──────────────────────────
   Full-page Livewire/Blade screens                  A catalog "card" the user taps,
-  rendered inside the okta-web shell;               which opens your mobile screen
-  a sidebar entry points at them.                   inside a WebView.
+  rendered inside the okta-web shell; a              which opens your mobile screen
+  header apps-menu tile points at them.             inside a WebView.
 
   Driven by manifest `menu` block.                  Driven by manifest `mobile` block.
   Built with the okta-web design system.            Built as a server-rendered page
@@ -78,7 +78,7 @@ example-app/
 
 | You want to… | Open |
 |---|---|
-| Build pages that appear in the **okta-web** sidebar/admin UI | [`./web-surface.md`](./web-surface.md) |
+| Build pages that appear in the **okta-web** admin UI (header apps menu + optional sidebar) | [`./web-surface.md`](./web-surface.md) |
 | Build the screen that appears as a **card in okta-app** and runs in its WebView | [`./app-surface.md`](./app-surface.md) |
 | Know exactly which manifest blocks drive what | [`./manifest-reference.md`](./manifest-reference.md) |
 | Read/write Tenant data the sanctioned way, and stay inside the isolation rules | [`./data-access-and-security.md`](./data-access-and-security.md) |

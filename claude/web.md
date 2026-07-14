@@ -290,9 +290,10 @@ published/installed manifest passes. Highlights:
   (the partner dev-panel block).
 
 > The `menu` block is **not** part of `ManifestValidator` — it is a runtime
-> concept read by `App\Livewire\AppsMenu` to place the sidebar/launch entry:
-> `menu.route` (falling back to `sidebar.route`, then `<slug>.dashboard`), with
-> optional per-account-type `menu.audiences[]`.
+> concept read by `App\Livewire\AppsMenu` (the okta-web **header apps menu**) to
+> place the launcher tile: `menu.route` (falling back to `sidebar.route`, then
+> `<slug>.dashboard`, `<slug>.index`, `/<slug>`, then `store.show`), with optional
+> per-account-type `menu.audiences[]`.
 
 The full manifest contract is in [installed-apps.md](./installed-apps.md).
 

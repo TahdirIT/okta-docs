@@ -85,7 +85,8 @@ okta-web) on publish/install. For the complete contract and package structure, s
 | `moduleId`, `version`, `category`, `displayName*`, `icon`, `screenshots`, `developer` | Identity & marketplace listing | both | — |
 | `integrationType` | `embedded` / `external` / `notification` / `payment` — the whole integration shape | both | [`./data-access-and-security.md`](./data-access-and-security.md) |
 | `scopes[]` | What Tenant data you may read/write | both | [`./data-access-and-security.md`](./data-access-and-security.md) |
-| **`menu`** | The **okta-web sidebar entry** + landing route (supports per-account-type `menu.audiences[]`) | platform surface | [`./web-surface.md`](./web-surface.md) |
+| **`menu`** | The **okta-web header apps-launcher tile** + landing route (supports per-account-type `menu.audiences[]`); read by `App\Livewire\AppsMenu` | platform surface | [`./web-surface.md`](./web-surface.md) |
+| `sidebar` | Optional **left-sidebar** nav entry inside the okta-web shell (`route`/`label`/`icon` + `roles`/`can`/`scope`/`tenant_types`/`plan_feature` gating); read by `app/Helpers/sidebar.php` | platform surface | [`./web-surface.md`](./web-surface.md#4b-optional--a-left-sidebar-entry-sidebar-block) |
 | **`mobile`** | The **okta-app catalog card(s)** + how they launch; `audiences[]` maps each account type (tenant roles or student/guardian portal) to its own entry | client surface | [`./app-surface.md`](./app-surface.md) |
 | `rbac_permissions` | Permissions created on install + granted to roles | platform surface | [`./web-surface.md`](./web-surface.md#6-permissions-rbac) |
 | `notifications[]` | The notification types your app may emit (via the host) | both | [`./data-access-and-security.md`](./data-access-and-security.md) |

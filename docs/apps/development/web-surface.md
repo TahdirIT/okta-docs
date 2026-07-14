@@ -14,8 +14,10 @@ Prereq mental model: [`./README.md`](./README.md). Data access:
 Your application ships **as code** into okta-web (under `Modules/ExampleApp/`).
 Once a Tenant installs it:
 
-1. A **sidebar entry** appears for that Tenant, pointing at your landing route.
-   This is declared by your manifest `menu` block.
+1. A **launcher tile** appears for that Tenant in the okta-web **header apps
+   menu** (`App\Livewire\AppsMenu` — a dropdown grid of the Tenant's installed
+   apps), pointing at your landing route. Its label/icon and the launch route
+   come from your manifest (`displayName`/`icon`/`menu`).
 2. Clicking it loads one of **your pages** — a full-page Livewire component (or a
    controller returning a Blade view) — rendered **inside the okta-web shell**
    (its top bar, sidebar, theme, RTL, and auth/tenant context all wrap your page).
@@ -25,7 +27,7 @@ module, mounting it on a module-prefixed route, registering it, and pointing the
 manifest `menu` at it.
 
 ```
-sidebar item (manifest.menu.route)
+apps-menu launcher tile (manifest.menu.route)   ← okta-web header (App\Livewire\AppsMenu)
         │  user clicks
         ▼
 GET /example-app/                       ← your routes/web.php
@@ -142,10 +144,10 @@ Routes are loaded by the `RouteServiceProvider` the main provider registers in
 
 ---
 
-## 4. The sidebar entry — manifest `menu`
+## 4. The launcher tile — manifest `menu`
 
-The sidebar item is declared in `manifest.json`. At minimum it names the route the
-item links to:
+The launcher tile is declared in `manifest.json`. At minimum it names the route the
+tile links to:
 
 ```json
 {
@@ -154,13 +156,50 @@ item links to:
 ```
 
 Name your landing route to match (`->name('dashboard')` under the `example-app.`
-group → `example-app.dashboard`). The platform reads installed apps' `menu`
-blocks at runtime (`App\Livewire\AppsMenu` in okta-web) to render the entry for
-Tenants that have the app installed. Resolution order for the launch route:
-`menu.route` → `sidebar.route` → `<slug>.dashboard`. A `menu.audiences[]` array
-can point different account types (tenant `roles[]` or a student/guardian
-`portal`) at different routes — mirroring the mobile `audiences` concept. See
+group → `example-app.dashboard`). At runtime `App\Livewire\AppsMenu` (the header
+apps menu) queries the Tenant's active installs (`tenant_module_installations`
+joined to `modules`), reads each installed module's `menu`/`displayName`/`icon`
+from its `manifest.json`, and renders a tile. It resolves the launch URL in this
+order (first hit wins):
+
+1. `manifest.menu.route`
+2. `manifest.sidebar.route` (backward-compat)
+3. `<slug>.dashboard` route (the partner-boilerplate convention)
+4. `<slug>.index` route
+5. `/<slug>` path URL (the module's route prefix)
+6. `store.show` (last-resort marketplace fallback)
+
+So a module wired the standard way (`Route::prefix('<slug>')->name('<slug>.')…
+->get('/', Page::class)->name('dashboard')`) gets a correct launch URL with
+nothing extra in `manifest.json`. A `menu.audiences[]` array can point different
+account types (tenant `roles[]` or a student/guardian `portal`) at different
+routes — mirroring the mobile `audiences` concept. See
 [`./manifest-reference.md`](./manifest-reference.md).
+
+## 4b. Optional — a left-sidebar entry (`sidebar` block)
+
+The header launcher above is the universal entry (every active install gets a
+tile). Separately, a **top-level `sidebar` block** places a **left-sidebar** nav
+entry inside the okta-web shell. It's read by `app/Helpers/sidebar.php`
+(`sidebar_items_from_modules()`), which globs installed modules' manifests and
+splices their `sidebar` entries into `config/sidebar.php` at the `_module_items_`
+marker:
+
+```json
+{
+  "sidebar": {
+    "route": "example-app.dashboard",
+    "label": "example-app::app.nav.title",
+    "icon": "academic-cap"
+  }
+}
+```
+
+The entry is gated per Tenant/user by the same keys the platform sidebar uses —
+`roles`, `can` / `can_any`, `scope`, `tenant_types`, `plan_feature` — plus the
+implicit "this Tenant has the app installed" check. `menu` and `sidebar` are
+independent: use `menu` for the launcher tile, add `sidebar` when you also want a
+persistent left-nav item.
 
 ---
 
