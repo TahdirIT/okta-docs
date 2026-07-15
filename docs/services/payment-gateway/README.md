@@ -7,8 +7,8 @@
 > **تمييز مهم:** هذه بوابة **فوترة الجهات**، وهي **غير** «مشغّل الدفع الموحّد
 > للتطبيقات الشريكة» (`integrationType: payment` + `PartnerApi\Payments\*`) الذي
 > تدفع عبره التطبيقات المثبَّتة مبالغ المستخدم النهائي — ذلك موثَّق في
-> [`claude/web.md`](../../../claude/web.md) و
-> [`claude/installed-apps.md`](../../../claude/installed-apps.md).
+> [`reference/web.md`](../../reference/web.md) و
+> [`reference/installed-apps.md`](../../reference/installed-apps.md).
 
 ## المحتوى
 

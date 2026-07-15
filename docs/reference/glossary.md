@@ -4,7 +4,7 @@ Key terms used across the `okta` product and these reference files. Terms are
 grounded in the actual code of the workspace repositories.
 
 > Language note: the product's primary domain language is Arabic. These English
-> terms map onto the Arabic vocabulary used in [`../docs/`](../docs/README.md)
+> terms map onto the Arabic vocabulary used in [`../`](../README.md)
 > (e.g. «الكيانات التعليمية» = *educational entities* = Tenants).
 
 ---
@@ -27,7 +27,7 @@ grounded in the actual code of the workspace repositories.
   applications a Tenant has installed — plus cross-tenant student/guardian
   portals. See [app.md](./app.md).
 - **okta-docs** — This repository. The documentation hub and entry point for any
-  new session. See the root [`../CLAUDE.md`](../CLAUDE.md).
+  new session. See the root [`../../CLAUDE.md`](../../CLAUDE.md).
 - **Installed-application repos** — Each installable application lives in its
   own partner repo scaffolded from the `okta-partners` boilerplate. Three live
   in this workspace: `okta-smart-timetable`, `okta-exams`, `okta-hdor`. See
@@ -40,12 +40,12 @@ grounded in the actual code of the workspace repositories.
 - **Tenant** — An educational entity that subscribes to the platform: individual
   teacher, school, complex, college, university, institute, academy, or
   educational company. The unit of data isolation
-  (`spatie/laravel-multitenancy`). Full list: [`../docs/roles-and-entities/tenants.md`](../docs/roles-and-entities/tenants.md).
+  (`spatie/laravel-multitenancy`). Full list: [`../roles-and-entities/tenants.md`](../roles-and-entities/tenants.md).
 - **Landlord** — The shared/central database and tables that are not
   tenant-scoped (e.g. `module_statuses`, the partner scope catalog, finance).
 - **End-user / role** — A person acting inside a Tenant with a role
   (account admin, administrative staff, teacher, student, guardian, guardian
-  delegate). See [`../docs/roles-and-entities/role-scopes.md`](../docs/roles-and-entities/role-scopes.md). The mobile
+  delegate). See [`../roles-and-entities/role-scopes.md`](../roles-and-entities/role-scopes.md). The mobile
   client resolves an **active role** per session.
 - **Active context** — The `(scope, tenant_id, active_role_id)` selection a user
   makes after login in `okta-app` (`scope` = `tenant` or `system`). Drives which
@@ -56,7 +56,7 @@ grounded in the actual code of the workspace repositories.
   cards surface here.
 - **Roles ↔ entities model** — entity types, end-user roles, and the
   relationships between them (containment, management, follow, permission
-  derivation): [`../docs/roles-and-entities/README.md`](../docs/roles-and-entities/README.md).
+  derivation): [`../roles-and-entities/README.md`](../roles-and-entities/README.md).
 
 ---
 
@@ -64,7 +64,7 @@ grounded in the actual code of the workspace repositories.
 
 - **Service** — A single use-case class under
   `app/Services/<Feature>/<Resource>/<Function>.php` exposing one `__invoke()`
-  (the platform's [feature-services standard](../docs/tech-standards/laravel-feature-services-structure.md)).
+  (the platform's [feature-services standard](../tech-standards/laravel-feature-services-structure.md)).
   `okta-web` exposes a dedicated, partner-facing slice of these under
   `App\Services\PartnerApi\*`.
 - **Partner API** — The *only* sanctioned surface through which an installed
@@ -80,7 +80,7 @@ grounded in the actual code of the workspace repositories.
   by `okta-partners`. See [installed-apps.md](./installed-apps.md).
 - **Permission** — A `spatie/laravel-permission` RBAC grant on a `User × Role`.
   Distinct from a Scope (which gates an *app's* access) — see the
-  [permissions-naming standard](../docs/tech-standards/permissions-naming.md).
+  [permissions-naming standard](../tech-standards/permissions-naming.md).
 
 ---
 

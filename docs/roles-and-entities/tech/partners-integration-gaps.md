@@ -61,4 +61,4 @@ partners يَعِد المطوّر بظهور تطبيقه لأدوار (`princi
 
 - العقد السليم: [`partner-apps-and-roles.md`](partner-apps-and-roles.md)
 - كتالوج الأنواع على web: [`entities-tenancy.md`](entities-tenancy.md) · [`roles-rbac.md`](roles-rbac.md)
-- منصّة الشركاء: [`claude/partners.md`](../../../claude/partners.md)
+- منصّة الشركاء: [`reference/partners.md`](../../reference/partners.md)

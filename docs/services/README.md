@@ -5,8 +5,8 @@
 apps) تُثبَّت لكل جهة من المتجر ولها مستودعاتها المستقلة.
 
 > للصورة الشاملة عبر المستودعات راجع [`../../CLAUDE.md`](../../CLAUDE.md) وطبقة
-> المراجع [`../../claude/`](../../claude/). لعقد التطبيقات المثبَّتة راجع
-> [`claude/installed-apps.md`](../../claude/installed-apps.md).
+> المراجع [`../reference/`](../reference/). لعقد التطبيقات المثبَّتة راجع
+> [`reference/installed-apps.md`](../reference/installed-apps.md).
 
 ---
 

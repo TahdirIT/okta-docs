@@ -90,8 +90,10 @@ subdirectories (generated from the filesystem; vendored/build dirs omitted).
 │
 ├── okta-docs/                     # Documentation hub (this repo)
 │   ├── CLAUDE.md                  # entry point + map
-│   ├── claude/                    # this reference layer
-│   └── docs/                      # product docs + tech-standards/ (consumed by both Laravel repos)
+│   └── docs/                      # all documentation
+│       ├── reference/             # this cross-repo reference layer
+│       ├── tech-standards/        # consumed by both Laravel repos
+│       └── services/ · apps/ · roles-and-entities/ · …
 │
 ├── okta-smart-timetable/          # Installed app: AI timetable generation + daily class ops
 ├── okta-exams/                    # Installed app: final-exam committees, seating, reports (paid)

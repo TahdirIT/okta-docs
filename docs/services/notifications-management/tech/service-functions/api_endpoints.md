@@ -3,7 +3,7 @@
 ## واجهة الجوال للإشعارات — `routes/api.php` (`/api/mobile/*`، `auth:sanctum`)
 
 الواجهة المكشوفة للإشعارات، يستهلكها تطبيق `okta-app`. راجع
-[`claude/web.md`](../../../../../claude/web.md#2-mobile-client-api).
+[`reference/web.md`](../../../../reference/web.md#2-mobile-client-api).
 
 **تسجيل أجهزة الدفع (FCM):**
 - `POST /api/mobile/notification-tokens` — body: `{ token, platform, app_version?, locale? }`
@@ -24,7 +24,7 @@
 (`App\Services\Notifications\NotificationEventCatalog`)، تُدار من صفحات إعدادات
 Livewire (منصّة/جهة). التطبيقات الشريكة تُطلق الإشعارات in-process عبر
 `App\Services\PartnerApi\Notifications\DispatchNotification` (راجع
-[`claude/web.md`](../../../../../claude/web.md#partner-notifications)).
+[`reference/web.md`](../../../../reference/web.md#partner-notifications)).
 
 ## التفضيلات (مستخدم)
 

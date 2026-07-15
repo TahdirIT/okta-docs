@@ -8,7 +8,7 @@ title: بوابات الدفع والمحاسبة
 > (`integrationType: payment` + خدمات `App\Services\PartnerApi\Payments\*`) الذي
 > تدفع من خلاله التطبيقات المثبَّتة مبالغ المستخدم النهائي عبر بوابة يثبّتها
 > المستأجر مرة واحدة — ذلك النظام موثَّق في
-> [`claude/web.md`](../../../claude/web.md) و[`claude/installed-apps.md`](../../../claude/installed-apps.md).
+> [`reference/web.md`](../../reference/web.md) و[`reference/installed-apps.md`](../../reference/installed-apps.md).
 
 ## نظرة عامة على الخدمة
 

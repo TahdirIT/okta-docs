@@ -11,9 +11,9 @@ on the two places an installed app lives —
 > Scope & audience. This is the *how-to-build-the-UI* guide. For the cross-product
 > map (how the repos relate), the full installable-application contract, and the
 > dev→prod publish flow, see the reference layer:
-> [`../../../claude/installed-apps.md`](../../../claude/installed-apps.md),
-> [`../../../claude/architecture.md`](../../../claude/architecture.md),
-> [`../../../claude/deployment.md`](../../../claude/deployment.md).
+> [`../../reference/installed-apps.md`](../../reference/installed-apps.md),
+> [`../../reference/architecture.md`](../../reference/architecture.md),
+> [`../../reference/deployment.md`](../../reference/deployment.md).
 >
 > Examples use **generic placeholders** — a slug `example-app`, StudlyCase
 > `ExampleApp`, namespace `Modules\ExampleApp`, env prefix `EXAMPLE_APP_`. Swap in
@@ -51,7 +51,7 @@ The same install, the same granted scopes, and the same data-access rules (the
 ## Where your code lives
 
 You scaffold from the partner boilerplate (see
-[`../../../claude/partners.md`](../../../claude/partners.md)) and get this layout. The
+[`../../reference/partners.md`](../../reference/partners.md)) and get this layout. The
 two files that drive the surfaces are highlighted:
 
 ```
@@ -84,7 +84,7 @@ example-app/
 | Know exactly which manifest blocks drive what | [`./manifest-reference.md`](./manifest-reference.md) |
 | Read/write Tenant data the sanctioned way, and stay inside the isolation rules | [`./data-access-and-security.md`](./data-access-and-security.md) |
 | Understand auth/identity across the surfaces and the install lifecycle | [`./auth-and-lifecycle.md`](./auth-and-lifecycle.md) |
-| See the whole product picture / publish flow | [`../../../claude/`](../../../claude/) |
+| See the whole product picture / publish flow | [`../../reference/`](../../reference/) |
 
 ---
 

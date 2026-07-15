@@ -6,7 +6,7 @@
 
 > هي الطبقة التي تعتمدها التطبيقات المثبَّتة لإرسال إشعاراتها عبر المنصة
 > (`PartnerApi\Notifications\*`) — راجع
-> [`claude/web.md`](../../../claude/web.md).
+> [`reference/web.md`](../../reference/web.md).
 
 ## نظرة عامة
 

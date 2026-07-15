@@ -6,7 +6,7 @@ page covers how to read/write host data, how to own your own data, the scope mod
 and the static + runtime guards that enforce all of it.
 
 Companion: [`./manifest-reference.md`](./manifest-reference.md) ·
-[`../../../claude/installed-apps.md`](../../../claude/installed-apps.md).
+[`../../reference/installed-apps.md`](../../reference/installed-apps.md).
 
 ---
 
@@ -71,7 +71,7 @@ If you're hosted externally, you call okta-web's `/api/apps/*` runtime with your
 **installation Bearer token**; each call is scope-gated by `app.scope:<key>`. You
 receive domain changes as **signed outbound webhooks** to your `external.webhookUrl`
 (HMAC-SHA256 over `<timestamp>.<body>` — validate signature + freshness). See
-[`../../../claude/web.md`](../../../claude/web.md) and [`./auth-and-lifecycle.md`](./auth-and-lifecycle.md).
+[`../../reference/web.md`](../../reference/web.md) and [`./auth-and-lifecycle.md`](./auth-and-lifecycle.md).
 
 ---
 
@@ -148,4 +148,4 @@ runs it on every PR/push):
 that throws if reached from a partner context — so even if something slipped past
 static analysis, it fails at runtime.
 
-Full enforcement details: [`../../../claude/installed-apps.md`](../../../claude/installed-apps.md#6-isolation-enforcement-general-requirement).
+Full enforcement details: [`../../reference/installed-apps.md`](../../reference/installed-apps.md#6-isolation-enforcement-general-requirement).

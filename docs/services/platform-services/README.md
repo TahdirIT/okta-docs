@@ -12,7 +12,7 @@
 
 أداة platform-admin للدخول بهوية مستخدم. `app/Services/Impersonation/{StartImpersonation,StopImpersonation}`؛
 `/impersonation/{start,stop}`؛ `Settings/TenantImpersonateModal`.
-> مختلف عن انتحال okta-partners (`claude/partners.md`) — مستودع وميزة أخرى.
+> مختلف عن انتحال okta-partners (`reference/partners.md`) — مستودع وميزة أخرى.
 
 ## Branding — هوية الجهة
 
@@ -40,7 +40,7 @@
 - **تجارة المتجر**: `app/Services/AppStore/{Checkout,RevenueSplit,Refunds,Subscriptions,Catalog,Webhooks}` —
   `InitiateAppCheckout`، `CalculateRevenueSplit`، `IssueAppRefund`، أهلية التجربة،
   `ExpireDueSubscriptions`. تكمّل آلية التثبيت الموثّقة في
-  [`claude/web.md`](../../../claude/web.md) و[`claude/installed-apps.md`](../../../claude/installed-apps.md).
+  [`reference/web.md`](../../reference/web.md) و[`reference/installed-apps.md`](../../reference/installed-apps.md).
 
 ## Student Profile Panels — نقطة توسعة ملف الطالب
 

@@ -7,9 +7,9 @@
 
 > **العقد التقني وآلية النشر/التثبيت** (manifest، النطاقات، العزل، السطحان،
 > sandbox→prod) في طبقة المراجع:
-> [`claude/partners.md`](../../claude/partners.md) ·
-> [`claude/installed-apps.md`](../../claude/installed-apps.md) ·
-> [`claude/deployment.md`](../../claude/deployment.md).
+> [`reference/partners.md`](../reference/partners.md) ·
+> [`reference/installed-apps.md`](../reference/installed-apps.md) ·
+> [`reference/deployment.md`](../reference/deployment.md).
 
 ---
 

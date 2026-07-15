@@ -388,7 +388,7 @@ How discovery + render works:
 
 > The in-WebView SPA details (hash routing, token minting, `okta-app://close`
 > bridge) are conventions documented in
-> [`../docs/apps/development/app-surface.md`](../docs/apps/development/app-surface.md);
+> [`../apps/development/app-surface.md`](../apps/development/app-surface.md);
 > the **requirement** is only that each `entry` renders a page the client WebView
 > can host and that all data access still flows through the Partner API.
 

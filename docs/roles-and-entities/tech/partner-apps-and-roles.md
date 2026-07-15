@@ -6,9 +6,9 @@
 تطبيق Embedded**.
 
 > خلفية أوسع عن الجسر ودورة dev→prod:
-> [`claude/partners.md`](../../../claude/partners.md) ·
-> [`claude/installed-apps.md`](../../../claude/installed-apps.md) ·
-> [`claude/deployment.md`](../../../claude/deployment.md).
+> [`reference/partners.md`](../../reference/partners.md) ·
+> [`reference/installed-apps.md`](../../reference/installed-apps.md) ·
+> [`reference/deployment.md`](../../reference/deployment.md).
 
 ---
 
@@ -210,5 +210,5 @@ flowchart TD
 
 - النطاقات والجداول: [`roles-rbac.md`](roles-rbac.md) · [`entities-tenancy.md`](entities-tenancy.md)
 - السياق والإطلاق على الموبايل: [`context-and-switching.md`](context-and-switching.md)
-- منصّة الشركاء ودورة النشر: [`claude/partners.md`](../../../claude/partners.md) · [`claude/deployment.md`](../../../claude/deployment.md)
-- عقد التطبيق المثبَّت: [`claude/installed-apps.md`](../../../claude/installed-apps.md)
+- منصّة الشركاء ودورة النشر: [`reference/partners.md`](../../reference/partners.md) · [`reference/deployment.md`](../../reference/deployment.md)
+- عقد التطبيق المثبَّت: [`reference/installed-apps.md`](../../reference/installed-apps.md)

@@ -12,7 +12,7 @@ the same installed application appears both inside `okta-web` and inside
 `okta-app` — and they progress through environments **dev → prod**
 (sandbox → production).
 
-This file is the **map**. Depth lives in [`claude/`](./claude/). Start here, then
+This file is the **map**. Depth lives in [`docs/reference/`](./docs/reference/). Start here, then
 open the reference file the table points you to.
 
 ---
@@ -21,16 +21,16 @@ open the reference file the table points you to.
 
 | Repo | Responsibility (one sentence) | Deep reference |
 |---|---|---|
-| **okta-web** | The platform/core: owns domain data, exposes services, and hosts installed applications as code; runs in sandbox + production. | [`claude/web.md`](./claude/web.md) |
-| **okta-partners** | The installation/deployment mechanism: author, version, review, publish, and install applications through the bridge into `okta-web`. | [`claude/partners.md`](./claude/partners.md) |
-| **okta-app** | The client: a Flutter app that lists and launches, per Tenant + role, the applications a Tenant has installed (plus student/guardian portals). | [`claude/app.md`](./claude/app.md) |
+| **okta-web** | The platform/core: owns domain data, exposes services, and hosts installed applications as code; runs in sandbox + production. | [`docs/reference/web.md`](./docs/reference/web.md) |
+| **okta-partners** | The installation/deployment mechanism: author, version, review, publish, and install applications through the bridge into `okta-web`. | [`docs/reference/partners.md`](./docs/reference/partners.md) |
+| **okta-app** | The client: a Flutter app that lists and launches, per Tenant + role, the applications a Tenant has installed (plus student/guardian portals). | [`docs/reference/app.md`](./docs/reference/app.md) |
 | **okta-docs** | This repo: documentation hub + engineering/design standards. | [`docs/`](./docs/README.md) · [`docs/tech-standards/`](./docs/tech-standards/README.md) |
-| **okta-smart-timetable** · **okta-exams** · **okta-hdor** | Installed-application repos (one per app): AI timetable, final-exam committees, and student attendance — all follow the installed-application contract. | [`claude/installed-apps.md`](./claude/installed-apps.md) |
+| **okta-smart-timetable** · **okta-exams** · **okta-hdor** | Installed-application repos (one per app): AI timetable, final-exam committees, and student attendance — all follow the installed-application contract. | [`docs/reference/installed-apps.md`](./docs/reference/installed-apps.md) |
 
 > Installable applications are not part of the core platform repos: each lives
 > in its own partner repo (scaffolded by `okta-partners`) and follows the
 > general **installed-application model** —
-> [`claude/installed-apps.md`](./claude/installed-apps.md).
+> [`docs/reference/installed-apps.md`](./docs/reference/installed-apps.md).
 
 ---
 
@@ -54,7 +54,7 @@ open the reference file the table points you to.
   guards.
 
 Diagrams, the workspace tree, and the dependency map:
-[`claude/architecture.md`](./claude/architecture.md).
+[`docs/reference/architecture.md`](./docs/reference/architecture.md).
 
 ---
 
@@ -62,15 +62,15 @@ Diagrams, the workspace tree, and the dependency map:
 
 | Your question | Open |
 |---|---|
-| How does the whole product fit together? Workspace tree, dependency map, dual surface. | [`claude/architecture.md`](./claude/architecture.md) |
-| What is each repo responsible for, and where are the boundaries? | [`claude/repos.md`](./claude/repos.md) |
-| What services does the core expose? How do installs work? Environments? | [`claude/web.md`](./claude/web.md) |
-| How are applications authored/published/installed? The dev→prod (sandbox→prod) flow? | [`claude/partners.md`](./claude/partners.md) · [`claude/deployment.md`](./claude/deployment.md) |
-| How does the mobile/desktop client list and launch a Tenant's apps? | [`claude/app.md`](./claude/app.md) |
-| What contract must an application follow to be installable and dual-surfaced? What do the three workspace app repos look like? | [`claude/installed-apps.md`](./claude/installed-apps.md) |
+| How does the whole product fit together? Workspace tree, dependency map, dual surface. | [`docs/reference/architecture.md`](./docs/reference/architecture.md) |
+| What is each repo responsible for, and where are the boundaries? | [`docs/reference/repos.md`](./docs/reference/repos.md) |
+| What services does the core expose? How do installs work? Environments? | [`docs/reference/web.md`](./docs/reference/web.md) |
+| How are applications authored/published/installed? The dev→prod (sandbox→prod) flow? | [`docs/reference/partners.md`](./docs/reference/partners.md) · [`docs/reference/deployment.md`](./docs/reference/deployment.md) |
+| How does the mobile/desktop client list and launch a Tenant's apps? | [`docs/reference/app.md`](./docs/reference/app.md) |
+| What contract must an application follow to be installable and dual-surfaced? What do the three workspace app repos look like? | [`docs/reference/installed-apps.md`](./docs/reference/installed-apps.md) |
 | **Build** an installed app's pages — where/how they're developed & appear in `okta-web` and `okta-app` (developer how-to). | [`docs/apps/development/`](./docs/apps/development/README.md) |
-| End-to-end: from publish to appearing in both `okta-web` and `okta-app`. | [`claude/deployment.md`](./claude/deployment.md) |
-| What does a term mean (Tenant, scope, installed app, audience, environment, …)? | [`claude/glossary.md`](./claude/glossary.md) |
+| End-to-end: from publish to appearing in both `okta-web` and `okta-app`. | [`docs/reference/deployment.md`](./docs/reference/deployment.md) |
+| What does a term mean (Tenant, scope, installed app, audience, environment, …)? | [`docs/reference/glossary.md`](./docs/reference/glossary.md) |
 | Product vision (Arabic). | [`docs/README.md`](./docs/README.md) |
 | Entity types (Tenants), end-user roles, and the relationships between them. | [`docs/roles-and-entities/README.md`](./docs/roles-and-entities/README.md) |
 | Roles ↔ account-type map (followed → follower, containment, derivation) as a graph. | [`docs/roles-and-entities/role-hierarchy.md`](./docs/roles-and-entities/role-hierarchy.md) |
@@ -80,17 +80,20 @@ Diagrams, the workspace tree, and the dependency map:
 
 ## About this repository (editing rules)
 
-`okta-docs` holds documentation only — no application code. Two layers:
+`okta-docs` holds documentation only — no application code. Everything lives under
+[`docs/`](./docs/README.md), in two kinds of content:
 
-- [`docs/`](./docs/README.md) — product docs + the **tech-standards** consumed by
-  `okta-web` and `okta-partners`. Primary language is **Arabic**; keep the
+- **product docs + tech-standards** — the per-service and per-domain documentation
+  plus the engineering/design **tech-standards** (`docs/tech-standards/`) consumed
+  by `okta-web` and `okta-partners`. Primary language is **Arabic**; keep the
   existing style and RTL-friendly Markdown. Changing a standard can **break** the
   consumer repos — flag such changes as breaking and note a migration path.
-- [`claude/`](./claude/) — this English reference layer describing the integrated
-  product. Use **relative links**; verify each one resolves.
+- [`docs/reference/`](./docs/reference/) — the **English cross-repo reference layer**
+  (the integrated-product map: architecture, repos, web, partners, app,
+  installed-apps, deployment, glossary). Use **relative links**; verify each resolves.
 
-Conventions: don't create doc files at the repo root (put them under `docs/` or
-`claude/`); don't commit scratch/draft trees (drafts belong in a branch or
+Conventions: don't create doc files at the repo root (put them under `docs/`);
+don't commit scratch/draft trees (drafts belong in a branch or
 outside the repo); when adding a tech-standard, update
 [`docs/tech-standards/README.md`](./docs/tech-standards/README.md); when adding a
 service doc, list it in [`docs/services/README.md`](./docs/services/README.md)

@@ -47,7 +47,7 @@ okta-web/
 
 ## Services exposed by okta-web
 
-okta-web follows the platform [feature-services standard](../docs/tech-standards/laravel-feature-services-structure.md):
+okta-web follows the platform [feature-services standard](../tech-standards/laravel-feature-services-structure.md):
 one use-case per `app/Services/<Feature>/<Resource>/<Function>.php` with a single
 `__invoke()`. The slices relevant to the rest of the product:
 
