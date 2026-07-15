@@ -21,7 +21,7 @@ edited inline in a three-column visual editor.
 
 ## Stack
 
-- **Laravel 12** + **Livewire 4** + **Tailwind v4**
+- **Laravel 13** + **Livewire 4** + **Tailwind v4**
 - **Alpine.js** + **SortableJS** for drag & drop
 - **spatie/laravel-multitenancy** (single-DB) with a composite tenant finder
 - **spatie/laravel-permission** (dot-style names, scope = `system`/`tenant`)

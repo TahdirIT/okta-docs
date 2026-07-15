@@ -1,8 +1,8 @@
-# Database structure (Laravel 12 + PostgreSQL)
+# Database structure (Laravel 13 + PostgreSQL)
 
 هذا القسم يوضح **هيكل قاعدة البيانات المقترح** لخدمة **إدارة الدول** مع افتراض:
 
-- **Laravel 12**
+- **Laravel 13**
 - **PostgreSQL** (مع استخدام `jsonb` للترجمات/الإعدادات)
 - **PostGIS** اختيارياً لدعم حدود المناطق/الإحداثيات (إن احتجنا `geometry`)
 
@@ -86,7 +86,7 @@
 - `holiday_schedules` (polymorphic على Country/School)
 - تخزين إعدادات الدولة مثل `weekdays` و `active_term_id` كـ JSON داخل `model_settings`
 
-### التحسينات المقترحة (Laravel 12 + Postgres)
+### التحسينات المقترحة (Laravel 13 + Postgres)
 
 - استخدام **`jsonb`** بدلاً من `json` للترجمات والإعدادات.
 - إضافة **قيود** (CHECK) و **فهارس** (Indexes) واضحة:

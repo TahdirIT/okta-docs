@@ -4,7 +4,7 @@
 
 ربط المستويات (`education_levels`) بمجموعاتها (`education_level_groups`) لكل دولة.
 
-## الأعمدة (مقترح Laravel 12 + PostgreSQL)
+## الأعمدة (مقترح Laravel 13 + PostgreSQL)
 
 - **education_level_group_id**: `bigint` (FK → `education_level_groups.id`)
 - **education_level_id**: `bigint` (FK → `education_levels.id`)

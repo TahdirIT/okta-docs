@@ -9,7 +9,7 @@
 - **`weekdays`**: إعدادات أيام الأسبوع على مستوى الدولة
 - **`active_term_id`**: الفصل النشط
 
-## الأعمدة (مقترح Laravel 12 + PostgreSQL)
+## الأعمدة (مقترح Laravel 13 + PostgreSQL)
 
 - **id**: `bigint` (PK)
 - **ulid**: `char(26)` unique (ULID للاستخدام في APIs العامة)

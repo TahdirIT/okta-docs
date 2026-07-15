@@ -16,7 +16,7 @@ system picture and diagrams, read [architecture.md](./architecture.md).
 
 | Repo | One-sentence responsibility | Stack | Deep reference |
 |---|---|---|---|
-| `okta-web` | The platform/core: owns domain data, exposes services, and hosts installed applications as code; runs in sandbox + production. | PHP 8.2 / Laravel 12, Livewire 4, PostgreSQL, `nwidart/laravel-modules` | [web.md](./web.md) |
+| `okta-web` | The platform/core: owns domain data, exposes services, and hosts installed applications as code; runs in sandbox + production. | PHP 8.3 / Laravel 13, Livewire 4, PostgreSQL, `nwidart/laravel-modules` | [web.md](./web.md) |
 | `okta-partners` | The installation/deployment mechanism: author, version, review, publish, and install applications through the bridge into `okta-web`. | PHP 8.3 / Laravel 13, Livewire 4, `firebase/php-jwt` | [partners.md](./partners.md) |
 | `okta-app` | The client: a Flutter cross-platform app that lists and launches, per Tenant + role, the applications a Tenant has installed (plus student/guardian portals). | Flutter / Dart, Riverpod, go_router, Dio, webview | [app.md](./app.md) |
 | `okta-docs` | The documentation hub and session entry point (this repo). | Markdown | [`../../CLAUDE.md`](../../CLAUDE.md) |

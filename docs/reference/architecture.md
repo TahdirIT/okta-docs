@@ -39,7 +39,7 @@ subdirectories (generated from the filesystem; vendored/build dirs omitted).
 
 ```
 .
-├── okta-web/                      # Platform / core — Laravel 12, Livewire 4, PostgreSQL
+├── okta-web/                      # Platform / core — Laravel 13, Livewire 4, PostgreSQL
 │   ├── app/
 │   │   ├── Http/                  # Controllers (Api/Apps, Api/Mobile, Api/Partners), Middleware
 │   │   ├── Services/

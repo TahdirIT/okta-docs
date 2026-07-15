@@ -81,7 +81,7 @@ Route::middleware(['auth', 'permission:users.create'])->group(function () {
 
 ### 5. الوسائط الإضافية المسجَّلة (aliases فعلية)
 
-من `bootstrap/app.php` (نمط Laravel 12، لا يوجد `Http/Kernel.php`):
+من `bootstrap/app.php` (نمط Laravel 13، لا يوجد `Http/Kernel.php`):
 
 | alias | الصنف | الغرض |
 |---|---|---|

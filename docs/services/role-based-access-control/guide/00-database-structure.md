@@ -1,8 +1,8 @@
-# Database structure (Laravel 12 + PostgreSQL)
+# Database structure (Laravel 13 + PostgreSQL)
 
 هذا القسم يوضح **هيكل قاعدة البيانات** لخدمة **التحكم في الوصول القائم على الأدوار** مع افتراض:
 
-- **Laravel 12**
+- **Laravel 13**
 - **PostgreSQL**
 - **spatie/laravel-permission** كحزمة أساسية
 - **spatie/laravel-multitenancy** (اختياري) أو نظام مستأجر مخصص

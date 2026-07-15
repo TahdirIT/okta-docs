@@ -1,6 +1,6 @@
 # okta-web — platform / core
 
-The core of `okta`: a Laravel 12 + Livewire 4 **modular monolith** (PostgreSQL,
+The core of `okta`: a Laravel 13 + Livewire 4 **modular monolith** (PostgreSQL,
 `spatie/laravel-multitenancy`, `spatie/laravel-permission`,
 `nwidart/laravel-modules`). It owns the domain data, exposes the services every
 other repo consumes, hosts embedded installed applications as code, and runs in

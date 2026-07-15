@@ -4,7 +4,7 @@
 
 ربط المواد (`subjects`) بالمستويات/الصفوف (`education_levels`) على مستوى الدولة.
 
-## الأعمدة (مقترح Laravel 12 + PostgreSQL)
+## الأعمدة (مقترح Laravel 13 + PostgreSQL)
 
 - **subject_id**: `bigint` (FK → `subjects.id`)
 - **education_level_id**: `bigint` (FK → `education_levels.id`)

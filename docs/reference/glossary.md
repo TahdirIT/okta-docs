@@ -14,7 +14,7 @@ grounded in the actual code of the workspace repositories.
 - **okta** — The single, integrated educational platform product. Not several
   separate products: one product split across the repositories below. See
   [architecture.md](./architecture.md).
-- **okta-web** — The platform / core. A Laravel 12 + Livewire 4 modular
+- **okta-web** — The platform / core. A Laravel 13 + Livewire 4 modular
   monolith that owns the domain data, exposes services, and hosts installed
   applications as code. Runs in two environments (sandbox and production). See
   [web.md](./web.md).
