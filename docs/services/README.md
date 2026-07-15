@@ -24,7 +24,7 @@ apps) تُثبَّت لكل جهة من المتجر ولها مستودعاته
 | إدارة الدول | الدول والمناطق والمراحل والتقويم والمواد والأعوام الدراسية | [`countries-management/`](countries-management/README.md) |
 | الإشعارات | مركز الإشعارات والقنوات والقوالب | [`notifications-management/`](notifications-management/README.md) |
 | خدمة OTP | إرسال والتحقق من رموز التحقق | [`otp-service/`](otp-service/README.md) |
-| منشئ صفحة الهبوط | محرّر الموقع العام لكل جهة | [`landing-builder/`](landing-builder/README.md) |
+| منشئ صفحة الهبوط | محرّر الموقع العام لكل جهة (توثيقه إنجليزي — استثناء موثَّق) | [`landing-builder/`](landing-builder/README.md) |
 | بوابة الدفع والمحاسبة | فوترة الجهات مقابل الاشتراكات + مزامنة وافق | [`payment-gateway/`](payment-gateway/README.md) |
 | النظام المالي (Finance) | محاسبة داخلية landlord: موردون، حوافظ صرف، اعتمادات، فواتير، عُهد، تقارير، وافق | [`finance/`](finance/README.md) |
 | الاشتراكات ومميزات الباقات | الباقات ودورة الاشتراك + toggle القدرات لكل باقة (PlanGate) | [`subscriptions/`](subscriptions/README.md) |

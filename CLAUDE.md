@@ -92,6 +92,18 @@ Diagrams, the workspace tree, and the dependency map:
   (the integrated-product map: architecture, repos, web, partners, app,
   installed-apps, deployment, glossary). Use **relative links**; verify each resolves.
 
+**Language policy** (choose by content, not by whim): product & domain docs —
+`docs/services/`, `docs/roles-and-entities/`, `docs/tech-standards/`, and the
+product `docs/README.md` — are written in **Arabic** (RTL). The cross-repo
+reference (`docs/reference/`) and the developer app-building guide
+(`docs/apps/development/`) are written in **English** (they are API/manifest/
+identifier-heavy and serve developers, including external partners). Keep each
+**file** — and ideally each **service folder** — in a single language; don't mix
+Arabic and English prose in one file. Content-inherent exceptions:
+`docs/reference/store-listings/` stays Arabic (it *is* the Arabic store copy), and
+`docs/services/landing-builder/` is a known English exception (self-consistent,
+developer-facing).
+
 Conventions: don't create doc files at the repo root (put them under `docs/`);
 don't commit scratch/draft trees (drafts belong in a branch or
 outside the repo); when adding a tech-standard, update

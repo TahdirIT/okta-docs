@@ -1,40 +1,47 @@
-# الحزم الأساسية في okta-web
+# Core packages in okta-web
 
-مرجع سريع لأهم الحزم التي يقوم عليها `okta-web`. المصدر الفعلي دائماً هو
-`okta-web/composer.json` و `okta-web/package.json` — حدّث هذا الملف عند تغيّرهما.
+A quick reference to the main packages `okta-web` is built on. The real source of
+truth is always `okta-web/composer.json` and `okta-web/package.json` — update this
+file when they change.
 
-## حزم PHP (composer)
+## PHP packages (composer)
 
-- `spatie/laravel-multitenancy` — تعدد المستأجرين (Tenants): تحديد المستأجر الحالي، والاستعلامات/الطوابير/الأوامر الواعية بالمستأجر.
-- `spatie/laravel-permission` — الأدوار والصلاحيات (RBAC) على مستوى قاعدة البيانات مع دعم الـ guards وBlade directives.
-- `nwidart/laravel-modules` — تنظيم التطبيق كوحدات (Modular Monolith)؛ وهي الآلية التي تُستضاف بها التطبيقات المثبَّتة (embedded) ككود داخل `Modules/`.
-- `mhmiton/laravel-modules-livewire` — ربط مكونات Livewire بالوحدات.
-- `livewire/livewire` + `wire-elements/modal` — الواجهات التفاعلية والنوافذ المنبثقة.
-- `laravel/fortify` — المصادقة والتحقق بخطوتين.
-- `laravel/sanctum` — التوكنات (تسجيل دخول تطبيق الجوال وواجهات `/api/mobile/*`).
-- `spatie/laravel-activitylog` — سجل النشاط.
-- `laravel/pulse` — المراقبة (مع بطاقات مخصصة لنشاط الشركاء).
-- `maatwebsite/excel`، `barryvdh/laravel-dompdf`، `mpdf/mpdf` — التصدير والاستيراد وطباعة PDF.
-- `firebase/php-jwt` — يُستخدم في `okta-partners` لتوقيع JWT (وليس في okta-web نفسه؛ التوقيعات في okta-web هاند-رولد HS256).
+- `spatie/laravel-multitenancy` — multitenancy (Tenants): resolving the current
+  tenant, and tenant-aware queries/queues/commands.
+- `spatie/laravel-permission` — roles & permissions (RBAC) at the database level,
+  with guard support and Blade directives.
+- `nwidart/laravel-modules` — organizes the app into modules (a modular monolith);
+  it's the mechanism that hosts embedded installed apps as code under `Modules/`.
+- `mhmiton/laravel-modules-livewire` — wires Livewire components to modules.
+- `livewire/livewire` + `wire-elements/modal` — interactive UIs and modals.
+- `laravel/fortify` — authentication and two-factor.
+- `laravel/sanctum` — tokens (the mobile app login and the `/api/mobile/*` APIs).
+- `spatie/laravel-activitylog` — activity log.
+- `laravel/pulse` — monitoring (with custom cards for partner activity).
+- `maatwebsite/excel`, `barryvdh/laravel-dompdf`, `mpdf/mpdf` — export, import, and
+  PDF printing.
+- `firebase/php-jwt` — used in `okta-partners` to sign JWTs (not in okta-web
+  itself; okta-web's signatures are hand-rolled HS256).
 
-## حزم JavaScript (`package.json`)
+## JavaScript packages (`package.json`)
 
 ### Dependencies
 
-- `@tailwindcss/vite` — تكامل Tailwind CSS v4 مع Vite.
-- `autoprefixer` — إضافة بادئات المتصفحات لقواعد CSS تلقائياً.
-- `axios` — عميل HTTP للمتصفح.
-- `concurrently` — تشغيل عدة أوامر تطوير معاً (`composer run dev`).
-- `driver.js` — الجولات التعريفية داخل الواجهة (product tours).
-- `flatpickr` — منتقي التاريخ/الوقت.
-- `laravel-vite-plugin` — تكامل Vite الرسمي مع Laravel.
-- `sortablejs` — السحب والإفلات (إعادة ترتيب القوائم).
-- `vite` — أداة البناء وخادم التطوير.
+- `@tailwindcss/vite` — Tailwind CSS v4 integration with Vite.
+- `autoprefixer` — adds browser prefixes to CSS rules automatically.
+- `axios` — browser HTTP client.
+- `concurrently` — runs several dev commands together (`composer run dev`).
+- `driver.js` — in-app product tours.
+- `flatpickr` — date/time picker.
+- `laravel-vite-plugin` — Laravel's official Vite integration.
+- `sortablejs` — drag-and-drop (list reordering).
+- `vite` — build tool and dev server.
 
 ### Optional dependencies
 
-- `@rollup/rollup-linux-x64-gnu`، `@tailwindcss/oxide-linux-x64-gnu`، `lightningcss-linux-x64-gnu` — ملفات ثنائية أصلية لتسريع البناء على Linux x64.
+- `@rollup/rollup-linux-x64-gnu`, `@tailwindcss/oxide-linux-x64-gnu`,
+  `lightningcss-linux-x64-gnu` — native binaries that speed up builds on Linux x64.
 
 ### Dev dependencies
 
-- `tailwindcss` — إطار CSS الأساسي للواجهة.
+- `tailwindcss` — the core CSS framework for the UI.
