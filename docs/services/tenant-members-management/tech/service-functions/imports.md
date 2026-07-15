@@ -2,14 +2,14 @@
 
 ## 1) PreviewImport
 
-- **Goal**: Parsing + Validation + Preview بدون كتابة نهائية.
-- **Auth**:
+- **الهدف**: Parsing + Validation + Preview بدون كتابة نهائية.
+- **الصلاحية**:
   - حسب النوع: `tenant_members_management.import.students` أو غيرها
-- **Input**:
+- **المدخلات**:
   - `import_type`: students | guardians | employees
   - `file`
   - (اختياري) `schema_variant`
-- **Output**:
+- **المخرجات**:
   - `rows[]` مع:
     - `data` (normalized)
     - `errors[]` (row-level)
@@ -17,20 +17,20 @@
 
 ## 2) ExecuteImport
 
-- **Goal**: تنفيذ الاستيراد النهائي.
-- **Auth**: حسب النوع
-- **Input**:
+- **الهدف**: تنفيذ الاستيراد النهائي.
+- **الصلاحية**: حسب النوع
+- **المدخلات**:
   - `import_session_id` أو `rows` بعد المعاينة
-- **Writes**:
+- **الكتابة**:
   - upsert entities
   - attach relations
   - dispatch post-jobs
 
 ## 3) DownloadEmptyTemplate (Okta template)
 
-- **Goal**: تنزيل ملف Excel فارغ مُهيأ للجهة.
-- **Auth**: `tenant_members_management.file_formats.download_templates`
-- **Output**: ملف Excel
+- **الهدف**: تنزيل ملف Excel فارغ مُهيأ للجهة.
+- **الصلاحية**: `tenant_members_management.file_formats.download_templates`
+- **المخرجات**: ملف Excel
 
 > يجب أن يحتوي القالب حقولاً تُحقق إلزامية الصف/الفصل.
 

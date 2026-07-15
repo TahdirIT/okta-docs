@@ -2,35 +2,35 @@
 
 ## 1) ListGuardians
 
-- **Goal**: إرجاع قائمة أولياء الأمور الذين لديهم أبناء ضمن الجهة.
-- **Auth**: `tenant_members_management.guardians.view`
-- **Input**:
-  - `search` (optional)
+- **الهدف**: إرجاع قائمة أولياء الأمور الذين لديهم أبناء ضمن الجهة.
+- **الصلاحية**: `tenant_members_management.guardians.view`
+- **المدخلات**:
+  - `search` (اختياري)
   - `page`, `per_page`
-- **Output**: `paginated list` مع `children_count`
+- **المخرجات**: `paginated list` مع `children_count`
 
 ## 2) LinkGuardianToStudent
 
-- **Goal**: ربط ولي أمر بطالب ضمن الجهة.
-- **Auth**: `tenant_members_management.guardians.link_student`
-- **Input**:
+- **الهدف**: ربط ولي أمر بطالب ضمن الجهة.
+- **الصلاحية**: `tenant_members_management.guardians.link_student`
+- **المدخلات**:
   - `guardian_national_id` (أو `guardian_user_id`)
   - `student_id`
-- **Validation**:
+- **التحقق**:
   - student ضمن الجهة
   - منع self-link
   - منع إعادة الربط إذا العلاقة فعّالة
-- **Writes**:
+- **الكتابة**:
   - upsert User/Guardian (إن لزم)
   - attach guardian↔student
 
 ## 3) UnlinkGuardianFromStudent
 
-- **Goal**: فصل العلاقة بين ولي وطالب.
-- **Auth**: `tenant_members_management.guardians.unlink_student`
-- **Input**:
+- **الهدف**: فصل العلاقة بين ولي وطالب.
+- **الصلاحية**: `tenant_members_management.guardians.unlink_student`
+- **المدخلات**:
   - `guardian_id`
   - `student_id`
-- **Writes**:
+- **الكتابة**:
   - set `unlinked_at = now()` على pivot
 

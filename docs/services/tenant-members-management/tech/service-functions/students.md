@@ -2,30 +2,30 @@
 
 ## 1) ListStudents
 
-- **Goal**: إرجاع قائمة طلاب الجهة مع بحث/تصفية.
-- **Auth**: `tenant_members_management.students.view`
-- **Input**:
-  - `search` (optional)
-  - `stage_id` (optional)
-  - `section_id` (optional)
-  - `status` (optional)
+- **الهدف**: إرجاع قائمة طلاب الجهة مع بحث/تصفية.
+- **الصلاحية**: `tenant_members_management.students.view`
+- **المدخلات**:
+  - `search` (اختياري)
+  - `stage_id` (اختياري)
+  - `section_id` (اختياري)
+  - `status` (اختياري)
   - `page`, `per_page`
-- **Output**: `paginated list`
+- **المخرجات**: `paginated list`
 
 ## 2) CreateStudentAndAttachToTenant
 
-- **Goal**: إنشاء/ربط طالب جديد داخل الجهة مع فصل فعّال.
-- **Auth**: `tenant_members_management.students.create`
-- **Input**:
+- **الهدف**: إنشاء/ربط طالب جديد داخل الجهة مع فصل فعّال.
+- **الصلاحية**: `tenant_members_management.students.create`
+- **المدخلات**:
   - `national_id`
-  - `name_ar` (+ optional `name_en`)
+  - `name_ar` (+ اختياري `name_en`)
   - `active_status` (regular/affiliate)
-  - `section_id` (mandatory)
-- **Validation**:
+  - `section_id` (إلزامي)
+- **التحقق**:
   - منع وجود الطالب داخل نفس الجهة.
   - منع ارتباطه بجهة أخرى (حسب السياسة).
   - `section_id` يجب أن ينتمي للجهة.
-- **Writes**:
+- **الكتابة**:
   - Upsert `User`
   - Upsert `Student`
   - Attach Student↔Tenant
@@ -33,28 +33,28 @@
 
 ## 3) MoveStudentToSection
 
-- **Goal**: نقل طالب لفصل آخر داخل الجهة.
-- **Auth**: `tenant_members_management.students.move_section`
-- **Input**:
+- **الهدف**: نقل طالب لفصل آخر داخل الجهة.
+- **الصلاحية**: `tenant_members_management.students.move_section`
+- **المدخلات**:
   - `student_id`
   - `to_section_id`
-- **Validation**:
+- **التحقق**:
   - student ضمن الجهة
   - to_section ضمن الجهة
-- **Writes (atomic)**:
+- **الكتابة (atomic)**:
   - release pivot القديم
   - attach pivot جديد
   - update `active_section_id`
 
 ## 4) UnlinkStudentFromTenant
 
-- **Goal**: فصل الطالب من الجهة.
-- **Auth**: `tenant_members_management.students.unlink`
-- **Input**:
+- **الهدف**: فصل الطالب من الجهة.
+- **الصلاحية**: `tenant_members_management.students.unlink`
+- **المدخلات**:
   - `student_id`
-- **Writes**:
+- **الكتابة**:
   - release Student↔Tenant pivot
   - release Student↔Section pivot (أو تحديث `active_section_id = null` حسب السياسة)
-- **Notes**:
+- **ملاحظات**:
   - يجب منع بقاء الطالب بحالة “نشط” دون فصل/جهة.
 

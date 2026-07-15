@@ -2,53 +2,53 @@
 
 ## 1) ListEmployees
 
-- **Goal**: إرجاع قائمة موظفي الجهة مع بحث.
-- **Auth**: `tenant_members_management.employees.view`
-- **Input**:
-  - `search` (optional)
+- **الهدف**: إرجاع قائمة موظفي الجهة مع بحث.
+- **الصلاحية**: `tenant_members_management.employees.view`
+- **المدخلات**:
+  - `search` (اختياري)
   - `page`, `per_page`
 
 ## 2) AddEmployeeToTenant
 
-- **Goal**: إضافة موظف جديد أو ربط موظف موجود بالجهة.
-- **Auth**: `tenant_members_management.employees.create`
-- **Input**:
+- **الهدف**: إضافة موظف جديد أو ربط موظف موجود بالجهة.
+- **الصلاحية**: `tenant_members_management.employees.create`
+- **المدخلات**:
   - `national_id`
-  - `name_ar` (+ optional)
+  - `name_ar` (+ اختياري)
   - `primary_role_id`
-  - `extra_role_ids[]` (optional)
-- **Validation**:
+  - `extra_role_ids[]` (اختياري)
+- **التحقق**:
   - منع وجود الموظف داخل الجهة مسبقاً
   - التأكد من أن الأدوار tenant-scoped ضمن نفس الجهة
-- **Writes**:
+- **الكتابة**:
   - upsert User
   - upsert Employee
   - attach employee↔tenant + assign roles
 
 ## 3) UpdateEmployeeRoles
 
-- **Goal**: تحديث أدوار موظف داخل الجهة.
-- **Auth**: `tenant_members_management.employees.update`
-- **Input**:
+- **الهدف**: تحديث أدوار موظف داخل الجهة.
+- **الصلاحية**: `tenant_members_management.employees.update`
+- **المدخلات**:
   - `employee_id`
   - `primary_role_id`
   - `extra_role_ids[]`
-- **Writes**:
+- **الكتابة**:
   - sync roles tenant-scoped
 
 ## 4) ChangeEmployeePassword
 
-- **Goal**: تغيير كلمة المرور لموظف (إجراء إداري).
-- **Auth**: `tenant_members_management.employees.change_password`
-- **Input**:
+- **الهدف**: تغيير كلمة المرور لموظف (إجراء إداري).
+- **الصلاحية**: `tenant_members_management.employees.change_password`
+- **المدخلات**:
   - `employee_id`
   - `new_password`
 
 ## 5) UnlinkEmployeeFromTenant
 
-- **Goal**: فصل الموظف من الجهة.
-- **Auth**: `tenant_members_management.employees.unlink`
-- **Writes**:
+- **الهدف**: فصل الموظف من الجهة.
+- **الصلاحية**: `tenant_members_management.employees.unlink`
+- **الكتابة**:
   - set `released_at`
   - (اختياري) revoke roles tenant-scoped
 
