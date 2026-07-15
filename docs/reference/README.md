@@ -23,7 +23,7 @@ standards the code repos must obey see
 
 | File | Covers |
 |---|---|
-| [`packages.md`](./packages.md) | أهم الحزم التي يقوم عليها `okta-web` (مرجع سريع؛ المصدر الفعلي `composer.json`/`package.json`). |
+| [`packages.md`](./packages.md) | الحزم البارزة لكل منصّة (web / partners / app) ودورها — بلا إصدارات؛ المصدر الفعلي للقائمة والإصدارات هو مانيفست كل مشروع. |
 | [`store-listings/`](./store-listings/store-listing.md) | نصوص متجر التطبيقات (App Store / Google Play) لتطبيق `okta-app`. |
 
 > The repo-root map is [`../../CLAUDE.md`](../../CLAUDE.md) — start there; its
