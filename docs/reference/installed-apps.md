@@ -14,20 +14,9 @@ and in the boilerplate `okta-partners` pushes to every new application repo.
 > e.g. `example-app`), `<module_lower>` (snake_case), `<MODULE_UPPER>`
 > (UPPER_SNAKE). These mirror the boilerplate's substitution tokens.
 
-<a id="real-examples"></a>
-## Real examples in this workspace
-
-Three installed-application repos live alongside the platform repos and are the
-concrete references for this contract (each is an **embedded** module authored
-by the platform team's partner account):
-
-| Repo | App | Traits worth studying |
-|---|---|---|
-| `okta-smart-timetable` | «اوكتا الجدول الذكي» — AI-assisted school timetable generation + daily class operations (attendance, substitutes). | Platform-AI usage (`aiSupport: true`, `aiMode: platform`, `app/AiTools/`), read-only education scopes, richest partner-policy toolset (adds `UiScanner` + `NotificationScanner`). |
-| `okta-exams` | «اوكتا الاختبارات النهائية» — final-exam periods, committees, seat distribution, observers, attendance, printable reports. | **Paid** app (pricing block), `rbac_permissions` grants (~26 fine-grained permissions), mpdf report suite, a public marketing landing route, a student-profile panel injected into the platform, AI committee tools, per-audience mobile screens (admin/observer/student/guardian). |
-| `okta-hdor` | «اوكتا حضور» — student check-in/out, absence cutoff, leave requests, parent notifications. | Richest **notifications** manifest (7 types incl. WhatsApp), a module scheduler (`daily-closure`) + console commands, outbound signed webhooks with a management UI, mobile check-in API (barcode/NFC/face/…), the most complete in-module `Services/PartnerApi/` wrapper layer. |
-
----
+Installable applications live in their own partner repos (scaffolded from
+`okta-partners`); each is an **embedded** or **external** module that follows the
+contract below. An app's own product/data documentation lives in its own repo.
 
 ## 1. Identity: two descriptors at the repo root
 
@@ -221,8 +210,7 @@ boot responsibilities that generalize:
 - Load translations + views under the `<module-slug>` namespace.
 - Register migrations from `database/migrations/`.
 - Register Livewire components, event listeners, console commands, and scheduled
-  jobs (e.g. `okta-hdor` registers a `dailyAt` closure job with
-  `withoutOverlapping`).
+  jobs (e.g. a `dailyAt` closure job with `withoutOverlapping`).
 
 > The exact set of components/events/commands is application-specific; the
 > *mechanism* (one provider that registers routes + migrations + views + i18n +
@@ -344,7 +332,7 @@ At runtime the platform reinforces this: sensitive host models use the
   shell for users of that Tenant who hold the relevant permissions.
 - Optional deeper integrations: `rbac_permissions` (permissions created on
   install and granted to roles) and **student-profile panels** an app registers
-  from its provider (`okta-exams` injects an exam-schedule panel — see
+  from its provider (e.g. a student-profile panel — see
   `okta-web/CLAUDE.md`, «ملف الطالب»).
 
 ---

@@ -314,9 +314,8 @@ Activation state is stored in the DB, not the filesystem:
 - First migration from file → database:
   `php artisan migrate && php artisan modules:import-statuses-from-json`.
 
-Three real installed-application repos live in this workspace —
-`okta-smart-timetable`, `okta-exams`, `okta-hdor` — see
-[installed-apps.md](./installed-apps.md#real-examples).
+Installable applications live in their own partner repos — see
+[installed-apps.md](./installed-apps.md).
 
 ---
 

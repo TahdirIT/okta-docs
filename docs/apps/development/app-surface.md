@@ -94,7 +94,7 @@ one entry):
   (`GetPortalCatalogForUser` server-side). Block-level fields act as defaults
   for every audience.
 
-`okta-exams` is a live example: admin/observer tenant audiences plus
+An app may declare, for example, admin/observer tenant audiences plus
 student/guardian portal audiences, each with its own `mobile/screens/*.blade.php`.
 
 ---

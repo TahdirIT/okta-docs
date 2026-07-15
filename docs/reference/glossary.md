@@ -29,9 +29,8 @@ grounded in the actual code of the workspace repositories.
 - **okta-docs** — This repository. The documentation hub and entry point for any
   new session. See the root [`../../CLAUDE.md`](../../CLAUDE.md).
 - **Installed-application repos** — Each installable application lives in its
-  own partner repo scaffolded from the `okta-partners` boilerplate. Three live
-  in this workspace: `okta-smart-timetable`, `okta-exams`, `okta-hdor`. See
-  [installed-apps.md](./installed-apps.md#real-examples).
+  own partner repo scaffolded from the `okta-partners` boilerplate. See
+  [installed-apps.md](./installed-apps.md).
 
 ---
 
@@ -89,8 +88,7 @@ grounded in the actual code of the workspace repositories.
 - **Installable application / installed application** — A packaged Laravel module
   that a Tenant installs through `okta-partners` into `okta-web`. Identified by a
   `moduleId` (kebab-case slug). The general contract is documented in
-  [installed-apps.md](./installed-apps.md); three real examples live in this
-  workspace (`okta-smart-timetable`, `okta-exams`, `okta-hdor`).
+  [installed-apps.md](./installed-apps.md).
 - **Module** — The implementation form of an installable application:
   an `nwidart/laravel-modules` package (`module.json` + service provider) under
   `okta-web`'s `Modules/` directory (populated at install time via

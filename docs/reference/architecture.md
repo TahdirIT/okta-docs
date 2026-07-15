@@ -23,9 +23,8 @@ product boundary:
   launches the applications a Tenant has installed (plus the cross-tenant
   student/guardian portals).
 - **`okta-docs`** is how the whole thing is documented and standardized.
-- **Installed-application repos** (one per app — `okta-smart-timetable`,
-  `okta-exams`, `okta-hdor` in this workspace) carry the applications
-  themselves.
+- **Installed-application repos** (one per app, each in its own partner repo)
+  carry the applications themselves.
 
 An **installed application** is the thread that ties the three runtime repos
 together: authored/published in `okta-partners`, installed into `okta-web`, and
@@ -95,9 +94,7 @@ subdirectories (generated from the filesystem; vendored/build dirs omitted).
 │       ├── tech-standards/        # consumed by both Laravel repos
 │       └── services/ · apps/ · roles-and-entities/ · …
 │
-├── okta-smart-timetable/          # Installed app: AI timetable generation + daily class ops
-├── okta-exams/                    # Installed app: final-exam committees, seating, reports (paid)
-└── okta-hdor/                     # Installed app: student attendance / check-in-out + parent notifications
+└── <installed-app repos>/         # one per app, each in its own partner repo
     #   each: manifest.json, module.json, app/, mobile/, scripts/partner-policy/, ...
     #   scaffolded from okta-partners/resources/partner-boilerplate/
     #   embedded apps are installed (source-pulled) into okta-web/Modules/
@@ -133,11 +130,9 @@ subdirectories (generated from the filesystem; vendored/build dirs omitted).
            │ HTTP /api/mobile/*                            ▼
            │                                      ┌──────────────────────────┐
    ┌───────┴────────┐                             │ installed-application     │
-   │    okta-app    │                             │ repos (one per app), e.g. │
-   │ (Flutter client)│                            │ okta-smart-timetable,     │
-   └────────────────┘                             │ okta-exams, okta-hdor     │
-                                                  │ • embedded ⇒ code pulled   │
-                                                  │   into okta-web/Modules    │
+   │    okta-app    │                             │ repos (one per app)       │
+   │ (Flutter client)│                            │ • embedded ⇒ code pulled   │
+   └────────────────┘                             │   into okta-web/Modules    │
                                                   │ • external ⇒ hosted by     │
                                                   │   partner, HTTP+webhooks   │
                                                   └──────────────────────────┘

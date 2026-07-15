@@ -7,9 +7,8 @@ system picture and diagrams, read [architecture.md](./architecture.md).
 
 > A fifth kind of repository — an **installable application** — is not a fixed
 > repo: each application a Tenant installs lives in its own partner repository,
-> scaffolded from `okta-partners`. Three such repos live in this workspace —
-> `okta-smart-timetable`, `okta-exams`, and `okta-hdor` — and the general shape
-> is documented in [installed-apps.md](./installed-apps.md).
+> scaffolded from `okta-partners`. The general shape is documented in
+> [installed-apps.md](./installed-apps.md).
 
 ---
 
@@ -22,17 +21,12 @@ system picture and diagrams, read [architecture.md](./architecture.md).
 | `okta-app` | The client: a Flutter cross-platform app that lists and launches, per Tenant + role, the applications a Tenant has installed (plus student/guardian portals). | Flutter / Dart, Riverpod, go_router, Dio, webview | [app.md](./app.md) |
 | `okta-docs` | The documentation hub and session entry point (this repo). | Markdown | [`../../CLAUDE.md`](../../CLAUDE.md) |
 
-### Installed-application repos in this workspace
+### Installed-application repos
 
-| Repo | Application | Type |
-|---|---|---|
-| `okta-smart-timetable` | «اوكتا الجدول الذكي» — AI timetable generation + daily class operations | embedded |
-| `okta-exams` | «اوكتا الاختبارات النهائية» — final-exam committees, seating, observers, reports | embedded (paid) |
-| `okta-hdor` | «اوكتا حضور» — student attendance, leave requests, parent notifications | embedded |
-
-Each follows the [installed-application contract](./installed-apps.md): scaffolded
-from the `okta-partners` boilerplate, gated by the partner-policy scanners, and
-installed (source-pulled) into `okta-web/Modules/` per deployment.
+Installable applications live in their own partner repos. Each follows the
+[installed-application contract](./installed-apps.md): scaffolded from the
+`okta-partners` boilerplate, gated by the partner-policy scanners, and installed
+(source-pulled) into `okta-web/Modules/` per deployment.
 
 ---
 
@@ -130,8 +124,8 @@ Details: [app.md](./app.md).
             │   │                  │  HTTP bridge (publish / install / sync)
             │   └──────────────────┘  + pushes boilerplate to partner GitHub repos
             │
-            │  HTTP /api/mobile/*          okta-smart-timetable / okta-exams / okta-hdor
-            │                                  (installed-app repos; embedded code is
+            │  HTTP /api/mobile/*          installed-app repos (one per app)
+            │                                  (embedded code is
         okta-app                                source-pulled into okta-web/Modules/)
 ```
 

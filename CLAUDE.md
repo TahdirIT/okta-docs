@@ -25,7 +25,7 @@ open the reference file the table points you to.
 | **okta-partners** | The installation/deployment mechanism: author, version, review, publish, and install applications through the bridge into `okta-web`. | [`docs/reference/partners.md`](./docs/reference/partners.md) |
 | **okta-app** | The client: a Flutter app that lists and launches, per Tenant + role, the applications a Tenant has installed (plus student/guardian portals). | [`docs/reference/app.md`](./docs/reference/app.md) |
 | **okta-docs** | This repo: documentation hub + engineering/design standards. | [`docs/`](./docs/README.md) · [`docs/tech-standards/`](./docs/tech-standards/README.md) |
-| **okta-smart-timetable** · **okta-exams** · **okta-hdor** | Installed-application repos (one per app): AI timetable, final-exam committees, and student attendance — all follow the installed-application contract. | [`docs/reference/installed-apps.md`](./docs/reference/installed-apps.md) |
+| **Installed-app repos** (one per app) | Each installable application lives in its own partner repo and follows the installed-application contract. | [`docs/reference/installed-apps.md`](./docs/reference/installed-apps.md) |
 
 > Installable applications are not part of the core platform repos: each lives
 > in its own partner repo (scaffolded by `okta-partners`) and follows the
