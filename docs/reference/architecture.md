@@ -56,7 +56,7 @@ subdirectories (generated from the filesystem; vendored/build dirs omitted).
 │   ├── scripts/partner-policy/    # Scanner + UiScanner + PHPStan rule (source of truth for the boilerplate copy)
 │   └── tests/
 │
-├── okta-partners/                 # Installation / deployment mechanism — Laravel 13, JWT
+├── okta-partners/                 # Installation / deployment mechanism — Laravel 13, PostgreSQL, JWT
 │   ├── app/
 │   │   ├── Services/              # OktaWebService, BridgeSettings, GitHubAppService,
 │   │   │                          #   ModuleLifecycleService, PartnerScopes/Catalog/*,

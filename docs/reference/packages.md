@@ -50,7 +50,7 @@ tours), `flatpickr` (date picker), `sortablejs` (drag-reorder).
 
 ---
 
-## okta-partners (Laravel + Livewire; standard skeleton, no modules)
+## okta-partners (Laravel + Livewire, PostgreSQL; standard skeleton, no modules)
 
 **Framework & UI** — `laravel/framework`, `livewire/livewire`,
 `wire-elements/modal`, `laravel/tinker`. (Does **not** use

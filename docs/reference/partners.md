@@ -1,8 +1,9 @@
 # okta-partners — installation / deployment mechanism
 
-A **separate** Laravel 13 + Livewire 4 application (JWT via `firebase/php-jwt`)
-where installable applications are authored, versioned, reviewed, published, and
-installed *through the bridge* into [`okta-web`](./web.md). It shares **no code**
+A **separate** Laravel 13 + Livewire 4 application (PostgreSQL; JWT via
+`firebase/php-jwt`) where installable applications are authored, versioned,
+reviewed, published, and installed *through the bridge* into
+[`okta-web`](./web.md). It shares **no code**
 with `okta-web`; everything crosses the authenticated HTTP bridge. It has no
 contact with [`okta-app`](./app.md).
 
