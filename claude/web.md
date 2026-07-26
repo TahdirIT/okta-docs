@@ -165,6 +165,17 @@ directory, re-confirming that the active role holds the required scope, with
 `Cache-Control: no-store` and `Content-Security-Policy: frame-ancestors 'none'`.
 This is the page the `okta-app` WebView loads for embedded cards.
 
+### 3b. Native mini-app payload — `MiniappPayloadController`
+
+For `mobile.mode: native` cards, okta-app fetches a signed payload URL instead of
+a WebView URL. `MiniappPayloadController` calls `BundleMiniappSource`, which reads
+every `.dart` file under the module's `miniapp_dart/lib/` (realpath-fenced, size
+caps) into one **source bundle** (`{package, entry_file, entry_function,
+min_contract, files}`) and returns it with `Cache-Control: no-store`. okta-app
+compiles that source **on the device** (via `okta_miniapp`/`dart_eval`) and renders
+it natively — no WebView. The legacy schema/JSON bundler (`BundleMiniappPayload`)
+and the `miniapp/` runtime have been removed.
+
 ### 4. Scope-catalog bridge — `routes/api.php` (`/api/partners/*`)
 
 Consumed by `okta-partners` (guarded by `partner.api` shared Bearer token):

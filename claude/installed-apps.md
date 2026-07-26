@@ -51,8 +51,8 @@ shape:
 
   "mobile": {                                        // the client (okta-app) surface
     "supported": true,
-    "mode": "embedded",                              // embedded | external
-    "entry": "mobile/screens/dashboard.blade.php",
+    "mode": "embedded",                              // embedded | native | external
+    "entry": "mobile/screens/dashboard.blade.php",   // native: miniapp_dart/lib/main.dart
     "passRoleClaim": true,
     "allowedPlatforms": ["ios", "android", "windows", "linux"],
     "allowedRoles": ["tenant-admin"]

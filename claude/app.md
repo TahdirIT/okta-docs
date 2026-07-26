@@ -2,9 +2,11 @@
 
 A **Flutter** cross-platform client (Dart). It is a thin consumer of
 [`okta-web`](./web.md): the user logs in, picks an active Tenant + role, and sees
-the **catalog of applications that Tenant has installed**, launching each in a
-WebView. It talks only to `okta-web`'s `/api/mobile/*` API and has **no contact
-with [`okta-partners`](./partners.md)**.
+the **catalog of applications that Tenant has installed**, launching each either
+in a WebView (embedded/external apps) or as a **native source-on-device mini-app**
+(the `native` mode — real Dart compiled on the device, no WebView). It talks only
+to `okta-web`'s `/api/mobile/*` API and has **no contact with
+[`okta-partners`](./partners.md)**.
 
 Related: [architecture.md](./architecture.md#dual-surface) (the client surface) ·
 [installed-apps.md](./installed-apps.md#the-client-surface)
@@ -18,10 +20,17 @@ From `okta-app/pubspec.yaml`:
 - **State**: `flutter_riverpod`. **Routing**: `go_router`. **HTTP**: `dio`.
   **Secure storage**: `flutter_secure_storage`. **i18n**: `intl` +
   `flutter_localizations` (Arabic default, English; font *IBM Plex Sans Arabic*).
-- **WebView** (the heart of the client): `webview_flutter` (iOS/Android),
+- **WebView** (embedded/external apps): `webview_flutter` (iOS/Android),
   `webview_windows` (Windows, WebView2), `desktop_webview_window` (macOS/Linux
   fallback — opens a separate native window). Plus `permission_handler` (camera/
   mic just-in-time) and `nfc_manager` (native NFC bridged into the page).
+- **Native mini-app runtime** (`native` mode, no WebView): `okta_miniapp` (over
+  `dart_eval` / `flutter_eval`) — downloads a partner app's Dart **source bundle**,
+  compiles it **on the device** (once per published version, cached), and renders
+  it natively. Confined to `lib/features/miniapps/bridge/` and enforced by a
+  boundary CI. Partner code reaches the host only through the `Okta.*` bridge
+  (API/scan/upload/toast/context). This replaced the retired schema/JSON
+  `miniapp_kit` engine.
 
 Native shells **present in the repo**: `android/`, `ios/`, `windows/`. The
 pubspec declares the product as a multi-platform companion; `macos/`, `linux/`,

@@ -1,17 +1,19 @@
 # The client surface — screens inside okta-app
 
 How you develop the screen that appears as a **card** in the **okta-app** Flutter
-client and runs inside its WebView. This is the second half of the
-[dual surface](./README.md); it's driven entirely by your manifest's `mobile`
-block plus one server-rendered entry page.
+client. This is the second half of the [dual surface](./README.md); it's driven
+entirely by your manifest's `mobile` block.
 
-There are two modes:
+There are three modes:
 
 - **embedded** — your screen is a Blade page **served by okta-web** at
-  `/app/{slug}` and loaded into the client's WebView. (Most apps. The bulk of this
-  page.)
+  `/app/{slug}` and loaded into the client's WebView. (The bulk of this page.)
+- **native** — your screen is **real Dart** under `miniapp_dart/lib/`, shipped as
+  source and **compiled on the device** (source-on-device), then rendered
+  natively — **no WebView**. This is the successor to the retired schema/JSON
+  mini-app runtime. (See "Native mode".)
 - **external** — your screen is **hosted by you**; the client opens your URL
-  directly. (See the last section.)
+  directly. (See "External mode".)
 
 ---
 
@@ -31,12 +33,15 @@ GET /api/mobile/app-catalog ─────────────────�
                                       entry, allowed_platforms, allowed_roles,
                                       required_scope, pass_role_claim, icon} ] }
 user taps a card
-POST /api/mobile/app-catalog/{slug}/launch ────▶ embedded → temporarySignedRoute()
+POST /api/mobile/app-catalog/{slug}/launch ────▶ embedded/native → temporarySignedRoute()
    {tenant_id, role_id}                          external → your URL (+role JWT)
-   ◀──────── LaunchPayload (embedded signed URL | external URL)
-open in WebView
-  embedded → GET /app/{slug}?u&t&r&expires&sig ─▶ EnsureAppWebview + WebviewController
+   ◀──────── LaunchPayload (signed URL | external URL)
+embedded → open in WebView
+  GET /app/{slug}?u&t&r&expires&sig ────────────▶ EnsureAppWebview + WebviewController
                                                   renders mobile/screens/<entry>.blade.php
+native   → fetch the signed source bundle, compile on device, render (no WebView)
+  GET <signed payload URL> ─────────────────────▶ BundleMiniappSource
+                                                  reads miniapp_dart/lib/**.dart
 ```
 
 > The catalog request is a `GET` with `tenant_id`/`role_id` as **query params**
@@ -53,8 +58,10 @@ This block is the entire contract for the client surface:
 {
   "mobile": {
     "supported": true,                 // false → no card at all
-    "mode": "embedded",                // "embedded" | "external"
-    "entry": "mobile/screens/dashboard.blade.php",   // embedded only: page okta-web renders
+    "mode": "embedded",                // "embedded" | "native" | "external"
+    "entry": "mobile/screens/dashboard.blade.php",   // embedded: page okta-web renders.
+                                       // native: miniapp_dart/lib/main.dart
+    "minContract": 1,                  // native only: minimum host contract
     "allowedPlatforms": ["ios", "android", "windows", "linux"],  // [] = all
     "allowedRoles": ["tenant-admin"],  // [] = no role filter
     "requiredScope": "education.students.read",       // empty = no scope gate
@@ -240,7 +247,45 @@ in the view bag, and don't rely on cookies or framing.
 
 ---
 
-## 5. External mode
+## 5. Native mode — a source-on-device Dart mini-app
+
+When `mobile.mode` is `native`, your screen is **real Dart**, not a WebView page.
+You author it under `miniapp_dart/lib/` in your app repo (entry
+`miniapp_dart/lib/main.dart`, a `Widget main()`), pinned to the platform's
+`okta_miniapp` runtime. The flow:
+
+1. **Publish** — okta-web reads every `.dart` file under `miniapp_dart/lib/` into
+   one **signed source bundle** (`{package, entry_file, entry_function,
+   min_contract, files}`). No compiled artifact ever leaves the repo, so what is
+   reviewed is exactly what runs.
+2. **On device** — okta-app downloads the bundle, **compiles it on the device**
+   (once per published version, then caches the bytecode keyed by
+   `(slug, payload_version, runtime signature)`), and renders the widget your
+   `main()` returns — with the full platform identity, **no WebView**.
+
+**Host contract** — the only way out of the sandbox is the static `Okta.*` facade
+(`package:okta_host`, injected by the runtime): `Okta.context()` (tenant/role/
+locale/dark), `Okta.get/getQuery/post` (allow-listed to `/api/<your-slug>/…` and
+the scope-gated `/api/apps/*` partner API, tenant auth attached), `Okta.scanBarcode
+/scanNfc`, `Okta.uploadFile`, `Okta.toast`. The mini-app gets no `dart_eval`
+permissions — no direct network or filesystem.
+
+**Runtime subset** — the device runtime is `dart_eval` + `flutter_eval`, a subset
+of Dart/Flutter. A CI compile-check (`flutter test tool/validate.dart`) compiles
+your code against the exact device runtime, so a broken widget fails the build,
+not the user's phone. Declare `minContract` for host capabilities you depend on;
+the app shows "update the app" instead of running a mini-app it is too old for.
+The partner boilerplate's `miniapp_dart/README.md` carries the supported-patterns
+catalog (static `Okta.*` only, no `State.mounted`, closure-literal callbacks,
+`Map`-typed indexing, `ElevatedButton`/`TextButton` only, no `Wrap` /
+`AlignmentDirectional` / `Icons.*`, no nested loops).
+
+> This replaces the earlier schema/JSON mini-app runtime (`miniapp/`, the
+> `miniapp_kit` engine), which has been removed platform-wide.
+
+---
+
+## 6. External mode
 
 If `integrationType` is `external` and `mobile.mode` is `external`, you host the
 screen yourself:

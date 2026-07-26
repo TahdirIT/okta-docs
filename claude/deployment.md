@@ -119,6 +119,9 @@ permissions.
 
 - **embedded** → a short-lived **signed** URL to `okta-web`'s `/app/{slug}`,
   which renders the module's `mobile.entry` Blade inside the WebView;
+- **native** → a signed payload URL; `BundleMiniappSource` returns the module's
+  `miniapp_dart/lib/**.dart` as a source bundle, which okta-app compiles **on the
+  device** (cached per published version) and renders natively — no WebView;
 - **external** → the partner-hosted URL, with a signed role JWT if
   `passRoleClaim` is set.
 
