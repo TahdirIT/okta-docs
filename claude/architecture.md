@@ -87,7 +87,7 @@ subdirectories (generated from the filesystem; vendored/build dirs omitted).
 ```
 
 > An installable application's own structure (`manifest.json`, `module.json`,
-> `app/`, `mobile/`, `scripts/partner-policy/`, …) is documented in
+> `app/`, `okta_app/webview/`, `scripts/partner-policy/`, …) is documented in
 > [installed-apps.md](./installed-apps.md).
 
 ---
@@ -158,7 +158,7 @@ surfaces.**
    Livewire/Blade UI in the web sidebar         gets a card built from the module's
    at manifest `menu.route`, gated by           `mobile` manifest block (filtered by
    `module.access:<slug>`.                       platform + role + scope), then launches:
-                                                  • embedded ⇒ signed WebView URL to
+                                                  • webview  ⇒ signed WebView URL to
                                                     okta-web `/app/{slug}` rendering the
                                                     module's `mobile.entry` blade
                                                   • external ⇒ partner URL (+ optional
@@ -187,7 +187,7 @@ client surface uses the manifest's `mobile` block. See
    in the web sidebar.
 5. **Client surface** lights up: `okta-app` requests `/api/mobile/app-catalog`
    for the active `(tenant, role)` and renders the card; launching it opens the
-   embedded WebView or the external page.
+   webview-mode screen or the external page.
 
 The same sequence runs first in **sandbox** (development/testing) and then in
 **production** — the dev → prod progression detailed in

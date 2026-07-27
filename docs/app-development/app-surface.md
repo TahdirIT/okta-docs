@@ -6,9 +6,9 @@ entirely by your manifest's `mobile` block.
 
 There are three modes:
 
-- **embedded** — your screen is a Blade page **served by okta-web** at
+- **webview** — your screen is a Blade page **served by okta-web** at
   `/app/{slug}` and loaded into the client's WebView. (The bulk of this page.)
-- **native** — your screen is **real Dart** under `miniapp_dart/lib/`, shipped as
+- **native** — your screen is **real Dart** under `okta_app/native/main/lib/`, shipped as
   source and **compiled on the device** (source-on-device), then rendered
   natively — **no WebView**. This is the successor to the retired schema/JSON
   mini-app runtime. (See "Native mode".)
@@ -33,15 +33,15 @@ GET /api/mobile/app-catalog ─────────────────�
                                       entry, allowed_platforms, allowed_roles,
                                       required_scope, pass_role_claim, icon} ] }
 user taps a card
-POST /api/mobile/app-catalog/{slug}/launch ────▶ embedded/native → temporarySignedRoute()
+POST /api/mobile/app-catalog/{slug}/launch ────▶ webview/native → temporarySignedRoute()
    {tenant_id, role_id}                          external → your URL (+role JWT)
    ◀──────── LaunchPayload (signed URL | external URL)
-embedded → open in WebView
+webview  → open in WebView
   GET /app/{slug}?u&t&r&expires&sig ────────────▶ EnsureAppWebview + WebviewController
-                                                  renders mobile/screens/<entry>.blade.php
+                                                  renders okta_app/webview/screens/<entry>.blade.php
 native   → fetch the signed source bundle, compile on device, render (no WebView)
   GET <signed payload URL> ─────────────────────▶ BundleMiniappSource
-                                                  reads miniapp_dart/lib/**.dart
+                                                  reads okta_app/native/<entry>/lib/**.dart
 ```
 
 > The catalog request is a `GET` with `tenant_id`/`role_id` as **query params**
@@ -59,8 +59,8 @@ This block is the entire contract for the client surface:
   "mobile": {
     "supported": true,                 // false → no card at all
     "mode": "webview",                // "webview" | "native" | "external"
-    "entry": "mobile/screens/dashboard.blade.php",   // embedded: page okta-web renders.
-                                       // native: miniapp_dart/lib/main.dart
+    "entry": "okta_app/webview/screens/dashboard.blade.php",   // webview: page okta-web renders.
+                                       // native: okta_app/native/main/lib/main.dart
     "minContract": 1,                  // native only: minimum host contract
     "allowedPlatforms": ["ios", "android", "windows", "linux"],  // [] = all
     "allowedRoles": ["tenant-admin"],  // [] = no role filter
@@ -79,10 +79,10 @@ Field reference: [`./manifest-reference.md`](./manifest-reference.md).
 
 ---
 
-## 2. Develop the entry page (embedded mode)
+## 2. Develop the entry page (webview mode)
 
 Your entry is a **single server-rendered Blade page** at the `entry` path under
-your module's `mobile/` directory. It is **not** a Livewire page and does **not**
+your module's `okta_app/webview/` directory. It is **not** a Livewire page and does **not**
 share the okta-web shell — it's a standalone HTML document the WebView loads as its
 main document. The established pattern:
 
@@ -212,7 +212,7 @@ you navigate away — release on `hashchange` off the capture screen.)
 
 ---
 
-## 4. How okta-web serves the embedded screen (so you know the guarantees)
+## 4. How okta-web serves the webview screen (so you know the guarantees)
 
 You don't write this, but understanding it explains the view bag and the headers.
 
@@ -234,15 +234,15 @@ time (not just at launch time):
 
 - requires `mode === 'webview'` (external cards never render here);
 - resolves your installed module dir `Modules/<StudlySlug>/`;
-- **sandboxes** the manifest `entry` to your `mobile/` directory — it must start
-  with `mobile/`, contain no `..`, and `realpath` under `<module>/mobile/`, else 404;
+- **sandboxes** the manifest `entry` to your `okta_app/webview/` directory — it must start
+  with `okta_app/webview/`, contain no `..`, and `realpath` under `<module>/okta_app/webview/`, else 404;
 - renders the Blade with view bag `{ user, role, slug }`;
 - **injects platform chrome** (typography/base styles) right before `</head>` so
-  every embedded screen inherits the okta-web look;
+  every webview screen inherits the okta-web look;
 - sets `Cache-Control: no-store`, `Content-Security-Policy: frame-ancestors 'none'`,
   `X-Frame-Options: DENY`, `Referrer-Policy: no-referrer`.
 
-Takeaways for you: put your entry under `mobile/`, expect `$user`/`$role`/`$slug`
+Takeaways for you: put your entry under `okta_app/webview/`, expect `$user`/`$role`/`$slug`
 in the view bag, and don't rely on cookies or framing.
 
 ---
@@ -250,12 +250,21 @@ in the view bag, and don't rely on cookies or framing.
 ## 5. Native mode — a source-on-device Dart mini-app
 
 When `mobile.mode` is `native`, your screen is **real Dart**, not a WebView page.
-You author it under `miniapp_dart/lib/` in your app repo (entry
-`miniapp_dart/lib/main.dart`, a `Widget main()`), pinned to the platform's
-`okta_miniapp` runtime. The flow:
+You author it under `okta_app/native/<entry>/lib/` in your app repo (entry
+`okta_app/native/<entry>/lib/main.dart`, a `Widget main()`), pinned to the
+platform's `okta_miniapp` runtime.
 
-1. **Publish** — okta-web reads every `.dart` file under `miniapp_dart/lib/` into
-   one **signed source bundle** (`{package, entry_file, entry_function,
+`<entry>` names a **standalone Dart package** — its own `pubspec.yaml`, its own
+`lib/`. The folder is keyed by **entry, not by account type**: several audiences
+may point at the same entry, and an app that wants one screen for everyone ships
+a single `okta_app/native/main/`. Add a sibling folder only when an audience
+genuinely needs a different app. A bundle carries exactly one package: siblings
+are never bundled together, so they can't leak into each other.
+
+The flow:
+
+1. **Publish** — okta-web reads every `.dart` file under the named entry's `lib/`
+   into one **signed source bundle** (`{package, entry_file, entry_function,
    min_contract, files}`). No compiled artifact ever leaves the repo, so what is
    reviewed is exactly what runs.
 2. **On device** — okta-app downloads the bundle, **compiles it on the device**
@@ -275,7 +284,7 @@ of Dart/Flutter. A CI compile-check (`flutter test tool/validate.dart`) compiles
 your code against the exact device runtime, so a broken widget fails the build,
 not the user's phone. Declare `minContract` for host capabilities you depend on;
 the app shows "update the app" instead of running a mini-app it is too old for.
-The partner boilerplate's `miniapp_dart/README.md` carries the supported-patterns
+The partner boilerplate's `okta_app/native/main/README.md` carries the supported-patterns
 catalog (static `Okta.*` only, no `State.mounted`, closure-literal callbacks,
 `Map`-typed indexing, `ElevatedButton`/`TextButton` only, no `Wrap` /
 `AlignmentDirectional` / `Icons.*`, no nested loops).
@@ -303,10 +312,10 @@ screen yourself:
 
 ---
 
-## Checklist — a client screen (embedded)
+## Checklist — a client screen (webview)
 
 - [ ] `mobile` block in the manifest: `supported`, `mode: webview`, `entry` under
-      `mobile/`, plus `allowedPlatforms`/`allowedRoles`/`requiredScope` as needed.
+      `okta_app/webview/`, plus `allowedPlatforms`/`allowedRoles`/`requiredScope` as needed.
 - [ ] Entry Blade mints a Sanctum token, builds a `BOOT` object, renders a
       hash-routed SPA.
 - [ ] All data calls go to **your** `/api/<slug>/*` with `Authorization: Bearer` +

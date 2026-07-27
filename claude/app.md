@@ -3,7 +3,7 @@
 A **Flutter** cross-platform client (Dart). It is a thin consumer of
 [`okta-web`](./web.md): the user logs in, picks an active Tenant + role, and sees
 the **catalog of applications that Tenant has installed**, launching each either
-in a WebView (embedded/external apps) or as a **native source-on-device mini-app**
+in a WebView (`webview`/`external` modes) or as a **native source-on-device mini-app**
 (the `native` mode — real Dart compiled on the device, no WebView). It talks only
 to `okta-web`'s `/api/mobile/*` API and has **no contact with
 [`okta-partners`](./partners.md)**.
@@ -20,7 +20,7 @@ From `okta-app/pubspec.yaml`:
 - **State**: `flutter_riverpod`. **Routing**: `go_router`. **HTTP**: `dio`.
   **Secure storage**: `flutter_secure_storage`. **i18n**: `intl` +
   `flutter_localizations` (Arabic default, English; font *IBM Plex Sans Arabic*).
-- **WebView** (embedded/external apps): `webview_flutter` (iOS/Android),
+- **WebView** (`webview`/`external` modes): `webview_flutter` (iOS/Android),
   `webview_windows` (Windows, WebView2), `desktop_webview_window` (macOS/Linux
   fallback — opens a separate native window). Plus `permission_handler` (camera/
   mic just-in-time) and `nfc_manager` (native NFC bridged into the page).
@@ -75,7 +75,7 @@ Endpoints consumed (all on `okta-web`):
 | `GET  /api/mobile/auth/me` | validate session on cold start |
 | `GET/POST /api/mobile/auth/context` | list / select `{scope, tenant_id, role_ids}` |
 | `GET  /api/mobile/app-catalog` | **installed-app cards** for the active `(tenant, role)` |
-| `POST /api/mobile/app-catalog/{slug}/launch` | resolve launch URL (signed embedded URL or external URL + optional JWT) |
+| `POST /api/mobile/app-catalog/{slug}/launch` | resolve launch URL (signed webview URL or external URL + optional JWT) |
 | `POST /api/mobile/auth/logout` | best-effort logout |
 | `POST /api/mobile/notification-tokens` | register this device's FCM token `{token, platform, app_version?, locale?}` |
 | `POST /api/mobile/notification-tokens/revoke` | unregister on logout (called **before** the Sanctum token is destroyed) |
@@ -167,7 +167,7 @@ exactly the cards `okta-web` returns from each installed module's `mobile` block
 - **Path-aware back button** walks up hash/path segments before popping the
   screen.
 
-For **embedded** cards the WebView loads the signed `/app/{slug}` URL on
+For **webview** cards the WebView loads the signed `/app/{slug}` URL on
 `okta-web`; for **external** cards it loads the partner URL with the role JWT in
 the fragment (when `passRoleClaim` is set). Either way, the page authenticates to
 `okta-web`'s mobile API with the token minted for the session.

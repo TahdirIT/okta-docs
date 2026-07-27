@@ -49,7 +49,7 @@ production.
               PLATFORM surface (okta-web)                          CLIENT surface (okta-app)
         embedded module UI in the web sidebar                 card in /api/mobile/app-catalog,
         at manifest `menu.route`                              launched via WebView (/app/{slug}
-                                                              embedded, or partner URL external)
+                                                              webview, or partner URL external)
 ```
 
 ### 1. Author (okta-partners)
@@ -117,10 +117,10 @@ permissions.
 `GetMobileCatalogForUser` builds a card from the module's `mobile` block
 (filtered by platform/role/scope). Launching it:
 
-- **embedded** → a short-lived **signed** URL to `okta-web`'s `/app/{slug}`,
+- **webview** → a short-lived **signed** URL to `okta-web`'s `/app/{slug}`,
   which renders the module's `mobile.entry` Blade inside the WebView;
 - **native** → a signed payload URL; `BundleMiniappSource` returns the module's
-  `miniapp_dart/lib/**.dart` as a source bundle, which okta-app compiles **on the
+  `okta_app/native/<entry>/lib/**.dart` as a source bundle, which okta-app compiles **on the
   device** (cached per published version) and renders natively — no WebView;
 - **external** → the partner-hosted URL, with a signed role JWT if
   `passRoleClaim` is set.

@@ -16,7 +16,7 @@ Companion: [`./web-surface.md`](./web-surface.md) · [`./app-surface.md`](./app-
 |---|---|---|---|
 | **Platform UI** (embedded) — `GET /<slug>/…` | The logged-in okta-web **session** + active Tenant (set by `context`/`active-tenant-context`). | `module.access:<slug>` confirms the Tenant installed your app. | User **permissions** (`can()`); in-process Partner API enforces **scopes**. |
 | **External HTTP runtime** — `/api/apps/*` | Your **installation token** (`Authorization: Bearer …`), resolved by `AuthenticateAppInstallation` into a `ModuleContext`. | The token is bound to `(tenant, module, installation)` + granted scopes. | `app.scope:<key>` per route (403 + `X-Missing-Scope`). |
-| **Client WebView** (embedded) — `GET /app/{slug}` then your `/api/<slug>/*` | A **signed launch URL** (the signature *is* the session) → your entry page **mints a Sanctum token** for the in-WebView code → that token authenticates calls to your own API. | The signed URL carries `u`/`t`/`r`; the minted token is yours. | `EnsureAppWebview` re-checks `requiredScope`/`allowedRoles`; your own context middleware sets the Tenant. |
+| **Client WebView** (`webview`) — `GET /app/{slug}` then your `/api/<slug>/*` | A **signed launch URL** (the signature *is* the session) → your entry page **mints a Sanctum token** for the in-WebView code → that token authenticates calls to your own API. | The signed URL carries `u`/`t`/`r`; the minted token is yours. | `EnsureAppWebview` re-checks `requiredScope`/`allowedRoles`; your own context middleware sets the Tenant. |
 
 ```
 PLATFORM UI                 EXTERNAL HTTP                 CLIENT WEBVIEW
@@ -46,7 +46,7 @@ in-process PartnerApi       app.scope:<key> →               render entry blade
 
 ## The minted WebView token (client surface)
 
-Generated **server-side** in your `mobile/` entry Blade, not by the client:
+Generated **server-side** in your `okta_app/webview/` entry Blade, not by the client:
 
 - revoke older tokens of the same name, then `createToken('<slug>:webview', ['*'],
   now()->addHours(8))` — long enough for a working session, short enough to expire;
@@ -55,7 +55,7 @@ Generated **server-side** in your `mobile/` entry Blade, not by the client:
 - paired with `X-Okta-Tenant-Id` so your module's context middleware verifies
   membership and calls `Tenant::makeCurrent()`.
 
-Details + code: [`./app-surface.md`](./app-surface.md#2-develop-the-entry-page-embedded-mode).
+Details + code: [`./app-surface.md`](./app-surface.md#2-develop-the-entry-page-webview-mode).
 
 ---
 

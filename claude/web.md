@@ -131,7 +131,7 @@ What `okta-app` calls (see [app.md](./app.md)):
   Version-gated by `EnforceMobileMinVersion` (HTTP 426 if the client is too old)
   and silenceable via a `mobile.app_catalog.kill_switch` platform setting.
 - `POST /api/mobile/app-catalog/{slug}/launch` — returns either a short-lived
-  **signed** URL to `/app/{slug}` (embedded) or the partner URL + optional role
+  **signed** URL to `/app/{slug}` (webview) or the partner URL + optional role
   JWT (external).
 - <a id="partner-notifications"></a>**Notifications surface** (plain
   `auth:sanctum`, no min-version gate):
@@ -160,16 +160,16 @@ What `okta-app` calls (see [app.md](./app.md)):
 ### 3. Embedded WebView — `routes/app.php` (`/app/{slug}`)
 
 `GET /app/{slug}` (middleware `web`, `signed`, `app.webview`, `throttle:30,1`)
-renders the embedded module's `mobile.entry` Blade file from its `mobile/`
+renders the embedded module's `mobile.entry` Blade file from its `okta_app/webview/`
 directory, re-confirming that the active role holds the required scope, with
 `Cache-Control: no-store` and `Content-Security-Policy: frame-ancestors 'none'`.
-This is the page the `okta-app` WebView loads for embedded cards.
+This is the page the `okta-app` WebView loads for webview-mode cards.
 
 ### 3b. Native mini-app payload — `MiniappPayloadController`
 
 For `mobile.mode: native` cards, okta-app fetches a signed payload URL instead of
 a WebView URL. `MiniappPayloadController` calls `BundleMiniappSource`, which reads
-every `.dart` file under the module's `miniapp_dart/lib/` (realpath-fenced, size
+every `.dart` file under the module's `okta_app/native/<entry>/lib/` (realpath-fenced, size
 caps) into one **source bundle** (`{package, entry_file, entry_function,
 min_contract, files}`) and returns it with `Cache-Control: no-store`. okta-app
 compiles that source **on the device** (via `okta_miniapp`/`dart_eval`) and renders

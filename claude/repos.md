@@ -72,7 +72,7 @@ Details: [partners.md](./partners.md).
 
 - **Owns**: the cross-platform end-user client. Login + active-context selection,
   a per-Tenant **catalog** of installed-app cards, and a platform-specific WebView
-  host that launches embedded screens (served by `okta-web`) and external partner
+  host that launches webview-mode screens (served by `okta-web`) and external partner
   pages.
 - **Depends only on `okta-web`**: every network call targets `okta-web`'s
   `/api/mobile/*` endpoints (auth, context, app-catalog, launch). It has **no
