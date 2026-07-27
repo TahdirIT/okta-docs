@@ -58,7 +58,7 @@ This block is the entire contract for the client surface:
 {
   "mobile": {
     "supported": true,                 // false → no card at all
-    "mode": "embedded",                // "embedded" | "native" | "external"
+    "mode": "webview",                // "webview" | "native" | "external"
     "entry": "mobile/screens/dashboard.blade.php",   // embedded: page okta-web renders.
                                        // native: miniapp_dart/lib/main.dart
     "minContract": 1,                  // native only: minimum host contract
@@ -232,7 +232,7 @@ time (not just at launch time):
 
 **`WebviewController::show`** then:
 
-- requires `mode === 'embedded'` (external cards never render here);
+- requires `mode === 'webview'` (external cards never render here);
 - resolves your installed module dir `Modules/<StudlySlug>/`;
 - **sandboxes** the manifest `entry` to your `mobile/` directory — it must start
   with `mobile/`, contain no `..`, and `realpath` under `<module>/mobile/`, else 404;
@@ -305,7 +305,7 @@ screen yourself:
 
 ## Checklist — a client screen (embedded)
 
-- [ ] `mobile` block in the manifest: `supported`, `mode: embedded`, `entry` under
+- [ ] `mobile` block in the manifest: `supported`, `mode: webview`, `entry` under
       `mobile/`, plus `allowedPlatforms`/`allowedRoles`/`requiredScope` as needed.
 - [ ] Entry Blade mints a Sanctum token, builds a `BOOT` object, renders a
       hash-routed SPA.

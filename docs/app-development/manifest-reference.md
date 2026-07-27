@@ -35,7 +35,7 @@ okta-web) on publish/install. For the complete contract and package structure, s
 
   "mobile": {
     "supported": true,
-    "mode": "embedded",
+    "mode": "webview",
     "entry": "mobile/screens/dashboard.blade.php",
     "minContract": 1,
     "allowedPlatforms": ["ios", "android", "windows", "linux"],
@@ -98,7 +98,7 @@ okta-web) on publish/install. For the complete contract and package structure, s
 - `integrationType` coherence: `embedded` must **not** carry an `external` block;
   `external` **requires** `external.webhookUrl` (HTTPS) + `webhookEvents[]`;
   `notification` requires its `notification` block.
-- `mobile`: `mode` is `embedded` | `native` | `external`. When `mode: embedded`,
+- `mobile`: `mode` is `webview` | `native` | `external`. When `mode: webview`,
   `entry` must be a path under `mobile/`; when `mode: native`, `entry` must be a
   `.dart` file under `miniapp_dart/lib/` (source-on-device — the schema/JSON
   `miniapp/` runtime has been removed) and `minContract` declares the minimum host

@@ -127,7 +127,7 @@ either tenant-scoped roles **or** a general portal, and names its own entry:
       "key": "staff",
       "kind": "primary",
       "roles": ["tenant-admin", "teacher"],     // tenant-scope audience
-      "mode": "embedded",
+      "mode": "webview",
       "entry": "mobile/screens/staff.blade.php",
       "requiredScope": "education.students.read",
       "allowedPlatforms": ["ios", "android"]
@@ -136,14 +136,14 @@ either tenant-scoped roles **or** a general portal, and names its own entry:
       "key": "guardian",
       "kind": "dependent",
       "portal": "guardian",                      // general-scope audience
-      "mode": "embedded",
+      "mode": "webview",
       "entry": "mobile/screens/family.blade.php"
     },
     {
       "key": "student",
       "kind": "dependent",
       "portal": "student",                       // shares the SAME entry as guardian
-      "mode": "embedded",
+      "mode": "webview",
       "entry": "mobile/screens/family.blade.php"
     }
   ]

@@ -134,7 +134,7 @@ Riverpod wires it together: changing the active context invalidates
 `features/app_catalog/` is the **client surface** of the dual-surface model:
 
 - `data/app_catalog_models.dart` — `AppCatalogCard { slug, displayName, iconUrl,
-  mode ('embedded'|'external'), entry, allowedOrigins, requiredScope,
+  mode ('webview'|'external'), entry, allowedOrigins, requiredScope,
   passRoleClaim }` and a `LaunchPayload` sealed type (`EmbeddedLaunch` =
   short-lived signed URL on `/app/{slug}`; `ExternalLaunch` = partner URL +
   allowed-origins fence + optional JWT in the URL fragment

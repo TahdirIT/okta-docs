@@ -135,7 +135,7 @@ okta-partners **يعكس** الكتالوج ولا يخترعه:
 ```json
 {
   "integrationType": "embedded",
-  "mobile": { "supported": true, "mode": "embedded", "passRoleClaim": true,
+  "mobile": { "supported": true, "mode": "webview", "passRoleClaim": true,
               "allowedRoles": ["tenant-admin"] },
   "scopes": [
     { "key": "education.students.read",        "required": true },

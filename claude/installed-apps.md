@@ -51,7 +51,7 @@ shape:
 
   "mobile": {                                        // the client (okta-app) surface
     "supported": true,
-    "mode": "embedded",                              // embedded | native | external
+    "mode": "webview",                              // webview | native | external
     "entry": "mobile/screens/dashboard.blade.php",   // native: miniapp_dart/lib/main.dart
     "passRoleClaim": true,
     "allowedPlatforms": ["ios", "android", "windows", "linux"],
@@ -297,7 +297,7 @@ catalog card `okta-app` renders (see
 [app.md](./app.md#rendering-a-tenants-installed-applications)):
 
 - `supported` — if false, the application is hidden from the mobile catalog.
-- `mode` — `embedded` (the platform serves the screen) or `external` (the partner
+- `mode` — `webview` (the platform serves the screen) or `external` (the partner
   hosts it).
 - `entry` — for embedded, a Blade path under the app's `mobile/` directory
   (e.g. `mobile/screens/<entry>.blade.php`).
