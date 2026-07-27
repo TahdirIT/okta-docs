@@ -177,7 +177,7 @@ every new application repo by `pushBoilerplate()`, with placeholders substituted
 (`__MODULE_NAME__`, `__MODULE_SLUG__`, `__MODULE_LOWER__`, `__MODULE_UPPER__`,
 `__MODULE_HASHID__`, and the PHPStan `{{MODULE_NAMESPACE}}` / `{{MODULE_ENV_PREFIX}}`
 / `{{MODULE_CONFIG_PREFIX}}` / `{{MODULE_PATHS}}`). It contains `manifest.json`,
-`module.json`, an `app/` skeleton, a `mobile/` entry, `routes/`, `lang/`,
+`module.json`, an `app/` skeleton, a `okta_app/webview/` entry, `routes/`, `lang/`,
 `scripts/partner-policy/` (Scanner + PHPStan rule, mirrored from okta-web), and
 the `.github/workflows/partner-module-policy.yml` CI gate. It lives under
 `resources/` (not `storage/`) so it ships in the release artifact. When the

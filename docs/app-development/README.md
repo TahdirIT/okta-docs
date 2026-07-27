@@ -65,7 +65,9 @@ example-app/
 │   ├── Livewire/                 ← platform-surface page components (okta-web)       ★
 │   └── Services/PartnerApi/      ← thin wrappers that call the host for data
 ├── resources/views/             ← Blade for the platform surface
-├── mobile/screens/<entry>.blade.php   ← client-surface entry rendered in the WebView ★
+├── okta_app/                    ← the whole client surface lives here (okta-app)      ★
+│   ├── webview/screens/<entry>.blade.php     ← mode: webview — rendered in the WebView
+│   └── native/<entry>/lib/main.dart          ← mode: native — a Dart package per entry
 ├── routes/{web.php,api.php}      ← web = platform UI; api = your mobile/machine API
 ├── config/{config.php,database.php}
 ├── database/migrations/         ← your own tables only

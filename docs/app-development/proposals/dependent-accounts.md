@@ -73,7 +73,7 @@ portal** (`student` / `guardian` → seen cross-tenant in the general scope).
   **that one tenant**, reads each module's `manifest['mobile']`, emits **one card
   per app**, then filters by `required_scope` (role permission) and `allowed_roles`
   (role name). → Strictly tenant-scoped; needs a chosen tenant + role.
-- Launch: `IssueWebviewLaunch` signs `/app/{slug}?u&t&r` for embedded, returns the
+- Launch: `IssueWebviewLaunch` signs `/app/{slug}?u&t&r` for `webview`, returns the
   single `entry`; `EnsureAppWebview` + `WebviewController` serve it.
 
 ### 2.3 The general (portal) scope ALREADY EXISTS — but carries no apps
@@ -128,7 +128,7 @@ either tenant-scoped roles **or** a general portal, and names its own entry:
       "kind": "primary",
       "roles": ["tenant-admin", "teacher"],     // tenant-scope audience
       "mode": "webview",
-      "entry": "mobile/screens/staff.blade.php",
+      "entry": "okta_app/webview/screens/staff.blade.php",
       "requiredScope": "education.students.read",
       "allowedPlatforms": ["ios", "android"]
     },
@@ -137,14 +137,14 @@ either tenant-scoped roles **or** a general portal, and names its own entry:
       "kind": "dependent",
       "portal": "guardian",                      // general-scope audience
       "mode": "webview",
-      "entry": "mobile/screens/family.blade.php"
+      "entry": "okta_app/webview/screens/family.blade.php"
     },
     {
       "key": "student",
       "kind": "dependent",
       "portal": "student",                       // shares the SAME entry as guardian
       "mode": "webview",
-      "entry": "mobile/screens/family.blade.php"
+      "entry": "okta_app/webview/screens/family.blade.php"
     }
   ]
 }
@@ -167,7 +167,7 @@ Rules:
   exactly one tenant-role audience, for older okta-web).
 - `VersionEditor` mobile tab → a repeatable list of audiences; each row picks
   *target* (roles **or** portal) + entry + options; validation (entry under
-  `mobile/`, mode/entry minimum, roles-xor-portal).
+  `okta_app/webview/`, mode/entry minimum, roles-xor-portal).
 - **Role vocabulary** for the picker: partners needs to know the platform roles
   (`tenant-admin`, `teacher`, …) and the two portals. `> TODO: confirm` whether to
   ship a fixed enum or sync a small **roles catalog** from okta-web (analogous to
@@ -175,7 +175,7 @@ Rules:
 
 ### 3.3 okta-web (consumption)
 - **`ManifestValidator`**: accept `mobile.audiences[]` (validate `kind`,
-  roles-xor-portal, `entry` under `mobile/`, `mode`); keep the legacy single block
+  roles-xor-portal, `entry` under `okta_app/webview/`, `mode`); keep the legacy single block
   valid.
 - **Tenant-scope catalog** (`GetMobileCatalogForUser`): instead of one card per
   app, select the **audience whose `roles` match the active role** and emit the card

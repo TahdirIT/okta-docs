@@ -52,7 +52,7 @@ shape:
   "mobile": {                                        // the client (okta-app) surface
     "supported": true,
     "mode": "webview",                              // webview | native | external
-    "entry": "mobile/screens/dashboard.blade.php",   // native: miniapp_dart/lib/main.dart
+    "entry": "okta_app/webview/screens/dashboard.blade.php",   // native: okta_app/native/main/lib/main.dart
     "passRoleClaim": true,
     "allowedPlatforms": ["ios", "android", "windows", "linux"],
     "allowedRoles": ["tenant-admin"]
@@ -148,7 +148,11 @@ at the service provider. Both are required for an embedded application.
 │   └── database.php               # the module's dedicated DB connection
 ├── database/migrations/           # module-owned tables only
 ├── lang/{ar,en}/
-├── mobile/screens/<entry>.blade.php   # the client-surface WebView entry (§ client)
+├── okta_app/                       # EVERYTHING the okta-app client renders (§ client)
+│   ├── webview/screens/<entry>.blade.php    # mode: webview — the WebView entry
+│   └── native/<entry>/             # mode: native — one Dart package per entry
+│       ├── pubspec.yaml
+│       └── lib/main.dart
 ├── resources/{views,assets,lang}/
 ├── routes/{web.php,api.php}        # web = platform UI; api = mobile/machine API
 ├── scripts/partner-policy/         # Scanner.php + check.php + phpstan/ (§6)
@@ -299,8 +303,8 @@ catalog card `okta-app` renders (see
 - `supported` — if false, the application is hidden from the mobile catalog.
 - `mode` — `webview` (the platform serves the screen) or `external` (the partner
   hosts it).
-- `entry` — for embedded, a Blade path under the app's `mobile/` directory
-  (e.g. `mobile/screens/<entry>.blade.php`).
+- `entry` — for `webview`, a Blade path under the app's `okta_app/webview/` directory
+  (e.g. `okta_app/webview/screens/<entry>.blade.php`).
 - `allowedPlatforms` — filters cards by `X-App-Platform` (empty = all).
 - `allowedRoles` — filters by the user's active role (empty = no filter).
 - `passRoleClaim` — if true, an external launch receives a signed role JWT.
@@ -310,7 +314,7 @@ How discovery + render works:
 1. `okta-app` calls `GET /api/mobile/app-catalog` for the active `(tenant, role)`.
 2. `okta-web` (`GetMobileCatalogForUser`) reads each installed module's `mobile`
    block, filters by platform + role + `requiredScope`, and returns cards.
-3. Launching an **embedded** card → `okta-web` issues a short-lived **signed**
+3. Launching a **webview** card → `okta-web` issues a short-lived **signed**
    URL to `/app/<module-slug>`, which renders the application's `entry` Blade.
    That page typically **mints a host token server-side** and hands it to its JS,
    so the in-WebView SPA calls the application's own `/api/<module-slug>/*`
