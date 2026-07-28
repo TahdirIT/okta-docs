@@ -286,8 +286,9 @@ not the user's phone. Declare `minContract` for host capabilities you depend on;
 the app shows "update the app" instead of running a mini-app it is too old for.
 The partner boilerplate's `okta_app/native/main/README.md` carries the supported-patterns
 catalog (static `Okta.*` only, no `State.mounted`, closure-literal callbacks,
-`Map`-typed indexing, `ElevatedButton`/`TextButton` only, no `Wrap` /
-`AlignmentDirectional` / `Icons.*`, no nested loops).
+JSON indexed on a `dynamic` receiver — never a `Map`-typed one, an explicit
+`flex:` on every `Expanded`/`Flexible`, `ElevatedButton`/`TextButton` only, no
+`Wrap` / `AlignmentDirectional` / `Icons.*`, no nested loops).
 
 > This replaces the earlier schema/JSON mini-app runtime (`miniapp/`, the
 > `miniapp_kit` engine), which has been removed platform-wide.
