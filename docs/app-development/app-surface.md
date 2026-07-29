@@ -288,7 +288,14 @@ The partner boilerplate's `okta_app/native/main/README.md` carries the supported
 catalog (static `Okta.*` only, no `State.mounted`, closure-literal callbacks,
 JSON indexed on a `dynamic` receiver — never a `Map`-typed one, an explicit
 `flex:` on every `Expanded`/`Flexible`, `ElevatedButton`/`TextButton` only, no
-`Wrap` / `AlignmentDirectional` / `Icons.*`, no nested loops).
+`Wrap` / `AlignmentDirectional` / `Icons.*`, no nested loops, and `ClipRRect`
+rather than `BoxDecoration` for rounding or borders).
+
+Note the limit of that compile-check: it catches what the runtime **rejects**,
+not what the runtime **discards**. A named argument the bridge does not declare
+is dropped silently rather than refused, so a call can pass CI, pass the
+analyzer, and still paint the wrong pixels — `BoxDecoration(borderRadius: …)`
+is the standing example. Visual review on a device stays part of the gate.
 
 > This replaces the earlier schema/JSON mini-app runtime (`miniapp/`, the
 > `miniapp_kit` engine), which has been removed platform-wide.
