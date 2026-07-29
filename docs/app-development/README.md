@@ -85,6 +85,7 @@ example-app/
 | Know exactly which manifest blocks drive what | [`./manifest-reference.md`](./manifest-reference.md) |
 | Read/write Tenant data the sanctioned way, and stay inside the isolation rules | [`./data-access-and-security.md`](./data-access-and-security.md) |
 | Understand auth/identity across the surfaces and the install lifecycle | [`./auth-and-lifecycle.md`](./auth-and-lifecycle.md) |
+| Gap analysis: Tahdir (v5app) attendance features vs okta-hdor/okta-app (Arabic) | [`./tahdir-gap-analysis.md`](./tahdir-gap-analysis.md) |
 | See the whole product picture / publish flow | [`../../claude/`](../../claude/) |
 
 ### Proposals / design specs (not yet implemented)
