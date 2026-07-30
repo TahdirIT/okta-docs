@@ -86,6 +86,7 @@ example-app/
 | Read/write Tenant data the sanctioned way, and stay inside the isolation rules | [`./data-access-and-security.md`](./data-access-and-security.md) |
 | Understand auth/identity across the surfaces and the install lifecycle | [`./auth-and-lifecycle.md`](./auth-and-lifecycle.md) |
 | Gap analysis: Tahdir (v5app) attendance features vs okta-hdor/okta-app (Arabic) | [`./tahdir-gap-analysis.md`](./tahdir-gap-analysis.md) |
+| Gap analysis: Tahdir calling (النداء) in v5website+v5app vs okta-calling (Arabic) | [`./tahdir-calling-gap-analysis.md`](./tahdir-calling-gap-analysis.md) |
 | See the whole product picture / publish flow | [`../../claude/`](../../claude/) |
 
 ### Proposals / design specs (not yet implemented)
