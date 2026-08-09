@@ -32,6 +32,15 @@ From `okta-app/pubspec.yaml`:
   (API/scan/upload/toast/context). This replaced the retired schema/JSON
   `miniapp_kit` engine.
 
+**Build constraint the runtime imposes:** every `--release` build of okta-app
+must pass **`--no-tree-shake-icons`**. Flutter subsets `MaterialIcons` by
+scanning *const* `IconData` at build time; a mini-app's icons are chosen at run
+time, on the device, so the scan cannot see them and tree-shaking would strip
+exactly the glyphs it needs. In practice the build fails first — `flutter_eval`
+constructs `IconData` non-const in its own source — which is Flutter refusing
+loudly rather than shipping empty icon boxes. CI passes the flag; local builds
+must too. Details: `okta-app/BUILDING.md`.
+
 Native shells **present in the repo**: `android/`, `ios/`, `windows/`. The
 pubspec declares the product as a multi-platform companion; `macos/`, `linux/`,
 and `web/` shells are **not** present in-repo, though the WebView packages for
