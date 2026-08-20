@@ -47,6 +47,30 @@ running; the card only decides whether to draw a tile. `[confirmed]`
 Limits enforced at assembly — `BundleMiniappSource.php:32-36`:
 **256 KB** per file, **2 MB** per bundle, **128** files.
 
+### Multiple files, and the import form
+
+The whole `lib/` tree is walked recursively (`BundleMiniappSource.php:80-82`) and
+handed to the compiler as **one** Dart package (`packages: {package: files}` —
+`okta_mini_app_bundle.dart:170-174`). So your files import each other by
+`package:` plus the package name from your `pubspec.yaml`:
+
+```dart
+// lib/main.dart          (package: 'demo_app')
+import 'package:demo_app/widget.dart';          // a sibling file
+import 'package:demo_app/widgets/card.dart';    // lib/widgets/card.dart
+```
+
+Live tested example: `okta-miniapp/test/okta_mini_app_bundle_test.dart:12-30`.
+Nested folders work — the path relative to `lib/` is kept as the key
+(`BundleMiniappSource.php:99`).
+
+**Relative imports** (`import 'widgets/card.dart'`) are not exercised anywhere in
+this repo — stick to `package:`. `[assumption]`
+
+The entry file need not be `main.dart`: the regex allows a nested tail, so
+`…/lib/src/app.dart` is a valid entry. What is fixed is the **function** name —
+`entry_function` is hard-coded server-side (`BundleMiniappSource.php:116`).
+
 ## The four injected libraries
 
 `okta-miniapp/lib/src/injected_sources.dart:41-46`. This map is the single

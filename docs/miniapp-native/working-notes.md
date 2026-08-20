@@ -392,6 +392,13 @@ Each is answerable in about a sentence by someone who already knows.
    `okta-miniapp/CLAUDE.md` §contract 13 and consistent with the ungated list, but
    the per-channel filtering itself lives in `okta-app/lib/features/toolkeys/` and
    was not traced. (`edges.md` §Tool keys gate coarsely, tagged `[likely]`)
+10. **Do relative imports work inside a mini-app package?** All of `lib/` is handed
+    over as one package, and the only multi-file example
+    (`okta-miniapp/test/okta_mini_app_bundle_test.dart:12-30`) uses `package:`
+    exclusively. No Flutter SDK was available here to try
+    `import 'widgets/card.dart'`. If they work it is worth documenting; if they
+    don't, it is worth an explicit rule in the boilerplate README.
+    `[assumption]` (`data.md` §Multiple files, and the import form)
 
 ---
 

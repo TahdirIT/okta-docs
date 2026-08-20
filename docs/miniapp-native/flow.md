@@ -9,6 +9,11 @@ The anchor: **a partner writes `Widget main()` in a `.dart` file, and it renders
 as a card inside `okta-app`.** Every hop below is on that one path. Forks are
 collected in §Side branches rather than followed.
 
+> **The anchor is a traced case, not a structural constraint.** A mini-app is not
+> one file: the **whole `lib/` tree** is bundled (128 files max — see Hop 7), and
+> your files import each other as `package:<your_package_name>/…`. `entryFile`
+> only names which file holds `main`.
+
 ---
 
 ## Hop 0 — The partner repo is scaffolded

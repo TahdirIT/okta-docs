@@ -48,6 +48,30 @@
 الحدود المفروضة عند التجميع — `BundleMiniappSource.php:32-36`:
 **256 كيلوبايت** للملف، **2 ميغابايت** للحزمة، **128** ملفاً.
 
+### تعدّد الملفات وصيغة الاستيراد
+
+تُجمَع شجرة `lib/` كاملةً تكرارياً (`BundleMiniappSource.php:80-82`) وتُسلَّم
+للمترجِم كحزمة Dart **واحدة** (`packages: {package: files}` —
+`okta_mini_app_bundle.dart:170-174`). فاستورد ملفاتك بعضها بعضاً بـ `package:`
+واسم حزمتك من `pubspec.yaml`:
+
+```dart
+// lib/main.dart          (package: 'demo_app')
+import 'package:demo_app/widget.dart';          // ملف بجانبه
+import 'package:demo_app/widgets/card.dart';    // lib/widgets/card.dart
+```
+
+مثال حيّ مُختبَر في `okta-miniapp/test/okta_mini_app_bundle_test.dart:12-30`.
+والمجلدات المتداخلة تعمل: المسار النسبي إلى `lib/` يُحفَظ كمفتاح
+(`BundleMiniappSource.php:99`).
+
+**الاستيرادات النسبية** (`import 'widgets/card.dart'`) لم تُختبَر في هذا
+المستودع — التزم `package:`. `[افتراض]`
+
+وملف الدخول لا يلزم أن يكون `main.dart`: الـ regex يسمح بمسار متداخل، فـ
+`…/lib/src/app.dart` مدخل صالح. الملزَم أن تكون **الدالة** اسمها `main`، فـ
+`entry_function` مثبَّت في الخادم (`BundleMiniappSource.php:116`).
+
 ## المكتبات المحقونة الأربع
 
 `okta-miniapp/lib/src/injected_sources.dart:41-46`. هذه الخريطة هي التعريف
