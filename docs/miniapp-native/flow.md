@@ -161,6 +161,14 @@ branch (`:173-200`) returns a **short-lived signed URL** to the payload route
 plus `payload_version`, derived from the module's `updated_at` timestamp
 (`:200`).
 
+> **This is why a sandbox loop needs no version bump.** A sandbox install
+> re-resolves the branch's commit, so `github_commit_sha` on the `modules` row
+> changes, `$module->update()` is dirty, and `updated_at` moves — which moves
+> `payload_version` and misses the device cache. Reinstalling *without* pushing
+> leaves every column identical, nothing is dirty, and the timestamp stays put.
+> `[confirmed]` `PartnerSandboxModuleInstaller.php:77-87`,
+> `okta-partners/app/Services/PartnerModules/Sandbox/InstallVersionOnSandbox.php:140-148`
+
 The two launch paths differ in a way worth naming: the portal launch takes
 `{tenant_id, portal}` and **no role**, and the tenant comes from the card rather
 than the session — a portal aggregates schools, so the session has no tenant to

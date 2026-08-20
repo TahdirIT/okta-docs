@@ -186,7 +186,7 @@ location_coarse  location_precise  files_read  documents_open  storage
 |---|---|---|
 | `slug` | تطبيق مختلف | تتصادم التطبيقات |
 | `entry` | حزمة مختلفة تحت slug واحد | **تتصادم حزمتان لـ slug واحد** — تتشاركان الـ slug و`payloadVersion` والبصمة، فمن أُطلِق أولاً كسب مدخل الكاش وأعاد الآخر تشغيل **bytecode الأول** (`:8-21`) |
-| `payloadVersion` | ينشر الشريك | إصدار جديد يعيد تشغيل bytecode قديم |
+| `payloadVersion` | يتحرّك `updated_at` لصفّ المودول — **أي تثبيت يحمل commit جديداً**، لا النشر وحده | إصدار جديد يعيد تشغيل bytecode قديم |
 | `runtimeSignature` | يتغيّر أي مصدر محقون | إصلاح في المضيف لا يصل الأجهزة أبداً (`:27-32`) |
 
 و`write()` يقلّم كل ملف آخر في المجلد — وهذا ما ينظّف `payloadVersion` القديم،

@@ -158,6 +158,13 @@ POST /api/mobile/app-catalog/portal/{slug}/launch   { tenant_id, portal }
 native (`:173-200`) **رابطاً موقَّعاً قصير العمر** إلى مسار الحمولة، مع
 `payload_version` مشتقّاً من طابع `updated_at` للمودول (`:200`).
 
+> **ولهذا لا تحتاج دورة sandbox رفع إصدار.** التثبيت على sandbox يعيد حلّ commit
+> الفرع، فيتغيّر `github_commit_sha` على صفّ `modules`، فيتّسخ `$module->update()`،
+> فيتحرّك `updated_at` — فيتحرّك `payload_version` ويسقط كاش الجهاز. أمّا إعادة
+> التثبيت **بلا دفع** فتترك كل عمود كما هو، فلا شيء يتّسخ، ويبقى الطابع.
+> `[مؤكَّد]` `PartnerSandboxModuleInstaller.php:77-87`،
+> `okta-partners/app/Services/PartnerModules/Sandbox/InstallVersionOnSandbox.php:140-148`
+
 ويختلف مسارا الإطلاق اختلافاً يستحقّ التسمية: إطلاق البوابة يأخذ
 `{tenant_id, portal}` و**لا يأخذ دوراً**، والجهة تأتي من **البطاقة** لا من
 الجلسة — فالبوابة تجمع مدارس، والسياق النشط لا جهة فيه ليقرأها. `[مؤكَّد]`

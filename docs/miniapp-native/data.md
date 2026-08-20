@@ -191,7 +191,7 @@ Four inputs, each answering a distinct question:
 |---|---|---|
 | `slug` | different app | apps collide |
 | `entry` | different package under one slug | **two entries of one slug collide** — they share slug, `payloadVersion` and signature, so whichever launched first won and the other replayed *its* bytecode (`:8-21`) |
-| `payloadVersion` | partner publishes | a new release replays old bytecode |
+| `payloadVersion` | the module row's `updated_at` moves — **any install carrying a new commit**, not only a publish | a new release replays old bytecode |
 | `runtimeSignature` | any injected source changes | a host fix never reaches devices (`:27-32`) |
 
 `write()` prunes every other file in the directory — which is how an old
