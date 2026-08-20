@@ -375,10 +375,14 @@ Each is answerable in about a sentence by someone who already knows.
    `miniapp_dart`** — the pre-`okta_app/native/` name. Dead default, or still used
    by something? The boilerplate's own copy hardcodes `lib/`, so partners are
    unaffected. `[confirmed]` as drift, unknown as to impact.
-5. **Are cache writes atomic against a mid-write kill?** `writeAsBytes(flush: true)`
-   then prune-siblings; a kill between them leaves two files, which the key
-   tolerates — but a kill *during* the write leaves a truncated `.evc` that
-   `read()` will happily return. `[assumption]` (`edges.md` §5)
+5. ~~**Are cache writes atomic against a mid-write kill?**~~ **Answered, and
+   fixed.** They were not: `writeAsBytes` wrote straight to the target, so a
+   kill mid-write left a truncated `.evc` that `read()` returns happily and
+   `Runtime(ByteData)` then dies on, every launch, until the partner publishes.
+   `write()` now stages to `<target>.writing` and renames — a rename either
+   happened or did not. Same pass also fixed `read()` returning its future from
+   inside a `try` (`return f` rather than `return await f`), which let an I/O
+   error escape the method its doc comment promised would never throw.
 6. **Can two mini-apps compile concurrently**, and is on-device compilation
    CPU-bound enough to matter on low-end devices? Not traced.
 7. **Does anything re-run `pushBoilerplate()` for existing partner repos**, or is

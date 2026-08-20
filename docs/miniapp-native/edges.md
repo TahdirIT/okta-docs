@@ -296,16 +296,21 @@ why `OktaDeclaredCapability` is translated into a gateway type at the boundary
 - The cache directory is per-`(slug, entry)` and `write()` prunes siblings, so two
   entries of one slug do not evict each other on alternate launches
   (`okta_mini_app_file_cache.dart:57-62`).
-- Cache reads and writes never throw; any failure is treated as a miss
-  (`:76-90`).
+- Cache reads and writes never throw; any failure is now also **reported**
+  through `OktaMiniAppLog` rather than swallowed silently, and an unreadable
+  entry is deleted so it stops failing on every launch.
+- **Writes are atomic** — staged to `<target>.writing`, then renamed. Writing
+  straight to the target let a kill mid-write leave a truncated `.evc`, which
+  does not fail to read; it reads back fine and dies inside
+  `Runtime(ByteData)` naming nothing.
 - The consent store caches decisions in memory because the gate is consulted on
   **every** gated call — a tool-key drain asks several times a second, so a disk
   read per call would make the gate the slowest thing in the app
   (`mini_app_consent_store.dart:41-44`).
 
-**Not traced**: what happens if two mini-apps compile concurrently, whether cache
-writes are atomic against a mid-write kill, and consent-store write races between
-two sheets. `[assumption]` — see Open Questions.
+**Still not traced**: what happens if two mini-apps compile concurrently, and
+consent-store write races between two sheets. `[assumption]` — see Open
+Questions. (Cache-write atomicity *was* on this list and is now answered above.)
 
 ## 6 · Versioning
 
