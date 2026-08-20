@@ -130,15 +130,25 @@ useless: `CheckEq` falls through to a plain Dart `==`, so `rawNull == null` is
 **false** and the guard silently passes it to the next method call, which dies
 instead.
 
-There is no defensive way to look at such a value. Never create one:
+There is no defensive way to look at such a value — **and `containsKey` is not
+one either.** That guard was written, shipped, and **reverted on device**: its
+boxing does not match `operator[]`'s, which dart_eval special-cases, so every
+guarded read fell through to its fallback. Read the comment inside `OktaJson.at`
+(`okta-app/lib/features/miniapps/runtime/shared/okta_kit.dart:67`) before
+reinstating it. `[confirmed — the revert is in the shipped source]`
 
-```dart
-if (!source.containsKey(key)) return null;   // a source-level null IS a boxed $null
-return source[key];
-```
+So the defence is upstream, in the payload: emit every field the mini-app reads
+on every response, `null` when empty. A key PRESENT holding a JSON null is safe;
+only ABSENCE is fatal.
 
-`OktaJson.at` does this (`okta-miniapp/lib/shared/okta_kit.dart:67`). Any
-hand-rolled reader must too. `[confirmed]`
+`OktaJson` covers the wrong SHAPE, not absence: `at` excludes a source that is
+not an object, but `strOr`/`number`/`list`/`rows` then run `is` on what it
+returned — which is the throw. `OktaJson.flag` is the one absence-safe reader
+(`== true`, not `is`). `[confirmed]`
+
+> **Open drift**: `strOr`'s doc-comment still claims `at` "refuses to index an
+> absent key". That described the reverted version. `[confirmed — comment and
+> code disagree in the shipped file]`
 
 ### Trap 4 · Named arguments are matched leniently and typed strictly
 
