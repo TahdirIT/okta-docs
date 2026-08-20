@@ -135,7 +135,7 @@ location_coarse  location_precise  files_read  documents_open  storage
 the device reads it; the other two only decide what may be *declared*. A name
 that exists in the PHP enums but not in `OktaCapabilities` publishes cleanly and
 is then **never granted** — the gate fails closed. `[confirmed]`
-`okta-miniapp/lib/src/host/okta_capabilities.dart:96-101`,
+`okta-miniapp/lib/src/host/okta_capabilities.dart:94`,
 `okta-partners/CLAUDE.md` §`mobile.capabilities`
 
 `GATE_CONTRACT = 13` is declared in both PHP enums (`okta-web:60`,
@@ -176,7 +176,7 @@ rather than per-slug (`:57-62`).
 
 ### `oktaMiniAppRuntimeSignature`
 
-`okta-miniapp/lib/src/runtime_info.dart:36` =
+`okta-miniapp/lib/src/runtime_info.dart:28` =
 `oktaMiniAppToolchainSignature` (`:8`, currently
 `dart_eval-0.8.5+flutter_eval-0.8.2`) + `inj-<digest of every injected source>`.
 

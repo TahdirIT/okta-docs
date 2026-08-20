@@ -6,6 +6,9 @@
 > `okta-partners@608abc3`, `okta-docs@9f95c93` — all on branch
 > `claude/okta-miniapp-native-dev-jbztqi`, read 2026-08-20.
 > **Depth**: standard. What was skipped is listed at the bottom of `edges.md`.
+>
+> 🇸🇦 Arabic translation: [`../miniapp-native-arabic/`](../miniapp-native-arabic/README.md)
+> — same structure and the same line anchors, so the two can be read side by side.
 
 ## The one-paragraph model
 
