@@ -129,6 +129,24 @@ okta-app binary**, not into the partner's bundle
 - The partner compiles against a **pinned commit** of `okta_miniapp`
   (`pubspec.yaml:18-22`), which must match the runtime the shipped binary
   carries — otherwise CI's guarantee is void in the one direction that matters.
+- **okta-app pins it too** (`okta-app/pubspec.yaml`, `ref:`). Adding a symbol to
+  the runtime and then referencing it from okta-app in the same breath does not
+  build until that ref moves.
+
+**What it looks like when it bites**, because the message names a path rather
+than the cause:
+
+```
+lib/features/miniapps/bridge/okta_dart_miniapp_host.dart:83:3:
+  Error: Undefined name 'OktaMiniAppLog'.
+ - 'OktaMiniAppException' is from 'package:okta_miniapp/src/errors.dart'
+   ('…/Pub/Cache/git/okta-miniapp-50e394e…/lib/src/errors.dart')
+```
+
+The SHA in the pub-cache path is the answer: it is the ref okta-app is pinned
+to, and a symbol added after it does not exist for this build. Read that path
+before reading the code — bump `ref:` in `okta-app/pubspec.yaml` **and the
+matching `ref`/`resolved-ref` pair in `pubspec.lock`**, then `flutter pub get`.
 
 **Two numbers, two different jobs, routinely confused:**
 

@@ -128,6 +128,23 @@ okta-web       BundleMiniappSource.php:50     ^okta_app/native/([A-Za-z0-9_-]+)/
 - والشريك يترجم مقابل **commit مثبَّت** من `okta_miniapp`
   (`pubspec.yaml:18-22`)، ويجب أن يطابق زمن التشغيل الذي يحمله الملف الثنائي
   المشحون — وإلا بطل ضمان CI في الاتجاه الوحيد الذي يهمّ.
+- **و okta-app يثبّته أيضاً** (`okta-app/pubspec.yaml`، `ref:`). فإضافة رمز إلى
+  زمن التشغيل ثم الإشارة إليه من okta-app في النَفَس نفسه **لا تُبنى** حتى
+  يتحرّك ذلك الـ ref.
+
+**وهكذا يبدو حين يعضّ**، لأن الرسالة تسمّي مساراً لا سبباً:
+
+```
+lib/features/miniapps/bridge/okta_dart_miniapp_host.dart:83:3:
+  Error: Undefined name 'OktaMiniAppLog'.
+ - 'OktaMiniAppException' is from 'package:okta_miniapp/src/errors.dart'
+   ('…/Pub/Cache/git/okta-miniapp-50e394e…/lib/src/errors.dart')
+```
+
+الـ SHA داخل مسار الـ pub-cache هو الجواب: إنه الـ ref الذي يثبّت عليه okta-app،
+والرمز المضاف بعده **لا يوجد** لهذا البناء. اقرأ ذلك المسار قبل أن تقرأ الكود —
+ثم ارفع `ref:` في `okta-app/pubspec.yaml` **وزوج `ref`/`resolved-ref` المقابل في
+`pubspec.lock`**، ثم `flutter pub get`.
 
 **رقمان، وظيفتان مختلفتان، ويُخلَط بينهما باستمرار:**
 
