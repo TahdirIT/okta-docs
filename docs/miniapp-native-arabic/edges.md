@@ -90,7 +90,38 @@ unawaited(cache.evict(slug).whenComplete(() {
 `hostContract` **و**`runtimeSignature`، لأن العقد وحده لا يعرّف البناء. والإبلاغ
 معلَّق على النداء نفسه الذي ينتج المرجع، فالسطح الذي يعرض رمزاً يودعه دائماً —
 وهو آمن من داخل `build` لأن `reportOnce` مُتماثِل لكل مرجع. `[مؤكَّد]`
-`miniapp_screen.dart:71-85`
+`miniapp_screen.dart:71-95`
+
+### أثر المكدس، ولماذا كان يختفي
+
+كل ما سبق صحيح، وظلّ أثر المكدس يضيع — لأن المرجع مشتقّ من **الصورة النصية**
+للخطأ: `oktaErrorReference` يبذر على `scope | runtimeType | '$error'`
+(`error_reference.dart:42-43`). وهذا يجعل `toString()` **حاملاً**: فإلحاق المكدس
+به كان سيغيّر كل مرجع ويوقف اتفاق جهازين على مرجع واحد.
+
+فالمكدس يسافر على قناة خاصّة به، وكانت ثلاثة مواضع تُسقطه قبل وجود تلك القناة:
+
+| الموضع | ما فُقِد |
+|---|---|
+| `OktaMiniAppException.toString()` | حقل `stackTrace` كان يُلتقَط عند كل موضع لفّ ولا يُطبَع في أي مكان |
+| توقيعا `error` / `renderError` في `OktaDartMiniApp` | `OktaMiniApp` يسلّم `StackTrace` إلى `errorBuilder`، و`FlutterErrorDetails` يحمل `.stack` — ولم يكن لأيٍّ منهما خانة في التوقيع الأعلى بطبقة |
+| `oktaReportedErrorReference` | بلا معامل `stackTrace` أصلاً، فلم يُملأ `reportOnce(stack:)` قطّ — رغم أن الخادم يحجز لذلك العمود `max:40000` (`MobileClientErrorsController.php:34`) |
+
+والمحصّلة: كل فشل تطبيق مصغّر **مُلتقَط ومعروض** كان يودع صفاً بعمود `stack`
+فارغ. ولم يملأه إلا `uncaught_error_hook.dart:102` — أي الإخفاقات التي لا ينظر
+إليها أحد وحدها.
+
+أمّا الآن: `OktaMiniAppException.diagnosticReport()` (`errors.dart`) يُلحِق مكدس
+الفشل **ومكدس كل سبب ملفوف تحته**، لأن الأثر الخارجي هو في الغالب موضع اللفّ
+الخاص بـ `okta_miniapp` بينما الإطارات التي تسمّي العطل الحقيقي تقع على السبب
+تحته. و`oktaMiniAppDiagnostics(error, stack)` في `okta_dart_miniapp_host.dart`
+ينسّقه على جانب الجسر من حدّ الاستيراد ويعيد `String` عادية، لأن
+`miniapp_screen.dart` لا يجوز له ذكر `OktaMiniAppException` (§4). و`toString()`
+لم يتغيّر، ويحرسه `okta-miniapp/test/mini_app_diagnostics_test.dart`.
+
+**واللوحة والتقرير مبوَّبان بشكل مختلف، عمداً.** `showsDiagnostics` يقرّر ما تراه
+**الجهة** على الشاشة؛ أمّا التقرير المُودَع فيحمل التشخيص بصرف النظر، لأن ذلك
+العلَم لم يكن يوماً عن ما يحقّ للمنصّة الاحتفاظ به في سجلّها هي.
 
 ### مفردات الرفض — الرفض قيمة، لا استثناء
 

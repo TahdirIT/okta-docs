@@ -94,7 +94,42 @@ recurring problem is recognisable. It carries `hostContract` **and**
 `runtimeSignature`, because the contract alone does not identify a build.
 Reporting is hung off the same call that produces the reference, so a surface
 that displays a code always files it — safe from `build` because `reportOnce` is
-idempotent per reference. `[confirmed]` `miniapp_screen.dart:71-85`
+idempotent per reference. `[confirmed]` `miniapp_screen.dart:71-95`
+
+### The stack trace, and why it used to vanish
+
+Everything above was true and the stack still went missing, because the reference
+is derived from the error's **string form** — `oktaErrorReference` seeds on
+`scope | runtimeType | '$error'` (`error_reference.dart:42-43`). That makes
+`toString()` load-bearing: appending a stack to it would change every reference
+and stop two devices agreeing on one.
+
+So the stack travels on its own channel, and three separate places used to drop
+it before that channel existed:
+
+| Where | What was lost |
+|---|---|
+| `OktaMiniAppException.toString()` | The `stackTrace` field was captured at every wrap site and never printed anywhere |
+| `OktaDartMiniApp`'s `error` / `renderError` signatures | `OktaMiniApp` hands a `StackTrace` to `errorBuilder`, and `FlutterErrorDetails` carries `.stack` — both had no slot in the signature one layer up |
+| `oktaReportedErrorReference` | No `stackTrace` parameter at all, so `reportOnce(stack:)` was never populated — even though the server sizes that column at `max:40000` (`MobileClientErrorsController.php:34`) |
+
+The net effect: every **caught and presented** mini-app failure filed a row with
+an empty `stack` column. Only `uncaught_error_hook.dart:102` ever populated it —
+i.e. only the failures nobody was looking at.
+
+Now: `OktaMiniAppException.diagnosticReport()` (`errors.dart`) appends the stack
+of the failure **and of every wrapped cause**, because the outermost trace is
+almost always `okta_miniapp`'s own wrap site while the frames that name the real
+fault sit on the cause underneath. `oktaMiniAppDiagnostics(error, stack)` in
+`okta_dart_miniapp_host.dart` formats it on the bridge side of the import
+boundary and returns a plain `String`, since `miniapp_screen.dart` may not name
+`OktaMiniAppException` (§4). `toString()` is unchanged, and
+`okta-miniapp/test/mini_app_diagnostics_test.dart` guards that.
+
+**The panel and the report are gated differently, on purpose.** `showsDiagnostics`
+decides what a *tenant* sees on screen; the filed report carries the diagnostics
+regardless, because that flag was never about what the platform may keep in its
+own log.
 
 ### The refusal vocabulary — refusals are values, never throws
 
