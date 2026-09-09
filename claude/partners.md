@@ -105,6 +105,10 @@ into production. A shared `webhookSecret()` verifies inbound webhooks.
   **polls** an install-status URL with backoff.
 - `probeModuleStatus()` / `resyncAppStoreCatalog()` / `syncNotificationCatalog()`
   — route to the right environment (some fan out to **both** prod + sandbox).
+- `listNotificationDeliveries()` — the module's notification delivery
+  aggregate from `/partners/modules/{slug}/notification-deliveries`
+  (production or sandbox), behind the hosted MCP tool `notification_deliveries`
+  — see [notifications.md](./notifications.md#7-read-the-outcome).
 
 ---
 
@@ -178,8 +182,12 @@ every new application repo by `pushBoilerplate()`, with placeholders substituted
 `__MODULE_HASHID__`, and the PHPStan `{{MODULE_NAMESPACE}}` / `{{MODULE_ENV_PREFIX}}`
 / `{{MODULE_CONFIG_PREFIX}}` / `{{MODULE_PATHS}}`). It contains `manifest.json`,
 `module.json`, an `app/` skeleton, a `okta_app/webview/` entry, `routes/`, `lang/`,
-`scripts/partner-policy/` (Scanner + PHPStan rule, mirrored from okta-web), and
-the `.github/workflows/partner-module-policy.yml` CI gate. It lives under
+`scripts/partner-policy/` (Scanner + PHPStan rule, mirrored from okta-web, plus
+`NotificationScanner` — declared-vs-used notification keys, blocking on an
+undeclared key and advisory on an unused key, a `partner_notify()` call or a
+guardian/student key dispatched without a `recipient`; see
+[notifications.md](./notifications.md#1-declare--the-catalog-okta-partners)),
+and the `.github/workflows/partner-module-policy.yml` CI gate. It lives under
 `resources/` (not `storage/`) so it ships in the release artifact. When the
 policy scanner changes in okta-web it must be re-copied here — okta-web's scanner
 is the source of truth. The resulting structure is the

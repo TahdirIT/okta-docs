@@ -50,7 +50,9 @@ okta-web) on publish/install. For the complete contract and package structure, s
     {
       "key": "example-app.resource.event",
       "display_name": { "ar": "…", "en": "…" },
-      "variables": { "student_id": "string", "event_at": "datetime" },
+      "variables": { "student_name": "string", "event_time": "string" },
+      "default_template": "وصل {{ student_name }} إلى المدرسة {{ event_time }}",
+      "audience": ["guardian"],
       "default_channels": ["in_app", "whatsapp", "push"],
       "severity": "info",
       "is_active": true
@@ -81,7 +83,7 @@ okta-web) on publish/install. For the complete contract and package structure, s
 | **`menu`** | The **okta-web sidebar entry** + landing route | platform surface | [`./web-surface.md`](./web-surface.md) |
 | **`mobile`** | The **okta-app catalog card** + how it launches | client surface | [`./app-surface.md`](./app-surface.md) |
 | `rbac_permissions` | Permissions created on install + granted to roles | platform surface | [`./web-surface.md`](./web-surface.md#6-permissions-rbac) |
-| `notifications[]` | The notification types your app may emit (via the host) | both | [`./data-access-and-security.md`](./data-access-and-security.md) |
+| `notifications[]` | The notification types your app may emit (via the host): key, bilingual name, `variables`, your `default_template`, `audience`, and `default_channels` as a ceiling the school narrows | both | [`./data-access-and-security.md#notifications`](./data-access-and-security.md#notifications) · [`../../claude/notifications.md`](../../claude/notifications.md) |
 | `database` | Declares your owned schema + migrations the platform tracks/runs | both | [`./data-access-and-security.md`](./data-access-and-security.md#owning-data) |
 | `external` (external apps only) | `webhookUrl` + `webhookEvents[]` (+ `redirectUrls[]`) | external | [`../../claude/web.md`](../../claude/web.md) |
 

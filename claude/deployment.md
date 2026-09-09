@@ -141,6 +141,13 @@ The dev → prod progression repeats per environment: steps 3–7 run first agai
 - **Webhooks out** (web → external apps): `DispatchEvent` → queued
   `DeliverPartnerWebhook` jobs sign and deliver to each subscriber's
   `webhookUrl`, with retry/backoff and a recovery scheduler.
+- **Notification catalog**: `SyncCatalogFromManifest` ingests a version's
+  `notifications[]` at publish and on every dashboard edit through
+  `POST /api/partners/modules/{slug}/notifications/sync`, deactivating keys the
+  manifest no longer carries; each install seeds the school's per-key settings
+  **disabled** (`SeedNotificationSettingsOnModuleInstalled`), and a key added
+  after the install is seeded on its first dispatch. Outcomes land in
+  `partner_notification_deliveries` — see [notifications.md](./notifications.md).
 - **Uninstall**: `UninstallModule` revokes installation tokens, deactivates
   webhook subscriptions (kept for audit), revokes RBAC + cross-module access, and
   drops the isolated schema — removing the application from both surfaces.
@@ -160,3 +167,5 @@ The dev → prod progression repeats per environment: steps 3–7 run first agai
 | Mobile catalog (client surface) | `okta-web` · `app/Services/MobileAppCatalog/GetMobileCatalogForUser.php` |
 | Embedded WebView render | `okta-web` · `routes/app.php` + `WebviewController` |
 | Catalog consumption (client) | `okta-app` · `lib/features/app_catalog/` |
+| Notification dispatch + fan-out | `okta-web` · `app/Services/PartnerApi/Notifications/` (file map in its `README.md`) + `app/Jobs/PartnerNotifications/` |
+| Notification delivery diagnostics | `okta-web` · `app/Services/Partners/Diagnostics/GetModuleNotificationDeliveries.php` · `okta-partners` · MCP `notification_deliveries` (`MonitorTools.php`) |

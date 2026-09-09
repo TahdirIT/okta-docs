@@ -55,9 +55,14 @@ Organized by domain, returning DTOs (not Eloquent models):
   `UpdateStudent`; likewise `Grades/`, `Sections/`, `Subjects/`, `Terms/`,
   `AcademicYears/`.
 - `Employees/Directory/` — employee CRUD.
-- `Notifications/` — `SendNotification`, `DispatchNotification`,
-  `GetNotificationCapabilities`, and `Providers/` (ConnectWhatsApp, Http,
-  Embedded, Hybrid).
+- `Notifications/` — two surfaces side by side: the **catalog dispatch**
+  (`DispatchNotification`, `NormalizeDispatchPayload`, `ResolveAudience`,
+  `RenderNotificationBody`, `SeedTenantNotificationSettings`,
+  `SyncCatalogFromManifest`, `Logs/ListNotificationLogs`) and the **provider**
+  surface for apps that carry a channel (`SendNotification`,
+  `GetNotificationCapabilities`, `Providers/` — ConnectWhatsApp, Http,
+  Embedded, Hybrid). The dispatch pipeline end to end is in
+  [notifications.md](./notifications.md).
 - `Reports/Builder/` — `ListReports`, `RunReport`.
 - `Dto/` — `StudentDto`, `EmployeeDto`, `ReportDto`, … (the stable shapes apps
   consume).
@@ -114,6 +119,14 @@ Route::get('/education/students', [StudentsController::class, 'index'])
 installation_id, scopes}`. The whole surface is feature-flagged by
 `partners.app_runtime_enabled`.
 
+Catalog notifications on this surface: `POST /api/apps/notifications/dispatch`
+(`notifications.dispatch.send`, idempotent — `{key, payload}` → `202` with
+`delivery_ids`, `422` naming an undeclared key) and
+`GET /api/apps/notifications/logs` (`notifications.logs.read` — the calling
+installation's delivery rows, filterable by `channel`/`status`/`key`/`from`/`to`).
+Embedded apps call `DispatchNotification` in-process instead and need no scope.
+See [notifications.md](./notifications.md).
+
 <a id="2-mobile-client-api"></a>
 ### 2. Mobile client API — `routes/api.php` (`/api/mobile/*`)
 
@@ -151,7 +164,10 @@ What `okta-app` calls (see [app.md](./app.md)):
   (`recipient: {type: parent_of_student | school_admin | host_user, id}`)
   resolve to concrete users via
   `App\Services\PartnerApi\Notifications\ResolveAudience`, falling back to
-  the tenant-configured recipients.
+  the tenant-configured recipients — a `student_id` beside the variables is a
+  template variable, never an address. The whole path from the partner's
+  catalog to the delivery row, and where each outcome is read, is in
+  [notifications.md](./notifications.md).
 
 > The catalog route is registered as `GET`; the client sends `tenant_id`/
 > `role_id` as query parameters. `> TODO: confirm` — one server-side comment
@@ -185,6 +201,13 @@ Consumed by `okta-partners` (guarded by `partner.api` shared Bearer token):
   `GetCatalog`).
 - `GET /api/partners/permissions/catalog/hash` → `{hash, generated_at}` for cheap
   drift detection.
+- `POST /api/partners/modules/{slug}/notifications/sync` — a version's
+  notification catalog on every dashboard edit (`SyncCatalogFromManifest`).
+- `GET /api/partners/modules/{slug}/notification-deliveries?days&recent` —
+  counts by status/channel/key plus the latest failures across every tenant
+  that installed the module (`GetModuleNotificationDeliveries`, ≤ 30 days; no
+  recipient or tenant name) — what the okta-partners MCP tool
+  `notification_deliveries` reads.
 
 Plus the publish and sandbox-install endpoints `okta-partners` posts to (see
 [deployment.md](./deployment.md)).

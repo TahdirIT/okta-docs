@@ -63,7 +63,45 @@ class GetStudents
 Cross-cutting actions (parent messaging, push, in-app) are delegated to the host
 too — e.g. a queued job calls the host's `DispatchNotification` service. You never
 talk to WhatsApp/FCM/etc. directly, and the notification *types* you may send must
-be declared in the manifest `notifications` block.
+be declared in the manifest `notifications` block. The call itself has rules
+that are easy to get wrong — see [Notifications](#notifications) below.
+
+<a id="notifications"></a>
+### Notifications — one call, and the address lives in the payload
+
+```php
+use App\Services\PartnerApi\Notifications\DispatchNotification;
+
+app(DispatchNotification::class)('example-app.attendance.checkin', [
+    'recipient' => ['type' => 'parent_of_student', 'id' => $student->ulid],
+    'variables' => ['student_name' => $student->name, 'event_time' => '07:02'],
+    'url'       => route('example-app.students.show', $student),   // optional
+]);
+```
+
+- **`recipient: {type, id}` is the only address the platform reads** —
+  `parent_of_student` (the student's ulid; the platform resolves the active
+  guardians), `host_user` (a user id/ulid), `school_admin` (no id). A
+  `student_id` beside the variables is a template variable, never a recipient:
+  a payload that relies on it reaches the office or nobody, and its delivery
+  row reads `failed: No … recipients`. Leave `recipient` out only for
+  office-wide keys (`audience: admin`).
+- **Never name a channel.** `default_channels` in the catalog is a ceiling; the
+  school narrows it on `/settings/notifications`, where every key starts
+  **disabled**. Declare every channel the notification legitimately fits.
+- **The call needs an active partner-app context**, not a scope. On your
+  module's web routes the `module.context` middleware builds it; a queue job,
+  a mobile endpoint or a Livewire action (posted to `/livewire/update`, not to
+  your routes) must build it itself with the host's `BootModuleContext` —
+  **around** the work, not before it, because a middleware lives exactly as
+  long as the `$next` it is handed.
+- **Read what happened** on the school's delivery-log card, over
+  `GET /api/apps/notifications/logs` (scope `notifications.logs.read`), or with
+  the MCP tool `notification_deliveries`. The statuses and the full pipeline
+  are in [`../../claude/notifications.md`](../../claude/notifications.md).
+- `partner_notify()` does not exist; the boilerplate scanner flags it, and flags
+  a guardian/student key dispatched with a literal payload that has no
+  `recipient`.
 
 ### External — HTTP runtime + signed webhooks
 

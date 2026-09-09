@@ -114,6 +114,11 @@ AppBar shows a bell + live unread badge. Push is an **optional capability**:
 - Foreground display: `flutter_local_notifications` channel on Android,
   native presentation options on iOS. Tapping a push (foreground,
   background, or cold start) opens `/notifications`.
+- What arrives is the `push` / `in_app` arm of a partner app's
+  `DispatchNotification` — addressed by the payload's
+  `recipient: {type, id}`, carried over the channels the school enabled.
+  The client neither addresses anyone nor picks channels; the whole path and
+  the delivery statuses are in [notifications.md](./notifications.md).
 - iOS additionally requires the APNs key in the Firebase project and the
   `aps-environment` entitlement (commented template in
   `ios/Runner/Runner.entitlements`).

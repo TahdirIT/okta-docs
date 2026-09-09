@@ -115,6 +115,24 @@ inferred rather than explicit in code, it is marked `> TODO: confirm`.
   PHPStan (`PartnerInternalAccessRule`) static-analysis tools that forbid an
   installable application from touching `okta-web` internals
   (`App\Models\*`, non-`PartnerApi` `App\Services\*`, platform tables/env/config).
+  Its sibling `NotificationScanner` gates dispatched notification keys against
+  the manifest catalog.
+- **Notification key** — One entry of an application's notifications catalog
+  (`<slug>.<resource>.<event>`), declared per version in `okta-partners`,
+  mirrored into `okta-web` (`partner_app_notifications`), and switched on per
+  installation by the school on `/settings/notifications`. An undeclared key is
+  refused by name at dispatch. See [notifications.md](./notifications.md).
+- **Recipient (dispatch)** — The only address `DispatchNotification` reads:
+  `recipient: {type: parent_of_student | host_user | school_admin, id}` inside
+  the payload, resolved to users by `ResolveAudience`. A `student_id` or
+  `user_id` beside the variables is a template variable, not a recipient; a
+  payload without `recipient` goes to the school's configured recipients.
+- **Delivery row** — One `partner_notification_deliveries` record per
+  `(key, channel)` attempt, ending in `sent`, `failed` (with the channel job's
+  error), or one of `skipped_disabled` / `skipped_quiet` /
+  `skipped_plan_feature` / `skipped_no_transport`. Read by the school's
+  delivery-log card, by the app over `GET /api/apps/notifications/logs`, and by
+  the developer over the MCP tool `notification_deliveries`.
 
 ---
 

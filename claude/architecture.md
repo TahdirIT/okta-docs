@@ -193,6 +193,16 @@ The same sequence runs first in **sandbox** (development/testing) and then in
 **production** — the dev → prod progression detailed in
 [deployment.md](./deployment.md).
 
+One cross-cutting flow rides on this: a **notification** raised by an
+installed app. Its catalog is declared per version in `okta-partners` and
+mirrored into `okta-web` at publish; the school enables keys and channels per
+installation; the app dispatches `DispatchNotification(key, payload)` with
+`recipient: {type, id}` inside the payload; `okta-web` fans out over the enabled
+channels (in-app, FCM push, WhatsApp, SMS, email, webhook) and records one
+delivery row per channel; `okta-app` shows the feed and receives the push. The
+whole path, and where each outcome is read, is in
+[notifications.md](./notifications.md).
+
 ---
 
 ## Data isolation & trust boundaries

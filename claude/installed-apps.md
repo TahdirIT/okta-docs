@@ -62,8 +62,10 @@ shape:
     {
       "key": "<module-slug>.<resource>.<event>",
       "display_name": { "ar": "…", "en": "…" },
-      "variables": { "student_id": "string", "event_at": "datetime" },
-      "default_channels": ["in_app", "whatsapp", "push"],
+      "variables": { "student_name": "string", "event_time": "string" },
+      "default_template": "وصل {{ student_name }} إلى المدرسة {{ event_time }}",
+      "audience": ["guardian"],                 // guardian | student | staff | admin
+      "default_channels": ["in_app", "whatsapp", "push"],   // a ceiling the school narrows
       "severity": "info",
       "is_active": true
     }
@@ -219,7 +221,15 @@ return ['data' => app($platform)($studentId)->toArray()];
 Cross-cutting actions (parent messaging, push, in-app) are delegated to the host
 too — e.g. a queued job calls the host's `DispatchNotification` service rather
 than talking to WhatsApp/FCM directly. The notification *types* it may send must
-be declared in `manifest.json → notifications`.
+be declared in `manifest.json → notifications`, and the call has one shape:
+`DispatchNotification($key, $payload)` where the payload names its audience as
+`recipient: {type: parent_of_student | host_user | school_admin, id}` and its
+template values under `variables` — never a channel, and never a `student_id`
+standing in for an address. It needs an active partner-app context
+(`BootModuleContext` — the `module.context` middleware on the app's web routes;
+queue jobs, mobile endpoints and Livewire actions build it themselves, *around*
+the work). The full pipeline and the delivery statuses are in
+[notifications.md](./notifications.md).
 
 ### External — HTTP runtime API + signed webhooks
 
