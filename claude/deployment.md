@@ -119,7 +119,10 @@ permissions.
 
 - **webview** → a short-lived **signed** URL to `okta-web`'s `/app/{slug}`,
   which renders the module's `mobile.entry` Blade inside the WebView;
-- **native** → a signed payload URL; `BundleMiniappSource` returns the module's
+- **native** → a signed payload URL plus `entry` and `min_contract` for the
+  **account type that matched** (`audiences[].minContract`, inheriting
+  `mobile.minContract`); okta-app refuses a floor above its host contract
+  **before** downloading. Then `BundleMiniappSource` returns the module's
   `okta_app/native/<entry>/lib/**.dart` as a source bundle, which okta-app compiles **on the
   device** (cached per published version) and renders natively — no WebView;
 - **external** → the partner-hosted URL, with a signed role JWT if
@@ -128,6 +131,16 @@ permissions.
 The dev → prod progression repeats per environment: steps 3–7 run first against
 **sandbox**, then against **production**.
 
+**Shipping the per-type contract floor** went in this order, and every step is
+additive so a published app keeps working on every phone — including one that
+never updated okta-app: (1) `okta-web` (sandbox + production) — the launch
+carries `min_contract`, a key old clients ignore; the release table, its
+settings card and the bridge endpoints; (2) `okta-app` — sends `X-App-Contract`
+and gates before download (older servers ignore the header; a missing key means
+no gate); (3) `okta-partners` — the per-type field, the block mirror, the MCP
+tools and the release-table mirror, which needs the bridge endpoint of step 1 on
+production.
+
 ---
 
 ## Runtime sync & ongoing operations
@@ -135,6 +148,16 @@ The dev → prod progression repeats per environment: steps 3–7 run first agai
 - **Scope catalog**: `okta-web` is the source of truth; `okta-partners` mirrors it
   via hash-aware `SyncFromOktaWeb` (cron `partners:sync-scope-catalog`, the
   `partner_scopes.catalog.changed` webhook, or `--force`).
+- **okta-app release table**: `okta-web` records, per shipped okta-app version,
+  the mini-app host contract it compiled with (`mobile_app_releases`, kept by the
+  Okta team on the mobile-app-catalog settings page when a build ships —
+  `1.1.1 → 26`; served on `GET /api/partners/mobile-app/releases/catalog{,/hash}`).
+  `okta-partners` mirrors it hash-aware (`partners:sync-okta-app-releases`,
+  hourly by default, `--force` to bypass the hash) into `platform_settings`, so
+  the version editor can say beside each account type's contract field which
+  okta-app versions run it. The mirror is read-only at render time — no bridge
+  call ever happens while a partner edits, and a failed pull keeps the last
+  mirror.
 - **Webhooks in** (web → partners): all events land on the unified
   `POST /webhooks/okta-web`, verified by `VerifyOktaWebWebhook` (HMAC envelope +
   freshness + replay).

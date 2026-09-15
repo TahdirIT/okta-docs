@@ -105,8 +105,15 @@ okta-web) on publish/install. For the complete contract and package structure, s
   under `okta_app/webview/`; when `mode: native`, `entry` must be a `.dart` file
   under `okta_app/native/<entry>/lib/` — `<entry>` being a standalone Dart package
   (source-on-device; the schema/JSON `miniapp/` runtime has been removed) — and
-  `minContract` declares the minimum host contract. Both are re-checked at
-  render/serve time (`realpath` inside the module, no `..`).
+  `minContract` declares the minimum host contract **per account type**
+  (`audiences[].minContract`, an integer ≥ 1; a type without one inherits the
+  block's `mobile.minContract`, which okta-partners exports as the primary
+  type's mirror). The same `.dart` path declared with two different contracts is
+  built with the first and logged as a warning at publish — not refused, so
+  what publishes today keeps publishing. Both `entry` and the floor are
+  re-checked at render/serve time (`realpath` inside the module, no `..`; the
+  floor also rides the launch answer as `min_contract`, where okta-app checks it
+  before downloading).
 - `database.migrations[].version` is a timestamp; each migration has `path` XOR
   `sql_up`.
 

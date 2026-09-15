@@ -192,6 +192,20 @@ compiles that source **on the device** (via `okta_miniapp`/`dart_eval`) and rend
 it natively — no WebView. The legacy schema/JSON bundler (`BundleMiniappPayload`)
 and the `miniapp/` runtime have been removed.
 
+The launch answer that precedes this (`POST /api/mobile/app-catalog/{slug}/launch`
+and its portal twin — `IssueWebviewLaunch::launchNative/launchPortalNative`) also
+carries `entry` and `min_contract`: the **matched account type's** floor
+(`audiences[].minContract`, else `mobile.minContract`, else 1 — resolved once by
+`NormalizeMobileAudiences`, so it is the same number the bundle carries).
+okta-app checks it before downloading. `MobileAppCatalogController` turns the
+phone's `X-App-Version` / `X-App-Contract` / `X-App-Platform` headers into a
+`ClientBuild` DTO (`ResolveClientBuild` — nothing below the controller reads the
+request); null means "did not say", which every build older than the header
+does. `ManifestValidator::nativeEntryContracts` and
+`BuildMiniappBundleArtifacts::warnIfContractDiffers` log `Mini-app entry declared
+with two contracts` when one `.dart` path is declared with two floors — a
+warning, never a refusal, because such manifests publish today.
+
 ### 4. Scope-catalog bridge — `routes/api.php` (`/api/partners/*`)
 
 Consumed by `okta-partners` (guarded by `partner.api` shared Bearer token):
@@ -208,6 +222,19 @@ Consumed by `okta-partners` (guarded by `partner.api` shared Bearer token):
   that installed the module (`GetModuleNotificationDeliveries`, ≤ 30 days; no
   recipient or tenant name) — what the okta-partners MCP tool
   `notification_deliveries` reads.
+- `GET /api/partners/mobile-app/releases/catalog` → `{hash, count,
+  data[{version, host_contract, released_at, notes}], generated_at}` with an
+  `ETag`, and `…/catalog/hash` → `{hash, generated_at}` — the **okta-app release
+  table** (`MobileAppReleaseCatalogController`): which shipped okta-app version
+  compiled mini-apps with which host contract. The Okta team keeps it on the
+  mobile-app-catalog settings page (`mobile_app_releases`;
+  `Releases\UpsertMobileAppRelease` refuses a non-`x.y.z` version, a contract
+  < 1, and a higher version with a lower contract). okta-partners mirrors it
+  (`partners:sync-okta-app-releases`, hourly by default) to show partners which
+  okta-app versions run which floor beside the per-type contract field.
+  `InferHostContractForVersion` answers the highest recorded version ≤ the one
+  asked — how a phone that sends `X-App-Version` but predates `X-App-Contract`
+  gets a contract.
 
 Plus the publish and sandbox-install endpoints `okta-partners` posts to (see
 [deployment.md](./deployment.md)).

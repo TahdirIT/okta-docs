@@ -311,10 +311,23 @@ catalog card `okta-app` renders (see
 [app.md](./app.md#rendering-a-tenants-installed-applications)):
 
 - `supported` — if false, the application is hidden from the mobile catalog.
-- `mode` — `webview` (the platform serves the screen) or `external` (the partner
-  hosts it).
+- `mode` — `webview` (the platform serves the screen), `native` (real Dart
+  compiled on the device — see step 4 below) or `external` (the partner hosts
+  it).
 - `entry` — for `webview`, a Blade path under the app's `okta_app/webview/` directory
-  (e.g. `okta_app/webview/screens/<entry>.blade.php`).
+  (e.g. `okta_app/webview/screens/<entry>.blade.php`); for `native`, a `.dart`
+  file under `okta_app/native/<entry>/lib/` (`<entry>` = one standalone Dart
+  package).
+- `audiences[]` — the account types the client surface serves (`roles[]` XOR
+  `portal`), each with its own `entry` — and, for `native`, its own
+  `minContract`.
+- `minContract` — `native` only: the lowest **host contract** the Dart code
+  needs. It is declared **per account type** (`audiences[].minContract`) and a
+  type that declares none inherits the block-level `mobile.minContract`. The
+  block value is what okta-partners exports as a **mirror of the primary type's
+  floor**, so a manifest that only ever set the block value keeps meaning
+  exactly what it meant. A staff package written against a newer host therefore
+  never locks the guardian package out of the phones it still compiles on.
 - `allowedPlatforms` — filters cards by `X-App-Platform` (empty = all).
 - `allowedRoles` — filters by the user's active role (empty = no filter).
 - `passRoleClaim` — if true, an external launch receives a signed role JWT.
@@ -329,6 +342,19 @@ How discovery + render works:
    That page typically **mints a host token server-side** and hands it to its JS,
    so the in-WebView SPA calls the application's own `/api/<module-slug>/*`
    endpoints. Launching an **external** card → the partner URL (+ role JWT).
+4. Launching a **native** card → a signed payload URL **plus** `entry` and
+   `min_contract` for the account type that matched. okta-app refuses a floor
+   above its own `oktaHostContractVersion` **before** downloading anything (the
+   same "update the app" screen as the post-download bundle gate); a launch
+   without the key — an older okta-web — is simply not gated before download.
+   The phone describes itself on every request with `X-App-Version` and
+   `X-App-Contract` ([app.md](./app.md#how-it-talks-to-okta-web)); Phase 1 only
+   records those, the per-version entry pick is Phase 2. One entry path declared
+   with two different contracts (an audience, the dashboard card and a screen
+   place may share a package) is **not** refused at publish: the first
+   declaration builds the artifact and okta-web logs `Mini-app entry declared
+   with two contracts` at publish and at artifact build — what publishes today
+   keeps publishing.
 
 > The in-WebView SPA details (hash routing, token minting, `okta-app://close`
 > bridge) are how one example implements its mobile entry; the **requirement** is

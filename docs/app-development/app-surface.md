@@ -61,7 +61,7 @@ This block is the entire contract for the client surface:
     "mode": "webview",                // "webview" | "native" | "external"
     "entry": "okta_app/webview/screens/dashboard.blade.php",   // webview: page okta-web renders.
                                        // native: okta_app/native/main/lib/main.dart
-    "minContract": 1,                  // native only: minimum host contract
+    "minContract": 1,                  // native only: block default of the per-type floor (audiences[].minContract)
     "allowedPlatforms": ["ios", "android", "windows", "linux"],  // [] = all
     "allowedRoles": ["tenant-admin"],  // [] = no role filter
     "requiredScope": "education.students.read",       // empty = no scope gate
@@ -282,8 +282,25 @@ permissions — no direct network or filesystem.
 **Runtime subset** — the device runtime is `dart_eval` + `flutter_eval`, a subset
 of Dart/Flutter. A CI compile-check (`flutter test tool/validate.dart`) compiles
 your code against the exact device runtime, so a broken widget fails the build,
-not the user's phone. Declare `minContract` for host capabilities you depend on;
-the app shows "update the app" instead of running a mini-app it is too old for.
+not the user's phone.
+
+**Contract floor, per account type** — declare `minContract` for the host
+capabilities you depend on **on the `audiences[]` row**, beside that type's
+`entry`. A type that declares none inherits the block-level `mobile.minContract`,
+which okta-partners writes as a mirror of your primary type's floor (a manifest
+that only ever set the block value keeps meaning what it meant). The app shows
+"update the app" instead of running a mini-app it is too old for — and it does
+so **before downloading**: the launch answer carries the matched type's
+`min_contract`, okta-app compares it with its own `oktaHostContractVersion`
+(which it also sends to the server on every request as `X-App-Contract`, beside
+`X-App-Version`), then the bundle gate re-checks after download. A staff package
+written against a newer host therefore never locks the guardian package out of
+the phones it still compiles on. One `.dart` path is one contract: the same
+entry declared twice with different floors (an audience and the dashboard card,
+say) builds with the first declaration and logs a warning at publish — give each
+floor its own package instead. The version editor shows, under each type's
+contract field, which okta-app releases run which contract (`1.1.1 → 26 …`),
+mirrored from the table the Okta team keeps on okta-web.
 The partner boilerplate's `okta_app/native/main/README.md` carries the supported-patterns
 catalog (static `Okta.*` only, no `State.mounted`, closure-literal callbacks,
 JSON indexed on a `dynamic` receiver — never a `Map`-typed one, an explicit

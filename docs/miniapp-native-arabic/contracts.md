@@ -150,9 +150,9 @@ lib/features/miniapps/bridge/okta_dart_miniapp_host.dart:83:3:
 
 | | `oktaHostContractVersion` | `oktaMiniAppRuntimeSignature` |
 |---|---|---|
-| معرَّف في | `okta-miniapp/lib/src/host/okta_host_delegate.dart:228` (= **17**) | `okta-miniapp/lib/src/runtime_info.dart:28` |
+| معرَّف في | `okta-miniapp/lib/src/host/okta_host_delegate.dart:228` (**17** حين كُتب هذا؛ و**26** اليوم — التاريخ فوق الثابت يقول سبب كل رفع) | `okta-miniapp/lib/src/runtime_info.dart:28` |
 | هو | عدد صحيح يُرفَع يدوياً | نصّ سلسلة الأدوات + بصمة كل مصدر محقون |
-| يبوّب | **القبول.** `minContract <= hostContract` وإلا رفض التشغيل — `okta_mini_app_bundle.dart:154-163` | **لا شيء.** يفتح مفتاح كاش الترجمة فقط |
+| يبوّب | **القبول.** `minContract <= hostContract` وإلا رفض التشغيل — `okta_mini_app_bundle.dart:154-163` بعد التنزيل، و`min_contract` نوع الحساب على ردّ الإطلاق قبله. **ويُبلَّغ للخادم** على كل طلب في ترويسة `X-App-Contract` (`oktaAppHostContract`) | **لا شيء.** يفتح مفتاح كاش الترجمة فقط |
 | يتحرّك حين | يرفعه أحد | تتغيّر أي بايت في أي مصدر محقون |
 
 `oktaMiniAppRuntimeSignature` **لا يبوّب القبول**، والاعتماد عليه لذلك هو الطريق
@@ -171,7 +171,8 @@ lib/features/miniapps/bridge/okta_dart_miniapp_host.dart:83:3:
 
 | المفهوم | okta-partners | okta-web | السلك | okta-miniapp / okta-app |
 |---|---|---|---|---|
-| حدّ العقد | `min_contract` (في `mobile_config`) | `mobile.minContract` (manifest)، `min_contract` (الحمولة) | `min_contract` | `minContract` |
+| حدّ العقد | `mobile_min_contract` (على صفّ كل جمهور؛ `mobile_config.min_contract` = افتراض الكتلة / مرآة النوع الأساسي) | `mobile.audiences[].minContract` ← `min_contract` لكل جمهور (`NormalizeMobileAudiences`)، وعلى ردّ الإطلاق أيضاً | `min_contract` (الإطلاق **والحمولة**) | `minContract` (`MiniAppLaunch.minContract` قبل التنزيل، و`minContract` في الحزمة بعده) |
+| عقد الهاتف نفسه | — (مرآة جدول الإصدارات `okta_web.mobile_app_releases`) | `ClientBuild.hostContract` (`ResolveClientBuild`)، و`mobile_app_releases.host_contract` لكل إصدار okta-app | ترويسة `X-App-Contract` (الغياب = لم يقل) | `oktaAppHostContract` (= `oktaHostContractVersion`، مُعاد تصديره من `bridge/`) |
 | مسار الدخول | `mobile_entry` (لكل جمهور) | `entry` (الكتلة المحلولة) | — (يُحلّ في الخادم) | `entryFile` (نسبةً إلى `lib/`) |
 | الحزمة | — | `package` (يُقرأ من `pubspec.yaml` للشريك) | `package` | `package` |
 | الإصدار | — | `payload_version` (من `updated_at`) | `payload_version` (عدد) | `payloadVersion` (**نصّ**) |

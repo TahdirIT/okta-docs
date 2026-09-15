@@ -152,9 +152,9 @@ matching `ref`/`resolved-ref` pair in `pubspec.lock`**, then `flutter pub get`.
 
 | | `oktaHostContractVersion` | `oktaMiniAppRuntimeSignature` |
 |---|---|---|
-| Defined | `okta-miniapp/lib/src/host/okta_host_delegate.dart:228` (= **17**) | `okta-miniapp/lib/src/runtime_info.dart:28` |
+| Defined | `okta-miniapp/lib/src/host/okta_host_delegate.dart:228` (**17** when this was written; **26** today — the history above the constant says why each bump happened) | `okta-miniapp/lib/src/runtime_info.dart:28` |
 | Is | An integer, hand-bumped | Toolchain string + digest of every injected source |
-| Gates | **Admission.** `minContract <= hostContract` or the app refuses to run — `okta_mini_app_bundle.dart:154-163` | **Nothing.** It keys the compile cache only |
+| Gates | **Admission.** `minContract <= hostContract` or the app refuses to run — `okta_mini_app_bundle.dart:154-163` after download, and the launch's per-account-type `min_contract` before it. Also **told to the server** on every request as `X-App-Contract` (`oktaAppHostContract`) | **Nothing.** It keys the compile cache only |
 | Moves when | Someone bumps it | Any injected source byte changes |
 
 `oktaMiniAppRuntimeSignature` **does not gate admission**, and relying on it to
@@ -175,7 +175,8 @@ carries a fix. `[confirmed]`
 
 | Concept | okta-partners | okta-web | wire | okta-miniapp / okta-app |
 |---|---|---|---|---|
-| Contract floor | `min_contract` (`mobile_config`) | `mobile.minContract` (manifest), `min_contract` (payload) | `min_contract` | `minContract` |
+| Contract floor | `mobile_min_contract` (per audience row; `mobile_config.min_contract` = block default / primary-type mirror) | `mobile.audiences[].minContract` → `min_contract` per audience (`NormalizeMobileAudiences`), also on the launch answer | `min_contract` (launch **and** payload) | `minContract` (`MiniAppLaunch.minContract` before download, bundle `minContract` after) |
+| The phone's own contract | — (release-table mirror, `okta_web.mobile_app_releases`) | `ClientBuild.hostContract` (`ResolveClientBuild`), `mobile_app_releases.host_contract` per okta-app version | `X-App-Contract` header (absent = did not say) | `oktaAppHostContract` (= `oktaHostContractVersion`, re-exported from `bridge/`) |
 | Entry path | `mobile_entry` (per audience) | `entry` (resolved block) | — (resolved server-side) | `entryFile` (basename-relative to `lib/`) |
 | Package | — | `package` (read from partner `pubspec.yaml`) | `package` | `package` |
 | Version | — | `payload_version` (from `updated_at`) | `payload_version` (int) | `payloadVersion` (**String**) |

@@ -24,10 +24,19 @@ stable type, with the low-level `dart_eval` cause retained for logging (`:12-17`
 ### The contract gate has a documented gap, and a second route past it
 
 The declared route is `min_contract`, checked **before anything compiles**
-(`okta_mini_app_bundle.dart:154-163`). But a deployment older than the point
-where okta-web started emitting `min_contract` sends nothing, the bundle defaults
-to `1`, and the gate never fires — so the partner's app dies with a raw compiler
-message instead of an actionable screen.
+(`okta_mini_app_bundle.dart:154-163`) — and, since the launch answer started
+carrying the matched account type's floor, **before anything downloads**:
+okta-app's `fetchSourceBundle`/`fetchPortalSourceBundle` compare
+`MiniAppLaunch.minContract` with `oktaHostContractVersion` ahead of any HTTP or
+cache reuse and throw the same `OktaMiniAppContractException`, so the refusal
+reaches the bundle loader's `error:` branch, which now recognises the type and
+renders "update the app" instead of the generic failure. Both gates read the
+same server-side number (`NormalizeMobileAudiences`, per audience), so an app
+that opens today is never refused by the new one. But a deployment older than
+the point where okta-web started emitting `min_contract` sends nothing — no key
+on the launch (no pre-download gate) and a bundle that defaults to `1` — so
+neither gate fires and the partner's app dies with a raw compiler message
+instead of an actionable screen.
 
 The undeclared route closes it: a compile error containing
 `Cannot find import 'package:okta_` is treated as "this host is too old", because
@@ -35,7 +44,7 @@ a mini-app can only import `package:okta_*` libraries the **host** injects, so a
 missing one is never the partner's mistake. `[confirmed]`
 `okta-app/lib/features/miniapps/bridge/okta_dart_miniapp_host.dart:192-209`
 
-Both routes converge on the same `updateApp` builder
+All three routes converge on the same `updateApp` builder
 (`okta_dart_miniapp_host.dart:275-277`).
 
 ### Retry must evict the cache, or it does nothing

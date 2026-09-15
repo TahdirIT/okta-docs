@@ -72,9 +72,21 @@ okta-app/lib/
 that inject:
 
 - `Authorization: Bearer <token>` (read from secure storage);
-- `X-App-Platform` (`ios`/`android`/OS name);
-- `X-App-Version` (compile-time `--dart-define=APP_VERSION`; absent = server skips
-  the version gate).
+- `X-App-Platform` (`ios`/`android`/OS name; withheld on the web build);
+- `X-App-Version` (compile-time `--dart-define=APP_VERSION`, CI shape
+  `1.1.1+11+<sha7>`; absent = server skips the version gate);
+- `X-App-Contract` — the mini-app **host contract** this build compiles
+  mini-apps with (`oktaAppHostContract`, a one-line re-export of
+  `oktaHostContractVersion` that lives in `lib/features/miniapps/bridge/` so the
+  network layer never imports the runtime). Sent on the web build too; omitted,
+  never empty, when unknown. Builds shipped before it send nothing, and the
+  server reads absence as "did not say" — a phone that did not update okta-app
+  keeps the entry it has today.
+
+okta-web folds the three into one `ClientBuild {appVersion "M.m.p"|null,
+hostContract|null, platform|null}` (`ResolveClientBuild`; only the controller
+reads headers, and the version keeps `major.minor.patch` of the CI shape).
+Phase 1 carries it; the per-version entry pick that consumes it is Phase 2.
 
 Endpoints consumed (all on `okta-web`):
 
@@ -84,7 +96,7 @@ Endpoints consumed (all on `okta-web`):
 | `GET  /api/mobile/auth/me` | validate session on cold start |
 | `GET/POST /api/mobile/auth/context` | list / select `{scope, tenant_id, role_ids}` |
 | `GET  /api/mobile/app-catalog` | **installed-app cards** for the active `(tenant, role)` |
-| `POST /api/mobile/app-catalog/{slug}/launch` | resolve launch URL (signed webview URL or external URL + optional JWT) |
+| `POST /api/mobile/app-catalog/{slug}/launch` | resolve launch URL (signed webview URL or external URL + optional JWT); a **native** card also gets `entry` + `min_contract` — the floor of the account type that matched — which okta-app checks **before** downloading the bundle (see the note below) |
 | `POST /api/mobile/auth/logout` | best-effort logout |
 | `POST /api/mobile/notification-tokens` | register this device's FCM token `{token, platform, app_version?, locale?}` |
 | `POST /api/mobile/notification-tokens/revoke` | unregister on logout (called **before** the Sanctum token is destroyed) |
@@ -94,6 +106,18 @@ Endpoints consumed (all on `okta-web`):
 
 > The client passes `tenant_id`/`role_id` as query parameters on the catalog
 > `GET`. See the matching server note in [web.md](./web.md#2-mobile-client-api).
+
+> **Native launch gate.** For a `native` card the launch answer carries
+> `min_contract` — the same number the bundle will carry, resolved on the server
+> **per account type** (the audience's own `minContract`, else
+> `mobile.minContract`, else 1). `fetchSourceBundle`/`fetchPortalSourceBundle`
+> refuse it **before** any download or cache reuse when
+> `min_contract > oktaHostContractVersion`, throwing the same
+> `OktaMiniAppContractException` the post-download bundle gate throws, so the
+> user sees the same "update the app" screen (the bundle loader's `error:` branch
+> now recognises the type). A missing key — an older okta-web — means no
+> pre-download gate; the bundle gate and the `Cannot find import 'package:okta_`
+> compile-error fallback stay as the last resorts.
 
 ## Notifications & push
 
