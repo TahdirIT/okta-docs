@@ -109,12 +109,13 @@ Endpoints consumed (all on `okta-web`):
 
 > **Native launch gate.** For a `native` card the launch answer carries `entry`
 > and `min_contract` — the same numbers the bundle will carry, resolved on the
-> server **per account type** and, when that type declares `versions[]`, **per
-> okta-app version**: `PickAudienceEntry` matches the newest bound this build
-> meets (from `X-App-Version`) whose floor it clears (from `X-App-Contract`, or
-> inferred from the release table), and falls back to the audience's default
-> entry. **A build that sends no version header always gets the default**, so
-> nothing an older okta-app receives today changes.
+> server **per account type** and, when that type declares `versions[]`, per
+> **build**: `PickAudienceEntry` reads the contract (from `X-App-Contract`, or
+> inferred from the release table by `X-App-Version`), takes the highest
+> **contract-bound** line the build clears, then the newest **version-bound**
+> line it meets, and falls back to the audience's default entry. **A build that
+> reports neither a usable contract nor a version it can meet always gets the
+> default**, so nothing an older okta-app receives today changes.
 > `fetchSourceBundle`/`fetchPortalSourceBundle`
 > refuse it **before** any download or cache reuse when
 > `min_contract > oktaHostContractVersion`, throwing the same

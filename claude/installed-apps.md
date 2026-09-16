@@ -321,22 +321,32 @@ catalog card `okta-app` renders (see
 - `audiences[]` — the account types the client surface serves (`roles[]` XOR
   `portal`), each with its own `entry` — and, for `native`, its own
   `minContract` and optionally its own `versions[]` (below).
-- `audiences[].versions[]` — `native` only: rows of
-  `{minAppVersion, entry, minContract}` that bind a **newer package to a newer
-  okta-app**, for the same account type. A floor alone says "do not run this
-  entry under host X" and never says what to run instead; a row says it. The
-  server picks (step 4 below), `entry` on the audience becomes optional when
-  rows are present (the type is then served on those builds only, and hidden
-  on the rest), and a row's `minContract` is **required and never inherited**
-  — the row exists because its package needs a newer host, so inheriting the
-  type's lower floor would hand it to a phone that cannot compile it.
+- `audiences[].versions[]` — `native` only: **extra entries for the same
+  account type**, so a newer package can reach newer phones without locking the
+  older ones out. A floor alone says "do not run this entry under host X" and
+  never says what to run instead; a line says it. Every line is bound on
+  **exactly one axis**: `minContract` (the precise question — the contract is
+  what decides whether the package compiles on the device at all) or
+  `minAppVersion` (for the builds that *cannot* answer it: every okta-app
+  shipped before the `X-App-Contract` header reports a version and no
+  contract). A line bound on neither is refused at publish. The server picks
+  (step 4 below), `entry` on the audience becomes optional when lines are
+  present (the type is then served on those builds only, and hidden on the
+  rest), and a floor on a **version-bound** line is optional — it inherits the
+  type's floor, because the axis there is the version and the floor is only a
+  safety net. On a contract-bound line the floor *is* the bound.
 - `minContract` — `native` only: the lowest **host contract** the Dart code
-  needs. It is declared **per account type** (`audiences[].minContract`) and a
-  type that declares none inherits the block-level `mobile.minContract`. The
-  block value is what okta-partners exports as a **mirror of the primary type's
-  floor**, so a manifest that only ever set the block value keeps meaning
-  exactly what it meant. A staff package written against a newer host therefore
-  never locks the guardian package out of the phones it still compiles on.
+  needs. It is declared **per account type** (`audiences[].minContract`) and is
+  **required** on any type that carries an `entry`: it is what the phone's
+  contract is compared against, so a type that never states it is a type nobody
+  can answer for. The block-level `mobile.minContract` is what okta-partners
+  exports as a **mirror of the primary type's floor**, so a manifest that only
+  ever set the block value keeps meaning exactly what it meant. A staff package
+  written against a newer host therefore never locks the guardian package out
+  of the phones it still compiles on. **One host contract names one entry per
+  type** — the default's own floor included, so two lines on the same contract
+  (or a line on the default's floor) are two answers to one question and are
+  refused by name.
 - `allowedPlatforms` — filters cards by `X-App-Platform` (empty = all).
 - `allowedRoles` — filters by the user's active role (empty = no filter).
 - `passRoleClaim` — if true, an external launch receives a signed role JWT.
@@ -358,22 +368,26 @@ How discovery + render works:
    without the key — an older okta-web — is simply not gated before download.
    The phone describes itself on every request with `X-App-Version` and
    `X-App-Contract` ([app.md](./app.md#how-it-talks-to-okta-web)), and
-   `PickAudienceEntry` uses them: **version first, contract as a safety net**.
-   The newest `versions[]` row whose `minAppVersion` the phone meets and whose
-   `minContract` it clears wins; failing that the default `entry`; failing
-   that — a type with rows and no default, on a build too old for any of them
-   — no card at all, and a 404 on launch. **A phone that does not report its
-   version always gets the default**: a bound row asks a question it did not
-   answer, which is why adding rows changes nothing for the builds already in
-   the field. A bound pick is pinned into the signed launch URL as `e=<bound>`
-   and re-derived from the manifest on the payload request (an unknown pin is
-   403); a default pick carries no `e`, so the URL is byte-for-byte what it was
+   `PickAudienceEntry` reads them in this order: the contract (from the header,
+   else inferred from the okta-app release table by version), then the
+   **contract-bound lines** highest floor first (an unknown contract clears
+   none of them — a line names a host, and "probably" is not a host), then the
+   **version-bound lines** newest bound first (with the contract as a safety
+   net when it is known), then the default `entry` **whatever its floor**;
+   failing all of that — a type with lines and no default, on a build that
+   meets none — no card at all, and a 404 on launch. **A phone that reports
+   neither a usable contract nor a version it can meet always gets the
+   default**, which is why adding lines changes nothing for the builds already
+   in the field. A bound pick is pinned into the signed launch URL as
+   `e=<bound>` (`1.2.0` for a version line, `c28` for a contract one) and
+   re-derived from the manifest on the payload request (an unknown pin is 403);
+   a default pick carries no `e`, so the URL is byte-for-byte what it was
    before. One entry path declared with two different contracts (an audience,
    the dashboard card and a screen place may share a package) is **not**
    refused at publish when both sides are the legacy declarations: the first
    builds the artifact and okta-web logs `Mini-app entry declared with two
    contracts` — what publishes today keeps publishing. It **is** refused when
-   one side is a `versions[]` row, a shape no published manifest carries.
+   one side is a `versions[]` line, a shape no published manifest carries.
 
 > The in-WebView SPA details (hash routing, token minting, `okta-app://close`
 > bridge) are how one example implements its mobile entry; the **requirement** is

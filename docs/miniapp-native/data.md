@@ -40,7 +40,7 @@ running; the card only decides whether to draw a tile. `[confirmed]`
 | `files` | `files` | — | every `.dart` under the entry's `lib/`, keyed relative to `lib/` |
 | `entryFile` | `entry_file` | `main.dart` | manifest entry, minus the `okta_app/native/<entry>/lib/` prefix |
 | `entryFunction` | `entry_function` | `main` | hard-coded server-side |
-| `minContract` | `min_contract` | `1` | manifest — the **entry that was picked**: the matched audience's `versions[]` row when the phone's version and contract reach one, else the audience's own `minContract`, else `mobile.minContract` (`NormalizeMobileAudiences` + `PickAudienceEntry`); the same number rides the launch answer, where okta-app checks it before downloading |
+| `minContract` | `min_contract` | `1` | manifest — the **entry that was picked**: the matched audience's `versions[]` line when the build clears one — contract-bound first, then version-bound — else the audience's own `minContract`, else `mobile.minContract` (`NormalizeMobileAudiences` + `PickAudienceEntry`); the same number rides the launch answer, where okta-app checks it before downloading |
 | `capabilities` | `capabilities` | `[]` | manifest, normalised twice |
 | `payloadVersion` | `payload_version` | — | **injected client-side from the launch** |
 

@@ -106,19 +106,25 @@ okta-web) on publish/install. For the complete contract and package structure, s
   under `okta_app/native/<entry>/lib/` — `<entry>` being a standalone Dart package
   (source-on-device; the schema/JSON `miniapp/` runtime has been removed) — and
   `minContract` declares the minimum host contract **per account type**
-  (`audiences[].minContract`, an integer ≥ 1; a type without one inherits the
-  block's `mobile.minContract`, which okta-partners exports as the primary
-  type's mirror). An account type may also bind **newer entries to newer
-  okta-app versions** with `audiences[].versions[]` — rows of
-  `{minAppVersion, entry, minContract}`, newest first, `native` only, ten at
-  most; okta-web picks by app version first with the contract as a safety net,
-  a phone that does not report its version always gets the default `entry`, and
-  a row's floor is required and never inherited. When rows are present the
-  type's own `entry` may be omitted, and the type is then served on those
-  builds alone. The same `.dart` path declared with two different contracts is
-  built with the first and logged as a warning at publish — not refused, so
-  what publishes today keeps publishing; it **is** refused when one side is a
-  `versions[]` row. Both `entry` and the floor are
+  (`audiences[].minContract`, an integer ≥ 1, **required** on any type that
+  carries an `entry`; the block's `mobile.minContract` is what okta-partners
+  exports as the primary type's mirror). An account type may also declare
+  **extra entries** in `audiences[].versions[]` — `native` only, ten at most,
+  each bound on **exactly one axis**: `minContract` (the precise question — the
+  contract decides whether the package compiles on the device at all) or
+  `minAppVersion` (for the builds that can only report a version, every okta-app
+  older than the `X-App-Contract` header). A line bound on neither is refused.
+  okta-web reads the contract-bound lines first (highest floor), then the
+  version-bound ones (newest bound), then the default `entry` whatever its
+  floor — so a phone that reports neither a usable contract nor a version it
+  can meet always gets the default. One host contract names one entry per type,
+  the default's own floor included; a version-bound line may omit its floor and
+  inherit the type's. When lines are present the type's own `entry` may be
+  omitted, and the type is then served on those builds alone. The same `.dart`
+  path declared with two different contracts is built with the first and logged
+  as a warning at publish — not refused, so what publishes today keeps
+  publishing; it **is** refused when one side is a `versions[]` line. Both
+  `entry` and the floor are
   re-checked at render/serve time (`realpath` inside the module, no `..`; the
   floor also rides the launch answer as `min_contract`, where okta-app checks it
   before downloading).

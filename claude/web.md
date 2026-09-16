@@ -204,20 +204,32 @@ request); null means "did not say", which every build older than the header
 does.
 
 `PickAudienceEntry` turns that DTO into the entry a phone actually gets, when
-the audience declares `versions[]` (rows of `{min_app_version, entry,
-min_contract}`, newest bound first): **version first, contract as a safety
-net** — the contract comes from `X-App-Contract`, else
-`InferHostContractForVersion` reads it off the release table. The first row the
-phone meets on both counts wins; failing that the default `entry` **regardless
-of its floor** (the device gate shows "update the app" as it always has);
-failing that — a rows-only audience on a build too old for any bound — the card
-is dropped with reason `no_entry_for_app_version` and the launch answers 404.
-**With no rows the pick is the default for every header state**, so an
-audience that does not use the shape is byte-for-byte what it was. A bound pick
-is signed into the launch URL as `e=<bound>`; `EnsureAppWebview::pinnedEntryBlock`
-re-derives the row from the manifest on the payload request and 403s on an
-unknown pin, or on no pin when the audience has no default. A default pick
-carries no `e`.
+the audience declares `versions[]` — extra entries for that same account type,
+each bound on **exactly one axis**: `min_contract` (the precise question) or
+`min_app_version` (for the builds that can only report a version). The contract
+comes from `X-App-Contract`, else `InferHostContractForVersion` reads it off the
+release table. Then, in order: the **contract-bound** rows highest floor first
+(an unknown contract clears none of them — the row names a host, and "probably"
+is not a host), the **version-bound** rows newest bound first (the contract
+still applies as a safety net when it is known), and failing both the default
+`entry` **regardless of its floor** (the device gate shows "update the app" as
+it always has); failing that — a rows-only audience on a build that meets none
+of them — the card is dropped with reason `no_entry_for_app_version` and the
+launch answers 404. **With no rows the pick is the default for every header
+state**, so an audience that does not use the shape is byte-for-byte what it
+was. A bound pick is signed into the launch URL as `e=<bound>` — the token
+`NormalizeMobileAudiences` builds, `1.2.0` for a version row and `c28` for a
+contract one; `EnsureAppWebview::pinnedEntryBlock` re-derives the row from the
+manifest on the payload request and 403s on an unknown pin, or on no pin when
+the audience has no default. A default pick carries no `e`.
+
+The validator enforces the two rules that make the pick answerable: a row bound
+on neither axis is refused (nothing could ever select it), and **one host
+contract names one entry per type** — the map is seeded with the type's own
+floor as "the default entry", so a second row on that contract, or two rows on
+the same one, are refused by name. A **version-bound** row may omit its floor
+and inherit the type's; a contract-bound row cannot, because there the floor
+*is* the bound.
 
 `ManifestValidator::nativeEntryContracts` and
 `BuildMiniappBundleArtifacts::warnIfContractDiffers` log `Mini-app entry declared

@@ -41,7 +41,7 @@
 | `files` | `files` | — | كل `.dart` تحت `lib/` للمدخل، مفهرسةً نسبةً إلى `lib/` |
 | `entryFile` | `entry_file` | `main.dart` | مدخل الـ manifest، منزوعاً منه بادئة `okta_app/native/<entry>/lib/` |
 | `entryFunction` | `entry_function` | `main` | مثبَّت في الخادم |
-| `minContract` | `min_contract` | `1` | الـ manifest — عقد **المدخل المُنتقى**: صفّ `versions[]` للجمهور المُطابَق حين يبلغه إصدار الهاتف وعقده، وإلا `minContract` الجمهور نفسه، وإلا `mobile.minContract` (`NormalizeMobileAudiences` + `PickAudienceEntry`)؛ والرقم نفسه يركب ردّ الإطلاق حيث يفحصه okta-app قبل التنزيل |
+| `minContract` | `min_contract` | `1` | الـ manifest — عقد **المدخل المُنتقى**: صفّ `versions[]` للجمهور المُطابَق حين يبلغه البناء — صفوف العقد أولاً ثم صفوف الإصدار — وإلا `minContract` الجمهور نفسه، وإلا `mobile.minContract` (`NormalizeMobileAudiences` + `PickAudienceEntry`)؛ والرقم نفسه يركب ردّ الإطلاق حيث يفحصه okta-app قبل التنزيل |
 | `capabilities` | `capabilities` | `[]` | الـ manifest، مطبَّعةً مرّتين |
 | `payloadVersion` | `payload_version` | — | **يُحقَن من جهة العميل من الإطلاق** |
 
