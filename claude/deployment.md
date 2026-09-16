@@ -152,14 +152,21 @@ that order and adds one rule of its own: (4) `okta-web` (sandbox + production)
 — the validator, the normaliser, `PickAudienceEntry`, the `e=` pin and the
 per-bound artifacts; additive, because no manifest exports the shape yet.
 (5) `okta-partners` — the canonical rows, the editor's per-type entry list, the
-MCP tools and the schema, **with `okta-web.miniapp.versioned_entries` off** until step 4
-is live on *both* okta-web environments. That flag is the rule: an older
-okta-web drops any audience with no entry silently, so a type that serves bound
-builds only would vanish with no error anywhere while the publish succeeded.
-The flag holds the *export* back, never the editing — rows are stored and
-validated behind it, so turning it on never has to recover data an ordinary
-save had erased. (6) `okta-app` — nothing required: the pick is a server
-decision and the launch keys it adds are ones an older client ignores.
+MCP tools and the schema. This step shipped behind `okta-web.miniapp.versioned_entries`
+until step 4 was live on *both* okta-web environments; **both carry it now, so
+the flag is gone** — deleted from `config`, the model, the editor, the Blade and
+the MCP tools. What the review before that deletion found is worth keeping,
+because it says what such a flag actually buys: a manifest with **no**
+`versions[]` was byte-identical either way (no rows, so no key is exported), and
+a type that has rows **and** a default entry runs on an older okta-web exactly
+as it runs today (it reads `entry` and ignores the key it does not know). The
+one shape that lost anything was a type with **no** default entry — and the old
+normaliser inherited the flat `mobile.entry` for it, opening another type's
+bundle, or dropped it when the block was empty. The flag did not protect even
+that: with it off, the exporter omitted the type from the manifest entirely. It
+changed the shape of the failure, it did not prevent it. (6) `okta-app` —
+nothing required: the pick is a server decision and the launch keys it adds are
+ones an older client ignores.
 
 ---
 
