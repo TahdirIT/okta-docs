@@ -108,9 +108,17 @@ okta-web) on publish/install. For the complete contract and package structure, s
   `minContract` declares the minimum host contract **per account type**
   (`audiences[].minContract`, an integer ≥ 1; a type without one inherits the
   block's `mobile.minContract`, which okta-partners exports as the primary
-  type's mirror). The same `.dart` path declared with two different contracts is
+  type's mirror). An account type may also bind **newer entries to newer
+  okta-app versions** with `audiences[].versions[]` — rows of
+  `{minAppVersion, entry, minContract}`, newest first, `native` only, ten at
+  most; okta-web picks by app version first with the contract as a safety net,
+  a phone that does not report its version always gets the default `entry`, and
+  a row's floor is required and never inherited. When rows are present the
+  type's own `entry` may be omitted, and the type is then served on those
+  builds alone. The same `.dart` path declared with two different contracts is
   built with the first and logged as a warning at publish — not refused, so
-  what publishes today keeps publishing. Both `entry` and the floor are
+  what publishes today keeps publishing; it **is** refused when one side is a
+  `versions[]` row. Both `entry` and the floor are
   re-checked at render/serve time (`realpath` inside the module, no `..`; the
   floor also rides the launch answer as `min_contract`, where okta-app checks it
   before downloading).

@@ -177,7 +177,8 @@ carries a fix. `[confirmed]`
 |---|---|---|---|---|
 | Contract floor | `mobile_min_contract` (per audience row; `mobile_config.min_contract` = block default / primary-type mirror) | `mobile.audiences[].minContract` → `min_contract` per audience (`NormalizeMobileAudiences`), also on the launch answer | `min_contract` (launch **and** payload) | `minContract` (`MiniAppLaunch.minContract` before download, bundle `minContract` after) |
 | The phone's own contract | — (release-table mirror, `okta_web.mobile_app_releases`) | `ClientBuild.hostContract` (`ResolveClientBuild`), `mobile_app_releases.host_contract` per okta-app version | `X-App-Contract` header (absent = did not say) | `oktaAppHostContract` (= `oktaHostContractVersion`, re-exported from `bridge/`) |
-| Entry path | `mobile_entry` (per audience) | `entry` (resolved block) | — (resolved server-side) | `entryFile` (basename-relative to `lib/`) |
+| Entry path | `mobile_entry` (per audience) | `entry` (resolved block, picked by `PickAudienceEntry`) | `entry` on the launch answer; `e=<bound>` pinned in the signed URL for a version-bound pick | `entryFile` (basename-relative to `lib/`) |
+| Version-bound entries | `mobile_versions[]` (`{min_app_version, mobile_entry, min_contract}` on the audience row) | `mobile.audiences[].versions[]` → `versions` per audience (`NormalizeMobileAudiences`), newest bound first | — (the pick is server-side; only the chosen `entry`/`min_contract` travel) | — (nothing new; the phone reports `X-App-Version` and receives one entry) |
 | Package | — | `package` (read from partner `pubspec.yaml`) | `package` | `package` |
 | Version | — | `payload_version` (from `updated_at`) | `payload_version` (int) | `payloadVersion` (**String**) |
 | Capability | `capabilities[].{key,reason}` | same | same | `OktaDeclaredCapability{key,reason}` → gateway type `MiniAppDeclaredCapability` |

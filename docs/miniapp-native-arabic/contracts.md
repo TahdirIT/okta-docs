@@ -173,7 +173,8 @@ lib/features/miniapps/bridge/okta_dart_miniapp_host.dart:83:3:
 |---|---|---|---|---|
 | حدّ العقد | `mobile_min_contract` (على صفّ كل جمهور؛ `mobile_config.min_contract` = افتراض الكتلة / مرآة النوع الأساسي) | `mobile.audiences[].minContract` ← `min_contract` لكل جمهور (`NormalizeMobileAudiences`)، وعلى ردّ الإطلاق أيضاً | `min_contract` (الإطلاق **والحمولة**) | `minContract` (`MiniAppLaunch.minContract` قبل التنزيل، و`minContract` في الحزمة بعده) |
 | عقد الهاتف نفسه | — (مرآة جدول الإصدارات `okta_web.mobile_app_releases`) | `ClientBuild.hostContract` (`ResolveClientBuild`)، و`mobile_app_releases.host_contract` لكل إصدار okta-app | ترويسة `X-App-Contract` (الغياب = لم يقل) | `oktaAppHostContract` (= `oktaHostContractVersion`، مُعاد تصديره من `bridge/`) |
-| مسار الدخول | `mobile_entry` (لكل جمهور) | `entry` (الكتلة المحلولة) | — (يُحلّ في الخادم) | `entryFile` (نسبةً إلى `lib/`) |
+| مسار الدخول | `mobile_entry` (لكل جمهور) | `entry` (الكتلة المحلولة، ينتقيه `PickAudienceEntry`) | `entry` على ردّ الإطلاق؛ و`e=<الحدّ>` مثبَّتاً في الرابط الموقَّع للانتقاء المقيَّد | `entryFile` (نسبةً إلى `lib/`) |
+| المداخل بحسب الإصدار | `mobile_versions[]` (`{min_app_version, mobile_entry, min_contract}` على صفّ الجمهور) | `mobile.audiences[].versions[]` ← `versions` لكل جمهور (`NormalizeMobileAudiences`)، الأحدث حدّاً أولاً | — (الانتقاء في الخادم؛ لا يسافر إلا المدخل والعقد المُختاران) | — (لا شيء جديد؛ الهاتف يبلّغ `X-App-Version` ويستلم مدخلاً واحداً) |
 | الحزمة | — | `package` (يُقرأ من `pubspec.yaml` للشريك) | `package` | `package` |
 | الإصدار | — | `payload_version` (من `updated_at`) | `payload_version` (عدد) | `payloadVersion` (**نصّ**) |
 | الصلاحية | `capabilities[].{key,reason}` | نفسه | نفسه | `OktaDeclaredCapability{key,reason}` ← النوع البوّابي `MiniAppDeclaredCapability` |

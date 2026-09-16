@@ -31,8 +31,11 @@ okta-app's `fetchSourceBundle`/`fetchPortalSourceBundle` compare
 cache reuse and throw the same `OktaMiniAppContractException`, so the refusal
 reaches the bundle loader's `error:` branch, which now recognises the type and
 renders "update the app" instead of the generic failure. Both gates read the
-same server-side number (`NormalizeMobileAudiences`, per audience), so an app
-that opens today is never refused by the new one. But a deployment older than
+same server-side number (`NormalizeMobileAudiences`, per audience — and per
+`versions[]` row once the audience declares them, resolved by
+`PickAudienceEntry`), so an app that opens today is never refused by the new
+one: a phone that reports no version gets the default entry and the default
+floor, exactly as before. But a deployment older than
 the point where okta-web started emitting `min_contract` sends nothing — no key
 on the launch (no pre-download gate) and a bundle that defaults to `1` — so
 neither gate fires and the partner's app dies with a raw compiler message

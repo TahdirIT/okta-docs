@@ -107,10 +107,15 @@ Endpoints consumed (all on `okta-web`):
 > The client passes `tenant_id`/`role_id` as query parameters on the catalog
 > `GET`. See the matching server note in [web.md](./web.md#2-mobile-client-api).
 
-> **Native launch gate.** For a `native` card the launch answer carries
-> `min_contract` — the same number the bundle will carry, resolved on the server
-> **per account type** (the audience's own `minContract`, else
-> `mobile.minContract`, else 1). `fetchSourceBundle`/`fetchPortalSourceBundle`
+> **Native launch gate.** For a `native` card the launch answer carries `entry`
+> and `min_contract` — the same numbers the bundle will carry, resolved on the
+> server **per account type** and, when that type declares `versions[]`, **per
+> okta-app version**: `PickAudienceEntry` matches the newest bound this build
+> meets (from `X-App-Version`) whose floor it clears (from `X-App-Contract`, or
+> inferred from the release table), and falls back to the audience's default
+> entry. **A build that sends no version header always gets the default**, so
+> nothing an older okta-app receives today changes.
+> `fetchSourceBundle`/`fetchPortalSourceBundle`
 > refuse it **before** any download or cache reuse when
 > `min_contract > oktaHostContractVersion`, throwing the same
 > `OktaMiniAppContractException` the post-download bundle gate throws, so the

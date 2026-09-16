@@ -61,7 +61,9 @@ This block is the entire contract for the client surface:
     "mode": "webview",                // "webview" | "native" | "external"
     "entry": "okta_app/webview/screens/dashboard.blade.php",   // webview: page okta-web renders.
                                        // native: okta_app/native/main/lib/main.dart
-    "minContract": 1,                  // native only: block default of the per-type floor (audiences[].minContract)
+    "minContract": 1,                  // native only: block default of the per-type floor (audiences[].minContract);
+                                       // a type may also bind newer entries to an okta-app version
+                                       // via audiences[].versions[] — see "A newer package for newer phones".
     "allowedPlatforms": ["ios", "android", "windows", "linux"],  // [] = all
     "allowedRoles": ["tenant-admin"],  // [] = no role filter
     "requiredScope": "education.students.read",       // empty = no scope gate
@@ -301,6 +303,21 @@ say) builds with the first declaration and logs a warning at publish — give ea
 floor its own package instead. The version editor shows, under each type's
 contract field, which okta-app releases run which contract (`1.1.1 → 26 …`),
 mirrored from the table the Okta team keeps on okta-web.
+
+**A newer package for newer phones** — `audiences[].versions[]`. A floor only
+says *do not run this entry under host X*; it never says what to run instead,
+so a package written against a newer host used to leave you a choice between
+locking the type away from older phones and staying on the old package forever.
+A row — `{minAppVersion, entry, minContract}` on the same account type — is the
+third answer, and okta-web picks: the newest bound the phone meets whose floor
+it clears, then the default entry. **A phone that does not report its version
+always gets the default**, so a row never changes what already works. The row's
+own floor is required and never inherited (its package needs the newer host —
+inheriting the lower floor would hand it to a phone that cannot compile it, and
+fail *after* the download). You may leave the type's `entry` empty and declare
+rows only, and then the type is hidden on every older phone and on every phone
+with no version header — do it on purpose. Here one `.dart` path with two
+floors is an **error**, not the warning the legacy overlap gets.
 The partner boilerplate's `okta_app/native/main/README.md` carries the supported-patterns
 catalog (static `Okta.*` only, no `State.mounted`, closure-literal callbacks,
 JSON indexed on a `dynamic` receiver — never a `Map`-typed one, an explicit

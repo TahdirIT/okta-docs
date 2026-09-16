@@ -121,8 +121,13 @@ permissions.
   which renders the module's `mobile.entry` Blade inside the WebView;
 - **native** → a signed payload URL plus `entry` and `min_contract` for the
   **account type that matched** (`audiences[].minContract`, inheriting
-  `mobile.minContract`); okta-app refuses a floor above its host contract
-  **before** downloading. Then `BundleMiniappSource` returns the module's
+  `mobile.minContract`) — and, when that type declares `versions[]`, for the
+  **okta-app version that asked**: `PickAudienceEntry` takes the newest bound
+  the build meets whose floor it clears, and the default entry otherwise, which
+  is what every build that sends no version header gets. A bound pick is signed
+  into the URL as `e=<bound>` and re-derived from the manifest on the payload
+  request. okta-app refuses a floor above its host contract **before**
+  downloading. Then `BundleMiniappSource` returns the module's
   `okta_app/native/<entry>/lib/**.dart` as a source bundle, which okta-app compiles **on the
   device** (cached per published version) and renders natively — no WebView;
 - **external** → the partner-hosted URL, with a signed role JWT if
@@ -140,6 +145,20 @@ and gates before download (older servers ignore the header; a missing key means
 no gate); (3) `okta-partners` — the per-type field, the block mirror, the MCP
 tools and the release-table mirror, which needs the bridge endpoint of step 1 on
 production.
+
+**Shipping the per-version entries** (`audiences[].versions[]`) continues that
+order and adds one rule of its own: (4) `okta-web` (sandbox + production) —
+the validator, the normaliser, `PickAudienceEntry`, the `e=` pin and the
+per-bound artifacts; additive, because no manifest exports the shape yet.
+(5) `okta-partners` — the canonical rows, the editor repeater, the MCP tools
+and the schema, **with `okta-web.miniapp.versioned_entries` off** until step 4
+is live on *both* okta-web environments. That flag is the rule: an older
+okta-web drops any audience with no entry silently, so a type that serves bound
+builds only would vanish with no error anywhere while the publish succeeded.
+The flag holds the *export* back, never the editing — rows are stored and
+validated behind it, so turning it on never has to recover data an ordinary
+save had erased. (6) `okta-app` — nothing required: the pick is a server
+decision and the launch keys it adds are ones an older client ignores.
 
 ---
 

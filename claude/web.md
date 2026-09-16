@@ -201,10 +201,32 @@ okta-app checks it before downloading. `MobileAppCatalogController` turns the
 phone's `X-App-Version` / `X-App-Contract` / `X-App-Platform` headers into a
 `ClientBuild` DTO (`ResolveClientBuild` — nothing below the controller reads the
 request); null means "did not say", which every build older than the header
-does. `ManifestValidator::nativeEntryContracts` and
+does.
+
+`PickAudienceEntry` turns that DTO into the entry a phone actually gets, when
+the audience declares `versions[]` (rows of `{min_app_version, entry,
+min_contract}`, newest bound first): **version first, contract as a safety
+net** — the contract comes from `X-App-Contract`, else
+`InferHostContractForVersion` reads it off the release table. The first row the
+phone meets on both counts wins; failing that the default `entry` **regardless
+of its floor** (the device gate shows "update the app" as it always has);
+failing that — a rows-only audience on a build too old for any bound — the card
+is dropped with reason `no_entry_for_app_version` and the launch answers 404.
+**With no rows the pick is the default for every header state**, so an
+audience that does not use the shape is byte-for-byte what it was. A bound pick
+is signed into the launch URL as `e=<bound>`; `EnsureAppWebview::pinnedEntryBlock`
+re-derives the row from the manifest on the payload request and 403s on an
+unknown pin, or on no pin when the audience has no default. A default pick
+carries no `e`.
+
+`ManifestValidator::nativeEntryContracts` and
 `BuildMiniappBundleArtifacts::warnIfContractDiffers` log `Mini-app entry declared
 with two contracts` when one `.dart` path is declared with two floors — a
-warning, never a refusal, because such manifests publish today.
+warning between the legacy declarations, because such manifests publish today,
+and an **error** when a `versions[]` row is one of the two, a shape no published
+manifest carries. `BuildMiniappBundleArtifacts::nativeEntries` walks the rows
+too, so each bound package is prebuilt rather than compiled on the first
+launch that asks for it.
 
 ### 4. Scope-catalog bridge — `routes/api.php` (`/api/partners/*`)
 
